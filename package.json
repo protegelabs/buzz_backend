@@ -1,0 +1,27 @@
+{
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index",
+    "sinit": "sequelize init"
+  },
+  "dependencies": {
+    "@mikro-orm/core": "^5.6.9",
+    "@mikro-orm/mysql": "^5.6.9",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "jsonwebtoken": "^8.5.1",
+    "messagebird": "^4.0.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
+    "nodemailer": "^6.8.0",
+    "nodemon": "^2.0.20",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "sequelize": "^6.29.0",
+    "sqlite3": "^5.1.4",
+    "twilio": "^4.8.0",
+    "uniqid": "^5.4.0"
+  }
+}

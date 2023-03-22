@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 
 const { sequelize } = require('../config/sequelize')
-const { STRING, INTEGER, DATE, } = DataTypes
+const { STRING, INTEGER, DATE,BOOLEAN } = DataTypes
 
 // Define models for each table
 
@@ -220,6 +220,26 @@ const Friend = sequelize.define('Friend', {
             key: 'id',
         },
     },
+    friendName: {
+        type: STRING,
+        allowNull: false,
+        references:{
+            model: 'User',
+            key: 'name',
+        }
+    },
+    status:{
+        type: STRING,
+        allowNull:false,
+        defaultValue: 'pending',
+        validate: {
+            isIn: {
+                args: [['pending', 'accepted','rejected']],
+                msg: 'gender must be M or F'
+            },
+        }
+        
+    }
 }, {
     // Other model options go here
     tableName: 'friends',

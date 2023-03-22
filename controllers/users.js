@@ -62,7 +62,7 @@ module.exports.register = async (req, res) => {
                 heat, profile_pic,
                 is_active, dob, gender
             })
-            req.session.user_id = newUser.id
+            req.session.user_id = id
             return res.status(201).send(newUser.dataValues)
         }
     } catch (e) {

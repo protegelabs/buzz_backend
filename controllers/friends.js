@@ -26,9 +26,9 @@ exports.getFriends = async (req, res) => {
     try {
         const friends = await Friend.findAll({
             where: {
-                [Op.or]: [
+                [Op.and]: [
                     { user_id: id },
-                    { friend_id: id }
+                    { status: 'accepted' }
                 ]
             }
         });

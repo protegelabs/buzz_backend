@@ -39,6 +39,7 @@ exports.getFriends = async (req, res) => {
 
 }
 
+
 exports.changeFriendStatus = async (req, res) => {
     const { sender, status, receiver } = req.body;
     try {
@@ -59,3 +60,21 @@ exports.changeFriendStatus = async (req, res) => {
 
 }
 
+
+
+exports.getPendingRequest = async (req, res) => {
+    const { id } = req.body
+    try {
+        const friends = await Friend.findAll({
+            where: {
+                [Op.and]: [
+                    { friend_id: id },
+                    { status: 'pending' }
+                ]
+            }
+        });
+        res.status(200).send(friends);
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+}

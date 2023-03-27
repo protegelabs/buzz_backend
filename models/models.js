@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 
 const { sequelize } = require('../config/sequelize')
-const { STRING, INTEGER, DATE,BOOLEAN } = DataTypes
+const { STRING, INTEGER, DATE, BOOLEAN } = DataTypes
 
 // Define models for each table
 
@@ -84,8 +84,8 @@ const Event = sequelize.define('Event', {
     name: STRING,
     price: INTEGER,
     location: STRING,
-    longitude:INTEGER,
-    latitude:INTEGER,
+    longitude: INTEGER,
+    latitude: INTEGER,
     date: DATE,
     host_id: STRING,
     discount: INTEGER,
@@ -223,22 +223,21 @@ const Friend = sequelize.define('Friend', {
     friendName: {
         type: STRING,
         allowNull: false,
-        references:{
+        references: {
             model: 'User',
             key: 'name',
         }
     },
-    status:{
+    status: {
         type: STRING,
-        allowNull:false,
+        allowNull: false,
         defaultValue: 'pending',
         validate: {
             isIn: {
-                args: [['pending', 'accepted','rejected']],
-                msg: 'gender must be M or F'
+                args: [['pending', 'accepted', 'rejected']],
             },
         }
-        
+
     }
 }, {
     // Other model options go here

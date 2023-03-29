@@ -1,11 +1,8 @@
 const session = require('express-session');
-const db = require('../dbconnect');
-const bcrypt = require('bcryptjs');
-const express = require('express');
+
+
 const { Friend } = require('../models/models');
 const { Op } = require('sequelize');
-const { hashPassword } = require('../utils/hashPassword');
-const { Mail, randNum } = require('../utils/validate');
 const uniqid = require('uniqid');
 
 
@@ -24,12 +21,17 @@ exports.friendRequest = async (req, res) => {
 }
 
 exports.getFriends = async (req, res) => {
-    const id = req.session.user_id || req.body.sender;
+    const { id } = req.body
     try {
         const friends = await Friend.findAll({
             where: {
                 [Op.and]: [
-                    { user_id: id },
+                    {
+                        [Op.or]: [
+                            { user_id: id },
+                            { friend_id: id }
+                        ]
+                    },
                     { status: 'accepted' }
                 ]
             }

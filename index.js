@@ -17,15 +17,6 @@ app.get("/", (req, res) => {
 })
 
 //get db
-app.get("/db", (req, res) => {
-    db.query('SELECT * FROM user', (err, result) => {
-        if (err) {
-            console.log(err)
-        }
-        console.log(result)
-        res.send(result)
-    })
-})
 
 // get users
 

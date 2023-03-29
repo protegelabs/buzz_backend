@@ -1,5 +1,4 @@
 const session = require('express-session');
-const db = require('../dbconnect');
 
 const bcrypt = require('bcryptjs');
 

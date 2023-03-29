@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, FLOAT } = require('sequelize');
 
 const { sequelize } = require('../config/sequelize')
 const { STRING, INTEGER, DATE, BOOLEAN } = DataTypes
@@ -14,7 +14,9 @@ const User = sequelize.define('User', {
         primaryKey: true,
         allowNull: false,
     },
-    name: STRING,
+    name: {
+        type: STRING,
+    },
     username: {
         type: STRING,
         unique: true,
@@ -39,12 +41,18 @@ const User = sequelize.define('User', {
             }
         }
     },
-    phone: STRING,
-    bio: STRING,
+    phone: {
+        type: STRING,
+    },
+    bio: {
+        type: STRING,
+    },
     password: {
         type: STRING,
     },
-    heat: INTEGER,
+    heat: {
+        type: INTEGER,
+    },
     profile_pic: {
         type: STRING,
         validate: {
@@ -54,8 +62,12 @@ const User = sequelize.define('User', {
             },
         }
     },
-    is_active: STRING,
-    dob: DATE,
+    is_active: {
+        type: BOOLEAN,
+    },
+    dob: {
+        type: DATE,
+    },
     gender: {
         type: STRING,
         validate: {
@@ -65,7 +77,9 @@ const User = sequelize.define('User', {
             },
         }
     },
-    location: STRING,
+    location: {
+        type: STRING,
+    },
 }, {
     // Other model options go here
     tableName: 'user',
@@ -81,17 +95,49 @@ const Event = sequelize.define('Event', {
         primaryKey: true,
         allowNull: false,
     },
-    name: STRING,
-    price: INTEGER,
-    location: STRING,
-    longitude: INTEGER,
-    latitude: INTEGER,
-    date: DATE,
-    host_id: STRING,
-    discount: INTEGER,
-    is_active: STRING,
-    pic: STRING,
-    tickets: INTEGER,
+    name: {
+        type: STRING,
+        allowNull: false,
+    },
+    price: {
+        type: INTEGER,
+        allowNull: false,
+    },
+    location: {
+        type: STRING,
+    },
+    longitude: {
+        type: FLOAT,
+    },
+    latitude: {
+        type: FLOAT,
+    },
+    date: {
+        type: DATE,
+    },
+    host_id: {
+        type: STRING,
+    },
+    discount: {
+        type: INTEGER,
+        allowNull: true
+    },
+    is_active: {
+        type: BOOLEAN,
+    },
+    event_pic: {
+        type: STRING,
+        validate: {
+            isUrl: {
+                args: true,
+                msg: "you didn't send a url"
+            }
+        }
+    },
+    tickets: {
+        type: INTEGER,
+        allowNull: true
+    },
 }, {
     // Other model options go here
     tableName: 'events',
@@ -103,18 +149,14 @@ const Event = sequelize.define('Event', {
 //3. POST SCHEMA
 const Post = sequelize.define('Post', {
     id: {
-        type: INTEGER,
+        type: STRING,
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
     },
     user_id: {
-        type: INTEGER,
+        type: STRING,
         allowNull: false,
-        references: {
-            model: 'User',
-            key: 'id',
-        },
+
     },
     content: {
         type: STRING,
@@ -134,31 +176,28 @@ const Post = sequelize.define('Post', {
 //4. COMMENT SCHEMA
 const Comment = sequelize.define('Comment', {
     id: {
-        type: INTEGER,
+        type: STRING,
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
     },
     event_id: {
-        type: INTEGER,
-        allowNull: true,
-        references: {
-            model: 'Event',
-            key: 'id',
-        },
+        type: STRING,
+
     },
     user_id: {
-        type: INTEGER,
-        allowNull: false,
-        references: {
-            model: 'User',
-            key: 'id',
-        },
+        type: STRING,
+
     },
     content: {
         type: STRING,
         allowNull: false,
     },
+    post: {
+        type: STRING,
+        allowNull: false,
+
+    }
+
 }, {
     // Other model options go here
     tableName: 'comments',
@@ -168,26 +207,19 @@ const Comment = sequelize.define('Comment', {
 //5. FAVOURITES SCHEMA
 const Favourite = sequelize.define('Favourite', {
     id: {
-        type: INTEGER,
+        type: STRING,
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
     },
     user_id: {
-        type: INTEGER,
+        type: STRING,
         allowNull: false,
-        references: {
-            model: 'User',
-            key: 'id',
-        },
+
     },
     event_id: {
-        type: INTEGER,
+        type: STRING,
         allowNull: false,
-        references: {
-            model: 'Event',
-            key: 'id',
-        },
+
     },
 }, {
     // Other model options go here
@@ -199,34 +231,23 @@ const Favourite = sequelize.define('Favourite', {
 //6. FRIEND SCHEMA
 const Friend = sequelize.define('Friend', {
     id: {
-        type: INTEGER,
+        type: STRING,
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
     },
     user_id: {
-        type: INTEGER,
+        type: STRING,
         allowNull: false,
-        references: {
-            model: 'User',
-            key: 'id',
-        },
+
     },
     friend_id: {
-        type: INTEGER,
+        type: STRING,
         allowNull: false,
-        references: {
-            model: 'User',
-            key: 'id',
-        },
     },
     friendName: {
         type: STRING,
         allowNull: false,
-        references: {
-            model: 'User',
-            key: 'name',
-        }
+
     },
     status: {
         type: STRING,
@@ -241,33 +262,26 @@ const Friend = sequelize.define('Friend', {
     }
 }, {
     // Other model options go here
-    tableName: 'friends',
-    modelName: 'friends'
+    tableName: 'friend',
+    modelName: 'friend'
 });
 
 //7. PURCHASE SCHEMA
 const Purchase = sequelize.define('Purchase', {
     id: {
-        type: INTEGER,
+        type: STRING,
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
     },
     user_id: {
-        type: INTEGER,
+        type: STRING,
         allowNull: false,
-        references: {
-            model: 'User',
-            key: 'id',
-        },
+
     },
     event_id: {
-        type: INTEGER,
+        type: STRING,
         allowNull: false,
-        references: {
-            model: 'Event',
-            key: 'id',
-        },
+
     },
 }, {
     // Other model options go here
@@ -278,17 +292,18 @@ const Purchase = sequelize.define('Purchase', {
 //8. FOLLOWERS SCHEMA
 const Follow = sequelize.define('Follow', {
     id: {
-        type: INTEGER,
+        type: STRING,
         primaryKey: true,
-        autoIncrement: true,
-    },
-    follower_id: {
-        type: INTEGER,
         allowNull: false,
     },
-    following_id: {
-        type: INTEGER,
+    host: {
+        type: STRING,
         allowNull: false,
+    },
+    follower: {
+        type: STRING,
+        allowNull: false,
+
     },
 }, {
     // Other model options go here
@@ -297,33 +312,66 @@ const Follow = sequelize.define('Follow', {
 });
 
 
-// Define relationships between tables
-User.hasMany(Post, { foreignKey: 'user_id' });
-User.hasMany(Event, { foreignKey: 'host_id' });
-User.hasMany(Friend, { foreignKey: 'user_id' });
-User.hasMany(Follow, { foreignKey: 'following_id' });
-User.hasMany(Favourite, { foreignKey: 'user_id' });
-User.hasMany(Purchase, { foreignKey: 'user_id' });
+const Story = sequelize.define('Follow', {
+    id: {
+        type: STRING,
+        primaryKey: true,
+        allowNull: false,
+    },
+    user_id: {
+        type: STRING,
+        allowNull: false,
+    },
+    story: {
+        type: STRING,
+        allowNull: false,
+        validate:{
+            isUrl:{
+                args:true,
+                msg:"you didn't send a url"
+            }
+        }
+    },
+    caption:{
+        type:STRING,
+    }
 
-Post.belongsTo(User, { foreignKey: 'user_id' });
-Post.hasMany(Comment, { foreignKey: 'post_id' });
+}, {
+    // Other model options go here
+    tableName: 'story',
+    modelName: 'story'
+});
 
-Event.belongsTo(User, { foreignKey: 'host_id' });
-Event.hasMany(Comment, { foreignKey: 'event_id' });
-Event.hasMany(Purchase, { foreignKey: 'event_id' });
 
-Friend.belongsTo(User, { foreignKey: 'user_id' });
 
-Purchase.belongsTo(User, { foreignKey: 'user_id' });
-Purchase.belongsTo(Event, { foreignKey: 'event_id' });
+// // Define relationships between tables
+// User.hasMany(Post, { foreignKey: 'user_id' });
+// User.hasMany(Event, { foreignKey: 'host_id' });
+// User.hasMany(Friend, { foreignKey: 'friend_id' });
+// User.hasMany(Follow, { foreignKey: 'follower' });
+// User.hasMany(Favourite, { foreignKey: 'user_id' });
+// User.hasMany(Purchase, { foreignKey: 'user_id' });
+// User.hasMany(Comment, { foreignKey: 'user_id' });
+// Post.belongsTo(User);
+// Post.hasMany(Comment, { foreignKey: 'post' });
 
-Follow.belongsTo(User, { foreignKey: 'user_id' });
+// Event.belongsTo(User);
+// Event.hasMany(Comment, { foreignKey: 'event_id' });
+// Event.hasMany(Purchase, { foreignKey: 'event_id' });
 
-Favourite.belongsTo(User, { foreignKey: 'user_id' });
+// Friend.belongsTo(User);
 
-Comment.belongsTo(User, { foreignKey: 'user_id' });
-Comment.belongsTo(Event, { foreignKey: 'event_id' });
+// Purchase.belongsTo(User);
+// Purchase.belongsTo(Event);
 
-sequelize.sync()
+// Follow.belongsTo(User);
 
-module.exports = { User, Event, Post, Comment, Favourite, Friend, Purchase, Follow };
+// Favourite.belongsTo(User);
+
+// Comment.belongsTo(User);
+// Comment.belongsTo(Event);
+// Comment.belongsTo(Post);
+
+sequelize.sync({ force: true })
+
+module.exports = { User, Event, Post, Comment, Favourite, Friend, Purchase, Follow,Story };

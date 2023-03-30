@@ -325,15 +325,15 @@ const Story = sequelize.define('Follow', {
     story: {
         type: STRING,
         allowNull: false,
-        validate:{
-            isUrl:{
-                args:true,
-                msg:"you didn't send a url"
+        validate: {
+            isUrl: {
+                args: true,
+                msg: "you didn't send a url"
             }
         }
     },
-    caption:{
-        type:STRING,
+    caption: {
+        type: STRING,
     }
 
 }, {
@@ -372,6 +372,6 @@ const Story = sequelize.define('Follow', {
 // Comment.belongsTo(Event);
 // Comment.belongsTo(Post);
 
-sequelize.sync({ force: true })
+sequelize.sync()
 
-module.exports = { User, Event, Post, Comment, Favourite, Friend, Purchase, Follow,Story };
+module.exports = { User, Event, Post, Comment, Favourite, Friend, Purchase, Follow, Story };

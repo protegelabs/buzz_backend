@@ -1,5 +1,4 @@
 const session = require('express-session');
-const db = require('../dbconnect');
 
 const bcrypt = require('bcryptjs');
 
@@ -40,7 +39,8 @@ module.exports.register = async (req, res) => {
             profile_pic,
             is_active,
             dob,
-            gender
+            gender,
+            location
         } = req.body;
 
         //hash password and save to database
@@ -60,7 +60,7 @@ module.exports.register = async (req, res) => {
                 username, email: email.toLowerCase(),
                 type, phone, bio, password: hash,
                 heat, profile_pic,
-                is_active, dob, gender
+                is_active, dob, gender, location
             })
             req.session.user_id = id
             return res.status(201).send(newUser.dataValues)
@@ -85,11 +85,13 @@ module.exports.login = async (req, res) => {
         if (newUser) {
             //check for username in database and ensure password matches, then grant access
             const check = await bcrypt.compare(password, newUser.password);
+
             if (check) {
 
 
                 req.session.user_id = newUser.id
-
+                req.session.user = newUser
+                console.log("user is", newUser)
                 return res.send(req.session)
             } else {
                 return res.status(400).json('wrong email or password')
@@ -116,7 +118,7 @@ module.exports.getProfile = async (req, res) => {
 }
 
 module.exports.editProfile = async (req, res) => {
-    //const { name, username, email, type, phone, bio, heat, profile_url, is_active, dob, gender } = req.body
+    //const { name, username, email, type, phone, bio, heat, profile_url, is_active, dob, gender, location } = req.body
     const requestBody = req.body;
     const id = req.session.user_id || req.body.id;
     try {

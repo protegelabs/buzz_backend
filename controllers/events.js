@@ -1,11 +1,6 @@
 const session = require('express-session');
-const db = require('../dbconnect');
-
-const bcrypt = require('bcryptjs');
-const express = require('express')
 const { Event } = require('../models/models')
 const { Op } = require('sequelize')
-const { hashPassword } = require('../utils/hashPassword')
 const uniqid = require('uniqid')
 
 

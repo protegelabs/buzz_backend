@@ -1,16 +1,15 @@
 const session = require('express-session');
-const db = require('../dbconnect');
-const bcrypt = require('bcryptjs');
-const express = require('express');
+
+
 const { Friend } = require('../models/models');
 const { Op } = require('sequelize');
-const { hashPassword } = require('../utils/hashPassword');
-const { Mail, randNum } = require('../utils/validate');
 const uniqid = require('uniqid');
 
 
 exports.friendRequest = async (req, res) => {
-    const { sender, receiver, senderName } = req.body;
+    const { receiver } = req.body;
+    const sender =  req.body.sender || req.session.user_id 
+    const senderName =req.body.senderName|| req.session.user.name
     try {
         const id = uniqid();
         const newFriendRequest = await Friend.create({ id, friend_id: receiver, user_id: sender, friendName: senderName });
@@ -22,16 +21,22 @@ exports.friendRequest = async (req, res) => {
 }
 
 exports.getFriends = async (req, res) => {
-    const { id } = req.body;
+    const { id } = req.body
     try {
         const friends = await Friend.findAll({
             where: {
                 [Op.and]: [
-                    { user_id: id },
+                    {
+                        [Op.or]: [
+                            { user_id: id },
+                            { friend_id: id }
+                        ]
+                    },
                     { status: 'accepted' }
                 ]
             }
         });
+        console.log(friends)
         res.status(200).send(friends);
     } catch (error) {
         res.status(400).json({ message: error.message })
@@ -39,8 +44,10 @@ exports.getFriends = async (req, res) => {
 
 }
 
+
 exports.changeFriendStatus = async (req, res) => {
-    const { sender, status, receiver } = req.body;
+    const { sender, status } = req.body;
+    const receiver = req.body.receiver || res.session.user_id 
     try {
         const friend = await Friend.findOne({
             where: {
@@ -59,3 +66,21 @@ exports.changeFriendStatus = async (req, res) => {
 
 }
 
+
+
+exports.getPendingRequest = async (req, res) => {
+    const { id } = req.body
+    try {
+        const friends = await Friend.findAll({
+            where: {
+                [Op.and]: [
+                    { friend_id: id },
+                    { status: 'pending' }
+                ]
+            }
+        });
+        res.status(200).send(friends);
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+}

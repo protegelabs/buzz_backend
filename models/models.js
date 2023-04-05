@@ -313,7 +313,7 @@ const Follow = sequelize.define('Follow', {
 });
 
 
-const Story = sequelize.define('Follow', {
+const Story = sequelize.define('Story', {
     id: {
         type: STRING,
         primaryKey: true,

@@ -49,7 +49,7 @@ module.exports.register = async (req, res) => {
 
 
         const check = await User.findOne({
-            where: { email }
+            where: { email:email.toLowerCase() }
         });
 
         if (check) {

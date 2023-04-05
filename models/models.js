@@ -3,7 +3,8 @@ const { DataTypes, FLOAT } = require('sequelize');
 const { sequelize } = require('../config/sequelize')
 const { STRING, INTEGER, DATE, BOOLEAN } = DataTypes
 
-// Define models for each table
+// Define models for each table 
+// pushing to dev
 
 //1. USER SCHEMA
 const User = sequelize.define('User', {
@@ -312,7 +313,7 @@ const Follow = sequelize.define('Follow', {
 });
 
 
-const Story = sequelize.define('Follow', {
+const Story = sequelize.define('Story', {
     id: {
         type: STRING,
         primaryKey: true,

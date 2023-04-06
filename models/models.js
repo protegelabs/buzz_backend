@@ -42,7 +42,7 @@ const User = sequelize.define('User', {
             }
         }
     },
-    phone: {
+    phone_number: {
         type: STRING,
     },
     bio: {

@@ -1,7 +1,5 @@
 const session = require('express-session');
-
 const bcrypt = require('bcryptjs');
-
 const express = require('express')
 const { User } = require('../models/models')
 const { Op } = require('sequelize')
@@ -32,7 +30,7 @@ module.exports.register = async (req, res) => {
             username,
             email,
             type,
-            phone,
+            phone_number,
             bio,
             password,
             heat,
@@ -49,7 +47,7 @@ module.exports.register = async (req, res) => {
 
 
         const check = await User.findOne({
-            where: { email }
+            where: { email: email.toLowerCase() }
         });
 
         if (check) {
@@ -58,7 +56,7 @@ module.exports.register = async (req, res) => {
             const newUser = await User.create({
                 id, name,
                 username, email: email.toLowerCase(),
-                type, phone, bio, password: hash,
+                type, phone_number, bio, password: hash,
                 heat, profile_pic,
                 is_active, dob, gender, location
             })
@@ -80,19 +78,16 @@ module.exports.login = async (req, res) => {
         const user = await User.findOne({
             where: { email: email.toLowerCase() }
         })
-        console.log(user)
+
         const newUser = user.dataValues
         if (newUser) {
             //check for username in database and ensure password matches, then grant access
             const check = await bcrypt.compare(password, newUser.password);
-
-            if (check) {
-
-
+            console.log(check)
+            if (check === true) {
                 req.session.user_id = newUser.id
                 req.session.user = newUser
-                console.log("user is", newUser)
-                return res.send(req.session)
+                return res.status(200).send(req.session)
             } else {
                 return res.status(400).json('wrong email or password')
             }

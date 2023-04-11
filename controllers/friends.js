@@ -8,8 +8,8 @@ const uniqid = require('uniqid');
 
 exports.friendRequest = async (req, res) => {
     const { receiver } = req.body;
-    const sender =  req.body.sender || req.session.user_id 
-    const senderName =req.body.senderName|| req.session.user.name
+    const sender = req.body.sender || req.session.user_id
+    const senderName = req.body.senderName || req.session.user.name
     try {
         const id = uniqid();
         const newFriendRequest = await Friend.create({ id, friend_id: receiver, user_id: sender, friendName: senderName });
@@ -21,7 +21,7 @@ exports.friendRequest = async (req, res) => {
 }
 
 exports.getFriends = async (req, res) => {
-    const { id } = req.body
+    const id = req.body.id || req.session.user_id
     try {
         const friends = await Friend.findAll({
             where: {
@@ -47,7 +47,7 @@ exports.getFriends = async (req, res) => {
 
 exports.changeFriendStatus = async (req, res) => {
     const { sender, status } = req.body;
-    const receiver = req.body.receiver || res.session.user_id 
+    const receiver = req.body.receiver || res.session.user_id
     try {
         const friend = await Friend.findOne({
             where: {
@@ -69,7 +69,7 @@ exports.changeFriendStatus = async (req, res) => {
 
 
 exports.getPendingRequest = async (req, res) => {
-    const { id } = req.body
+    const id = res.session.user_id || req.body.user_id
     try {
         const friends = await Friend.findAll({
             where: {

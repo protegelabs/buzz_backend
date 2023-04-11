@@ -7,7 +7,7 @@ const uniqid = require('uniqid')
 
 module.exports.getAllEvents = async (req, res) => {
     const event = await Event.findAll();
- return   res.send(event)
+    return res.send(event)
 }
 
 module.exports.getHostEvents = async (req, res) => {
@@ -15,9 +15,9 @@ module.exports.getHostEvents = async (req, res) => {
     console.log(req.session)
     try {
         const event = await Event.findAll({ where: { host } });
-    return    res.send(event)
+        return res.send(event)
     } catch (error) {
-      return  res.send('sorry an error occured')
+        return res.send('sorry an error occured')
     }
 
 }
@@ -27,36 +27,36 @@ module.exports.getEvent = async (req, res) => {
     console.log(id);
     try {
         const event = await Event.findOne({ where: { id } });
-       return res.send(event)
+        return res.send(event)
     } catch (error) {
-     return   res.send('sorry an error occured')
+        return res.send('sorry an error occured')
     }
 
 }
 
 module.exports.createEvent = async (req, res) => {
-    const { price, location, date, discount, is_active, pic, tickets, likes, dislikes } = req.body
+    const { name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets } = req.body
     const host = req.session.user_id || req.body.host
     console.log("host is", host)
     const id = uniqid();
     try {
-        const newEvent = await Event.create({ id, price, location, date, host, discount, is_active, pic, tickets, likes, dislikes })
-       return res.send(newEvent)
+        const newEvent = await Event.create({ id, name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets })
+        return res.send(newEvent)
     } catch (error) {
-     return   res.status(400).json({ message: error.message })
+        return res.status(400).json({ message: error.message })
     }
 }
 
 
 module.exports.editEvent = async (req, res) => {
-    const { price, location, date, discount, is_active, pic, tickets, likes, dislikes } = req.body
-    const id = req.params.event_id;
+    const { name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets } = req.body
+    const id = req.body.id || req.params.event_id;
     try {
-        const newEvent = await Event.update({ price, location, date, host, discount, is_active, pic, tickets, likes, dislikes }, {
+        const newEvent = await Event.update({ name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets }, {
             where: { id }
         });
-      return  res.send(newEvent)
+        return res.send(newEvent)
     } catch (error) {
-       return res.status(400).json({ message: error.message })
+        return res.status(400).json({ message: error.message })
     }
 }

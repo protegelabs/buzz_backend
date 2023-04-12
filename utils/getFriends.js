@@ -1,8 +1,9 @@
-const { Friends } = require('../models/models')
+const { Friend } = require('../models/models')
+const { Op } = require('sequelize')
 
-const getFriends = async (id) => {
+exports.getFriends = async (id) => {
     try {
-        const friendRecieved = await Friends.findAll({
+        const friendRecieved = await Friend.findAll({
             where: {
                 [Op.and]: [
                     { user_id: id },
@@ -11,17 +12,16 @@ const getFriends = async (id) => {
             },
             attributes: ['friend_id']
         });
-        const friendSent = await Friends.findAll({
+        const friendSent = await Friend.findAll({
             where: {
                 [Op.and]: [
-                    { frined_id: id },
+                    { friend_id: id },
                     { status: 'accepted' }
                 ]
             },
-            attributes:['user_id']
+            attributes: ['user_id']
         });
-
-       return Promise.all([friendRecieved,friendSent])
+        return Promise.all([friendRecieved, friendSent])
 
 
     } catch (err) {

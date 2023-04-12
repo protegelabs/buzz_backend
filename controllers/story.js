@@ -5,13 +5,79 @@ const {getFriends} = require('../utils/getFriends')
 
 
 
-exports.getStories= async(req,res)=>{
+exports.getFriendStories= async(req,res)=>{
      const{id}= req.body
      try{
-       const [friendRecieved,friendSent] = getFriends(id)
-       console.log(friendRecieved)
+      const storylist = []
+       const [friendRecieved, friendSent] = await getFriends(id)
+   
+      const t =  friendRecieved.map(async ({friend_id})=>{
+
+        const frinedstory = await Story.findAll({
+          where: { user_id:friend_id},
+      })
+      if(frinedstory.length>0){
+        storylist.push(frinedstory)
+       //  console.log(frinedstory)
+         return frinedstory
+       }else{
+         return null
+       }
+      
+      
+      })
+
+    const b =  friendSent.map(async ({ user_id})=>{
+  
+        const frinedstory = await Story.findAll({
+          where: { user_id: user_id},
+      })
+      if(frinedstory.length>0){
+       storylist.push(frinedstory)
+      //  console.log(frinedstory)
+        return frinedstory
+      }else{
+        return null
+      }
+      })
+      await Promise.all([...t,...b])
+      res.send(storylist)
    
      }catch(err){
          res.status(400).json({message:err.message})
      }
+}
+exports.uploadstories= async(req,res)=>{
+   try{
+    const id = uniqid()
+    const story = await Story.create({
+      id,...req.body
+    })
+     
+    res.send(story)
+   }catch(err){
+     res.status(400).json({message:err.message})
+   }
+}
+exports.deleteStory= async(req,res)=>{
+   const{id,user_id }= req.body
+   try{
+     const story = await Story.destroy({ where:{ id,user_id } })
+     res.send(story)
+   }catch(err){
+     res.status(400).json({message:err.message})
+   }
+}
+exports.getUserStories= async(req,res)=>{
+   const{ user_id}= req.body
+   try{
+     const userstory = await Story.findAll({
+      where:{
+        user_id:user_id
+      }
+     })
+     res.send(userstory)
+   }catch(err){
+     res.status(400).json({message:err.message})
+   }
 }

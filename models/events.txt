@@ -1,0 +1,210 @@
+{ 
+ "name":"The Rumbling",
+ "price":"100000",
+ "location":"Paradis",
+ "longitude":"180",
+ "latitude":"180",
+ "date":"2024-05-07",
+ "host_id":"216mabyllg8d2cwk",
+ "discount":"",
+ "is_active":"1",
+ "event_pic":"https://bit.ly/40SQ4M9",
+ "tickets":"1000" 
+}
+
+{ 
+ "name":"Beast Rage Destruction",
+ "price":"70000",
+ "location":"Paradis",
+ "longitude":"180",
+ "latitude":"180",
+ "date":"2024-05-07",
+ "host_id":"216mabyllg8d1epo",
+ "discount":"",
+ "is_active":"1",
+ "event_pic":"https://bit.ly/40SQ4M9",
+ "tickets":"1000" 
+}
+
+{ 
+ "name":"Beauty Parade",
+ "price":"50000",
+ "location":"The new world",
+ "longitude":"180",
+ "latitude":"180",
+ "date":"2024-05-07",
+ "host_id":"216mabyllg8d4xwh",
+ "discount":"",
+ "is_active":"1",
+ "event_pic":"https://bit.ly/3o0xG5q",
+ "tickets":"1000" 
+}
+
+{ 
+ "name":"Milles Fleurs",
+ "price":"20000",
+ "location":"The new world",
+ "longitude":"180",
+ "latitude":"180",
+ "date":"2024-05-07",
+ "host_id":"216ma7zxlg6v2iur",
+ "discount":"",
+ "is_active":"1",
+ "event_pic":"https://bit.ly/3o0xG5q",
+ "tickets":"1000" 
+}
+
+{ 
+ "name":"Lover Slaying",
+ "price":"100000",
+ "location":"United States",
+ "longitude":"180",
+ "latitude":"180",
+ "date":"2024-05-07",
+ "host_id":"216mabyllg8cwsbe",
+ "discount":"",
+ "is_active":"1",
+ "event_pic":"https://bit.ly/3o0xG5q",
+ "tickets":"1000" 
+}
+
+{ 
+ "name":"Titan experiment",
+ "price":"40000",
+ "location":"Paradis",
+ "longitude":"180",
+ "latitude":"180",
+ "date":"2024-05-07",
+ "host_id":"216mabyllg8d0quf",
+ "discount":"",
+ "is_active":"1",
+ "event_pic":"https://bit.ly/3o0xG5q",
+ "tickets":"1000" 
+}
+
+{ 
+ "name":"Lagos shutdown",
+ "price":"10000",
+ "location":"Lagos",
+ "longitude":"180",
+ "latitude":"180",
+ "date":"2024-05-07",
+ "host_id":"216mabyllg8d721u",
+ "discount":"",
+ "is_active":"1",
+ "event_pic":"https://bit.ly/3o0xG5q",
+ "tickets":"1000" 
+}
+
+{ 
+ "name":"Abuja Shutdown",
+ "price":"10000",
+ "location":"Abuja",
+ "longitude":"180",
+ "latitude":"180",
+ "date":"2024-05-07",
+ "host_id":"216mabyllg8d827n",
+ "discount":"",
+ "is_active":"1",
+ "event_pic":"https://bit.ly/3zHTx44",
+ "tickets":"1000" 
+}
+
+{ 
+ "name":"Pride Party",
+ "price":"18000",
+ "location":"Lagos",
+ "longitude":"180",
+ "latitude":"180",
+ "date":"2024-05-07",
+ "host_id":"216mabyllg8d2vus",
+ "discount":"",
+ "is_active":"1",
+ "event_pic":"https://bit.ly/3zHTx44",
+ "tickets":"1000" 
+}
+
+{ 
+ "name":"Kingdom Rage",
+ "price":"19000",
+ "location":"Lagos",
+ "longitude":"180",
+ "latitude":"180",
+ "date":"2024-05-07",
+ "host_id":"216mabyllg8d378y",
+ "discount":"",
+ "is_active":"1",
+ "event_pic":"https://bit.ly/3zHTx44",
+ "tickets":"1000" 
+}
+
+{ 
+ "name":"Nika Celebration",
+ "price":"100000",
+ "location":"Abuja",
+ "longitude":"180",
+ "latitude":"180",
+ "date":"2024-05-07",
+ "host_id":"216mabyllg8d3gg3",
+ "discount":"",
+ "is_active":"1",
+ "event_pic":"https://bit.ly/40SQ4M9",
+ "tickets":"1000" 
+}
+
+{ 
+ "name":"Durosoke",
+ "price":"10000",
+ "location":"Abuja",
+ "longitude":"180",
+ "latitude":"180",
+ "date":"2024-05-07",
+ "host_id":"216mabyllg8d7j1r",
+ "discount":"5",
+ "is_active":"1",
+ "event_pic":"https://bit.ly/3KL0qb9",
+ "tickets":"1000" 
+}
+
+{ 
+ "name":"Jagaban",
+ "price":"10000",
+ "location":"Lagos",
+ "longitude":"180",
+ "latitude":"180",
+ "date":"2024-05-07",
+ "host_id":"216mabyllg8d7tf4",
+ "discount":"5",
+ "is_active":"1",
+ "event_pic":"https://bit.ly/3KL0qb9",
+ "tickets":"1000" 
+}
+
+{ 
+ "name":"Courtship",
+ "price":"10000",
+ "location":"Lagos",
+ "longitude":"180",
+ "latitude":"180",
+ "date":"2024-05-07",
+ "host_id":"216mabyllg8d9dhg",
+ "discount":"5",
+ "is_active":"1",
+ "event_pic":"https://bit.ly/40SQ4M9",
+ "tickets":"1000" 
+}
+
+{ 
+ "name":"Britannia Nigeria",
+ "price":"50000",
+ "location":"Britannia",
+ "longitude":"180",
+ "latitude":"180",
+ "date":"2024-05-07",
+ "host_id":"216mabyllg8dif81",
+ "discount":"",
+ "is_active":"1",
+ "event_pic":"https://bit.ly/3KL0qb9",
+ "tickets":"1000" 
+}
+

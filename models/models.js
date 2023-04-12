@@ -56,12 +56,6 @@ const User = sequelize.define('User', {
     },
     profile_pic: {
         type: STRING,
-        validate: {
-            isUrl: {
-                args: true,
-                msg: "you didn't send a url"
-            },
-        }
     },
     is_active: {
         type: BOOLEAN,
@@ -128,12 +122,6 @@ const Event = sequelize.define('Event', {
     },
     event_pic: {
         type: STRING,
-        validate: {
-            isUrl: {
-                args: true,
-                msg: "you didn't send a url"
-            }
-        }
     },
     tickets: {
         type: INTEGER,

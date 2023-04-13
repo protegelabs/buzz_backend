@@ -75,6 +75,17 @@ const User = sequelize.define('User', {
     location: {
         type: STRING,
     },
+    authtype:{
+        type: STRING,
+        allowNull: false,
+        defaultValue:"buzz",
+        validate: {
+            isIn: {
+                args: [['facebook', 'google','buzz']],
+                msg: "Auth type doesnt exist"
+            }
+        }
+    }
 }, {
     // Other model options go here
     tableName: 'user',

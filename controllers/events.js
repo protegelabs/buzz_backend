@@ -1,6 +1,6 @@
 const session = require('express-session');
 const { Event } = require('../models/models')
-const { Op } = require('sequelize')
+const { Op, where } = require('sequelize')
 const uniqid = require('uniqid')
 
 
@@ -58,5 +58,19 @@ module.exports.editEvent = async (req, res) => {
         return res.send(newEvent)
     } catch (error) {
         return res.status(400).json({ message: error.message })
+    }
+}
+
+exports.searchEvent= async(req,res)=>{
+    const { event_name } = req.query;
+    try{
+       const search = await Event.findAll({
+        where:{
+            ...req.body,
+            [Op.like]: event_name
+        }
+       }) 
+    }catch(err){
+        res.status(400).json({message:err.message})
     }
 }

@@ -161,13 +161,13 @@ module.exports.sendsms = async (req, res) => {
 }
 
 exports.thirdpartysignup= async(req,res)=>{
-    const {authtype }= req.param
-     try{
-         const user = await User.create({...req.body,authtype})
-         res.send(user)
-     }catch(err){
-         res.status(400).json({message:err.message})
-     }
+    const { authtype }= req.param
+    try {
+        const user = await User.create({...req.body,authtype})
+        res.send(user)
+    } catch(err){
+        res.status(400).json({message:err.message})
+    }
 }
 
 

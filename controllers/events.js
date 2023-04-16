@@ -67,9 +67,10 @@ exports.searchEvent= async(req,res)=>{
        const search = await Event.findAll({
         where:{
             ...req.body,
-            [Op.like]: event_name
+            event_name:{
+            [Op.like]: `%${event_name}%`
         }
-       }) 
+    }}) 
     }catch(err){
         res.status(400).json({message:err.message})
     }

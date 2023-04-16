@@ -141,7 +141,7 @@ module.exports.changePassword = async (req, res) => {
 }
 
 module.exports.emailverify = async (req, res) => {
-    const { id } = req.body
+    const id = req.session.user_id || req.body.id
     try {
         const User = await User.findOne({ where: { id } })
         const { email } = User

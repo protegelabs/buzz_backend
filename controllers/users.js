@@ -169,6 +169,18 @@ exports.thirdpartysignup= async(req,res)=>{
          res.status(400).json({message:err.message})
      }
 }
+exports.searchUser= async(req,res)=>{
+     const{id,username }= req.body
+     try{
+         const user = await User.findAll({where:{
+                username:{
+                    [Op.like]:`%${username}%`
+                }
+         }})
+     }catch(err){
+         res.status(400).json({message:err.message})
+     }
+}
 
 
 module.exports.logout = (req, res) => {

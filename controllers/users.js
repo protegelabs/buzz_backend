@@ -38,7 +38,8 @@ module.exports.register = async (req, res) => {
             is_active,
             dob,
             gender,
-            location
+            location,
+            auth_type
         } = req.body;
 
         //hash password and save to database
@@ -58,7 +59,8 @@ module.exports.register = async (req, res) => {
                 username, email: email.toLowerCase(),
                 type, phone_number, bio, password: hash,
                 heat, profile_pic,
-                is_active, dob, gender, location
+                is_active, dob, gender, location,
+                authtype: auth_type
             })
             req.session.user_id = id
             return res.status(201).send(newUser.dataValues)

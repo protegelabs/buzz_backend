@@ -11,8 +11,9 @@ router.route('/register')
 
 
 router.route('/users')
-    .get(users.getUsers)
+    .get(users.searchUser)
     .post(users.getUsers)
+
 
 router.route('/login')
     // .get(users.renderLogin)

@@ -188,17 +188,33 @@ exports.thirdPartyAuthRegister = async (req, res) => {
     }
 
 }
-exports.searchUser= async(req,res)=>{
-     const{id,username }= req.body
-     try{
-         const user = await User.findAll({where:{
-                username:{
-                    [Op.like]:`%${username}%`
-                }
-         }})
-     }catch(err){
-         res.status(400).json({message:err.message})
-     }
+
+exports.searchUser= async (req,res) => {
+    const{ query } = req.body;
+
+    try {
+        const user = await User.findAll({
+            where: {
+                [Op.or]: [
+                    {
+                        username: {
+                            [Op.like]:`%${query}%`
+                        }
+                    },
+                    {
+                        name: {
+                            [Op.like]:`%${query}%`
+                        }
+                    }
+                ]
+            },
+            limit: 7
+        })
+        return res.status(200).json({ users: user.dataValues });
+
+    } catch(err) {
+        return res.status(400).json({message:err.message})
+    }
 }
 
 

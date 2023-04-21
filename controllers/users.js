@@ -190,7 +190,7 @@ exports.thirdPartyAuthRegister = async (req, res) => {
 }
 
 exports.searchUser= async (req,res) => {
-    const{ query } = req.body;
+    const { query } = req.params;
 
     try {
         const user = await User.findAll({

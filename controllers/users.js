@@ -38,7 +38,8 @@ module.exports.register = async (req, res) => {
             is_active,
             dob,
             gender,
-            location
+            location,
+            auth_type
         } = req.body;
 
         //hash password and save to database
@@ -58,7 +59,8 @@ module.exports.register = async (req, res) => {
                 username, email: email.toLowerCase(),
                 type, phone_number, bio, password: hash,
                 heat, profile_pic,
-                is_active, dob, gender, location
+                is_active, dob, gender, location,
+                authtype: auth_type
             })
             req.session.user_id = id
             return res.status(201).send(newUser.dataValues)
@@ -103,7 +105,7 @@ module.exports.login = async (req, res) => {
 }
 
 module.exports.getProfile = async (req, res) => {
-    const id = req.body.id || req.session.user_id;
+    const id = req.params.id || req.session.user_id;
     try {
         const getUser = await User.findOne({ where: { id } })
         res.send(getUser)
@@ -160,14 +162,31 @@ module.exports.sendsms = async (req, res) => {
     res.send(sms)
 }
 
-exports.thirdpartysignup= async(req,res)=>{
-    const {authtype }= req.param
-     try{
-         const user = await User.create({...req.body,authtype})
-         res.send(user)
-     }catch(err){
-         res.status(400).json({message:err.message})
-     }
+
+exports.thirdPartyAuth = async (req,res) => {
+    const { auth_type, user_id } = req.params;
+    try{
+        const user = await User.findByPk(user_id)
+        req.session.user_id = user.dataValues.id;
+        return res.json({ user_data: user.dataValues })
+    } catch(err){
+        res.status(400).json({ message:err.message })
+    }
+}
+
+exports.thirdPartyAuthRegister = async (req, res) => {
+    const { auth_type, user_id, email, ...rest } = req.body;
+    try {
+        const user = await User.create({
+            authtype: auth_type,
+            id: user_id,
+            //email: email.toLowerCase(),
+            //...rest
+        })
+    } catch (e) {
+
+    }
+
 }
 exports.searchUser= async(req,res)=>{
      const{id,username }= req.body

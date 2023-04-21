@@ -18,6 +18,10 @@ router.route('/users')
 router.route('/login')
     // .get(users.renderLogin)
     .post(users.login)
+
+router.route('/third-party-auth')
+    .get(users.thirdPartyAuth)
+
 router.route('/profile')
     .get(users.getProfile)
     .put(users.editProfile)

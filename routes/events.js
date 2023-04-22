@@ -8,6 +8,7 @@ const events = require('../controllers/events')
 
 router.route('/events')
     .get(events.getAllEvents)
+    .post(events.searchEvent)
 
 router.route('/host/Event')
     .get(events.getEvent)

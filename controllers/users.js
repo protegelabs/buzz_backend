@@ -141,7 +141,7 @@ module.exports.changePassword = async (req, res) => {
 }
 
 module.exports.emailverify = async (req, res) => {
-    const { id } = req.body
+    const id = req.session.user_id || req.body.id
     try {
         const User = await User.findOne({ where: { id } })
         const { email } = User
@@ -184,6 +184,18 @@ exports.thirdPartyAuthRegister = async (req, res) => {
 
     }
 
+}
+exports.searchUser= async(req,res)=>{
+     const{id,username }= req.body
+     try{
+         const user = await User.findAll({where:{
+                username:{
+                    [Op.like]:`%${username}%`
+                }
+         }})
+     }catch(err){
+         res.status(400).json({message:err.message})
+     }
 }
 
 

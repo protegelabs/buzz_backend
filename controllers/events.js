@@ -61,19 +61,24 @@ module.exports.editEvent = async (req, res) => {
     }
 }
 
-exports.searchEvent = async (req, res) => {
-    const { event_name } = req.query;
-    try {
-        const search = await Event.findAll({
+
+exports.searchEvent= async(req,res)=>{
+    const { event_name, ...rest } = req.body;
+    try{
+       return await Event.findAll({
             where: {
-                ...req.body,
                 event_name: {
                     [Op.like]: `%${event_name}%`
-                }
+                },
+                ...rest
             }
+        }) 
+        .then((data) => {
+            return res.json({ events: data })
         })
-        res.status(200).json(search)
-    } catch (err) {
-        res.status(400).json({ message: err.message })
+
+    } catch(err) {
+        return res.status(400).json({message:err.message})
+
     }
 }

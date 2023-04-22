@@ -134,7 +134,7 @@ module.exports.changePassword = async (req, res) => {
         const updatePassword = await User.update({ password }, {
             where: { id }
         });
-        return res.status(200).send(updatePassword)
+        return res.status(200).json(updatePassword)
     } catch (error) {
         return res.status(400).json({ message: error.message })
     }
@@ -147,7 +147,7 @@ module.exports.emailverify = async (req, res) => {
         const { email } = User
         const num = randNum()
         await Mail(email, num)
-        return res.send(num)
+        return res.status(200).json(num)
     } catch (e) {
         return res.status(400).json({ message: e.message })
     }
@@ -164,7 +164,7 @@ exports.thirdpartysignup= async(req,res)=>{
     const {authtype }= req.param
      try{
          const user = await User.create({...req.body,authtype})
-         res.send(user)
+         res.status(200).json(user)
      }catch(err){
          res.status(400).json({message:err.message})
      }
@@ -177,6 +177,7 @@ exports.searchUser= async(req,res)=>{
                     [Op.like]:`%${username}%`
                 }
          }})
+         res.status(200).json(username)
      }catch(err){
          res.status(400).json({message:err.message})
      }

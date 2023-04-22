@@ -136,7 +136,7 @@ module.exports.changePassword = async (req, res) => {
         const updatePassword = await User.update({ password }, {
             where: { id }
         });
-        return res.status(200).send(updatePassword)
+        return res.status(200).json(updatePassword)
     } catch (error) {
         return res.status(400).json({ message: error.message })
     }
@@ -149,7 +149,7 @@ module.exports.emailverify = async (req, res) => {
         const { email } = User
         const num = randNum()
         await Mail(email, num)
-        return res.send(num)
+        return res.status(200).json(num)
     } catch (e) {
         return res.status(400).json({ message: e.message })
     }
@@ -161,6 +161,7 @@ module.exports.sendsms = async (req, res) => {
     let sms;
     res.send(sms)
 }
+
 
 
 exports.thirdPartyAuth = async (req,res) => {
@@ -219,6 +220,7 @@ exports.searchUser= async (req,res) => {
     } catch(err) {
         return res.status(400).json({message:err.message})
     }
+
 }
 
 

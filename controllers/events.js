@@ -61,6 +61,7 @@ module.exports.editEvent = async (req, res) => {
     }
 }
 
+
 exports.searchEvent= async(req,res)=>{
     const { event_name, ...rest } = req.body;
     try{
@@ -78,5 +79,6 @@ exports.searchEvent= async(req,res)=>{
 
     } catch(err) {
         return res.status(400).json({message:err.message})
+
     }
 }

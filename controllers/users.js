@@ -190,10 +190,12 @@ exports.thirdPartyAuthRegister = async (req, res) => {
 }
 
 exports.searchUser= async (req,res) => {
-    const { query } = req.params;
-
+    const query = req.body.query;
+    console.log(req.body);
+    
     try {
-        const user = await User.findAll({
+        console.log(query)
+        return await User.findAll({
             where: {
                 [Op.or]: [
                     {
@@ -210,7 +212,9 @@ exports.searchUser= async (req,res) => {
             },
             limit: 7
         })
-        return res.status(200).json({ users: user.dataValues });
+        .then((resp) => {
+            return res.status(200).json({ users: resp });
+        })
 
     } catch(err) {
         return res.status(400).json({message:err.message})

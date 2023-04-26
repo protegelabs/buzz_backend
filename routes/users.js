@@ -11,13 +11,17 @@ router.route('/register')
 
 
 router.route('/users')
-    .get(users.searchUser)
-    .post(users.getUsers)
+    .get(users.getUsers)
+    .post(users.searchUser)
 
 
 router.route('/login')
     // .get(users.renderLogin)
     .post(users.login)
+
+router.route('/third-party-auth')
+    .get(users.thirdPartyAuth)
+
 router.route('/profile')
     .get(users.getProfile)
     .put(users.editProfile)

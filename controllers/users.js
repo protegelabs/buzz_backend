@@ -13,8 +13,14 @@ module.exports.renderRegister = (req, res) => {
 }
 
 module.exports.getUsers = async (req, res) => {
-    const users = await User.findAll();
-    return res.status(200).send(users)
+    try {
+        const users = await User.findAll();
+     res.status(200).send(users) 
+    } catch (error) {
+        res.status(500).json({message:error.message})
+        
+    }
+ 
 }
 
 module.exports.get = async (req, res) => {
@@ -38,7 +44,8 @@ module.exports.register = async (req, res) => {
             is_active,
             dob,
             gender,
-            location
+            location,
+            auth_type
         } = req.body;
 
         //hash password and save to database
@@ -58,7 +65,8 @@ module.exports.register = async (req, res) => {
                 username, email: email.toLowerCase(),
                 type, phone_number, bio, password: hash,
                 heat, profile_pic,
-                is_active, dob, gender, location
+                is_active, dob, gender, location,
+                authtype: auth_type
             })
             req.session.user_id = id
             return res.status(201).send(newUser.dataValues)
@@ -103,7 +111,7 @@ module.exports.login = async (req, res) => {
 }
 
 module.exports.getProfile = async (req, res) => {
-    const id = req.body.id || req.session.user_id;
+    const id = req.params.id || req.session.user_id;
     try {
         const getUser = await User.findOne({ where: { id } })
         res.send(getUser)
@@ -134,7 +142,7 @@ module.exports.changePassword = async (req, res) => {
         const updatePassword = await User.update({ password }, {
             where: { id }
         });
-        return res.status(200).send(updatePassword)
+        return res.status(200).json(updatePassword)
     } catch (error) {
         return res.status(400).json({ message: error.message })
     }
@@ -147,7 +155,7 @@ module.exports.emailverify = async (req, res) => {
         const { email } = User
         const num = randNum()
         await Mail(email, num)
-        return res.send(num)
+        return res.status(200).json(num)
     } catch (e) {
         return res.status(400).json({ message: e.message })
     }
@@ -160,26 +168,65 @@ module.exports.sendsms = async (req, res) => {
     res.send(sms)
 }
 
-exports.thirdpartysignup= async(req,res)=>{
-    const {authtype }= req.param
-     try{
-         const user = await User.create({...req.body,authtype})
-         res.send(user)
-     }catch(err){
-         res.status(400).json({message:err.message})
-     }
+
+
+exports.thirdPartyAuth = async (req,res) => {
+    const { auth_type, user_id } = req.params;
+    try{
+        const user = await User.findByPk(user_id)
+        req.session.user_id = user.dataValues.id;
+        return res.json({ user_data: user.dataValues })
+    } catch(err){
+        res.status(400).json({ message:err.message })
+    }
 }
-exports.searchUser= async(req,res)=>{
-     const{id,username }= req.body
-     try{
-         const user = await User.findAll({where:{
-                username:{
-                    [Op.like]:`%${username}%`
-                }
-         }})
-     }catch(err){
-         res.status(400).json({message:err.message})
-     }
+
+exports.thirdPartyAuthRegister = async (req, res) => {
+    const { auth_type, user_id, email, ...rest } = req.body;
+    try {
+        const user = await User.create({
+            authtype: auth_type,
+            id: user_id,
+            //email: email.toLowerCase(),
+            //...rest
+        })
+    } catch (e) {
+
+    }
+
+}
+
+exports.searchUser= async (req,res) => {
+    const query = req.body.query;
+    console.log(req.body);
+    
+    try {
+        console.log(query)
+        return await User.findAll({
+            where: {
+                [Op.or]: [
+                    {
+                        username: {
+                            [Op.like]:`%${query}%`
+                        }
+                    },
+                    {
+                        name: {
+                            [Op.like]:`%${query}%`
+                        }
+                    }
+                ]
+            },
+            limit: 7
+        })
+        .then((resp) => {
+            return res.status(200).json({ users: resp });
+        })
+
+    } catch(err) {
+        return res.status(400).json({message:err.message})
+    }
+
 }
 
 

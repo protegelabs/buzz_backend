@@ -1,5 +1,5 @@
 const session = require('express-session');
-const { Purchase } = require('../models/models')
+const { Purchase, Event } = require('../models/models')
 const { Op } = require('sequelize')
 const uniqid = require('uniqid')
 
@@ -40,8 +40,21 @@ module.exports.createPurchase = async (req, res) => {
     const id = uniqid();
     try {
         const newPurchase = await Purchase.create({ id, user_id, event_id })
-        return res.send(newPurchase)
+        const count = await Event.increment({ sold: 1 }, { where: { id: event_id } })
+        res.send(newPurchase)
     } catch (error) {
         return res.status(400).json({ message: error.message })
     }
 }
+
+
+module.exports.test = async (req, res) => {
+    const { event_id } = req.body
+
+    try {
+        const count = await Event.increment({ sold: 1 }, { where: { id: event_id } })
+    } catch (error) {
+        return res.status(400).json({ message: error.message })
+    }
+}
+

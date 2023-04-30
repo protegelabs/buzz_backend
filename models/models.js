@@ -1,4 +1,4 @@
-const { DataTypes, FLOAT } = require('sequelize');
+const { DataTypes, FLOAT, TIME } = require('sequelize');
 
 const { sequelize } = require('../config/sequelize')
 const { STRING, INTEGER, DATE, BOOLEAN } = DataTypes
@@ -75,13 +75,13 @@ const User = sequelize.define('User', {
     location: {
         type: STRING,
     },
-    authtype:{
+    authtype: {
         type: STRING,
         allowNull: false,
-        defaultValue:"email",
+        defaultValue: "email",
         validate: {
             isIn: {
-                args: [['facebook', 'google','email']],
+                args: [['facebook', 'google', 'email']],
                 msg: "Auth type doesnt exist"
             }
         }
@@ -137,6 +137,13 @@ const Event = sequelize.define('Event', {
     tickets: {
         type: INTEGER,
         allowNull: true
+    },
+    sold: {
+        type: INTEGER,
+        defaultValue: 0,
+    },
+    time: {
+        type: TIME,
     },
 }, {
     // Other model options go here

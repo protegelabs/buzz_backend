@@ -9,13 +9,16 @@ const purchases = require('../controllers/purchases')
 router.route('/purchases')
     .get(purchases.getAllPurchases)
 
-router.route('/host/Purchase')
+router.route('/user/Purchase')
     .get(purchases.getPurchase)
-    .post(purchases.createPurchase)
+    .put(purchases.createPurchase)
 
 
 router.route('/user/AllPurchases')
     .get(purchases.getUserPurchases)
+
+router.route('/testers')
+    .post(purchases.test)
 
 
 module.exports = router;

@@ -17,8 +17,12 @@ router.route('/user/Purchase')
 router.route('/user/AllPurchases')
     .get(purchases.getUserPurchases)
 
+router.route('/pay')
+    .post(purchases.makePayment)
+    .get(purchases.paymentVerification)
+
 router.route('/testers')
-    .post(purchases.test)
+    .get(purchases.test)
 
 
 module.exports = router;

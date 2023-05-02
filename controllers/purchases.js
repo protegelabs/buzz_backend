@@ -122,7 +122,6 @@ module.exports.paymentVerification = async (req, res) => {
     }).on('error', error => {
         console.error(error)
     })
-    S
 };
 
 

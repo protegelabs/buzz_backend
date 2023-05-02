@@ -22,6 +22,9 @@ exports.friendRequest = async (req, res) => {
 
 exports.getFriends = async (req, res) => {
     const id = req.body.id || req.session.user_id
+    
+    console.log(req.body);
+
     try {
         const friends = await Friend.findAll({
             where: {
@@ -37,9 +40,9 @@ exports.getFriends = async (req, res) => {
             }
         });
         console.log(friends)
-        res.status(200).send(friends);
+        return res.status(200).json({ friends });
     } catch (error) {
-        res.status(400).json({ message: error.message })
+        return res.status(400).json({ message: error.message })
     }
 
 }
@@ -79,8 +82,8 @@ exports.getPendingRequest = async (req, res) => {
                 ]
             }
         });
-        res.status(200).send(friends);
+        return res.status(200).json({ pending: friends });
     } catch (err) {
-        res.status(400).json({ message: err.message })
+        return res.status(400).json({ message: err.message })
     }
 }

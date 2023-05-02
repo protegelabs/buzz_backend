@@ -65,12 +65,14 @@ exports.searchEvent= async(req,res)=>{
     const { event_name, ...rest } = req.body;
     try{
        return await Event.findAll({
+            
             where: {
                 event_name: {
                     [Op.like]: `%${event_name}%`
                 },
                 ...rest
-            }
+            },
+            
         }) 
         .then((data) => {
             return res.json({ events: data })

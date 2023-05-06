@@ -82,3 +82,26 @@ exports.searchEvent = async (req, res) => {
 
     }
 }
+exports.closestEvent= async(req,res)=>{
+     const{id,longitude,latitude }= req.body
+     try{
+            const distance = 50; // 50km
+            const nearest = await Event.scope({ 
+                method: ['distance', latitude, longitude, distance] 
+            })
+            .findAll({
+                attributes: [
+                    'id'
+                ],
+                where: {
+                    status: 1
+                },
+                order: sequelize.col('distance'),
+                limit: 5
+            });
+          return  res.status(200).json(nearest)
+           
+     }catch(err){
+       return  res.status(400).json({message:err.message})
+     }
+}

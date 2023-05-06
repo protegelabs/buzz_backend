@@ -5,7 +5,8 @@ const { User } = require('../models/models')
 const { Op } = require('sequelize')
 const { hashPassword } = require('../utils/hashPassword')
 const { Mail, randNum } = require('../utils/validate')
-const uniqid = require('uniqid')
+const uniqid = require('uniqid');
+const { getHostEvent } = require('../utils/getFriends');
 
 module.exports.renderRegister = (req, res) => {
     const james = User.create({ fullName: 'james', id: "me" })
@@ -227,6 +228,25 @@ exports.searchUser= async (req,res) => {
         return res.status(400).json({message:err.message})
     }
 
+}
+
+exports.HostAnalytics= async(req,res)=>{
+     const{id}= req.body
+     try{
+         /**
+          * grab all events id done by host attribute will be event id
+          * search through the event categories table with each id and grab its categories put it in an object
+          * where event are keys categories are values
+          * count for all categories
+          * display value
+          */
+         const [event,categories,categoriesCount] = await getHostEvent(id)
+     
+         res.status(200).json({event,categories,categoriesCount})
+     }catch(err){
+        console.log(err)
+         return res.status(400).json({message:err.message})
+     }
 }
 
 

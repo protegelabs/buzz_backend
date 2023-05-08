@@ -35,8 +35,8 @@ module.exports.getEvent = async (req, res) => {
 }
 
 module.exports.createEvent = async (req, res) => {
-    const { name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets } = req.body
-    const host = req.session.user_id || req.body.host
+    const { name, price, location, longitude, latitude, date, discount, is_active, event_pic, tickets } = req.body
+    const host_id = req.session.user_id || req.body.host
     console.log("host is", host)
     const id = uniqid();
     try {
@@ -50,7 +50,7 @@ module.exports.createEvent = async (req, res) => {
 
 module.exports.editEvent = async (req, res) => {
     const { name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets } = req.body
-    const id = req.body.id || req.params.event_id;
+    const id = req.body.event_id || req.params.event_id;
     try {
         const newEvent = await Event.update({ name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets }, {
             where: { id }

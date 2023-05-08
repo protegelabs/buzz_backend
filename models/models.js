@@ -169,7 +169,19 @@ const Post = sequelize.define('Post', {
         type: STRING,
         allowNull: true,
     },
-    picture: {
+    pic1: {
+        type: STRING,
+        allowNull: true,
+    },
+    pic2: {
+        type: STRING,
+        allowNull: true,
+    },
+    pic3: {
+        type: STRING,
+        allowNull: true,
+    },
+    pic4: {
         type: STRING,
         allowNull: true,
     },

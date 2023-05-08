@@ -35,6 +35,8 @@ router.post('/validate/email', users.emailverify)
 // router.route('/sesh')
 //     .get(users.sesh);
 
+router.route('/host')
+    .get(users.HostAnalytics)
 
 
 

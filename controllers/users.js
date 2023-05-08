@@ -5,7 +5,8 @@ const { User } = require('../models/models')
 const { Op } = require('sequelize')
 const { hashPassword } = require('../utils/hashPassword')
 const { Mail, randNum } = require('../utils/validate')
-const uniqid = require('uniqid')
+const uniqid = require('uniqid');
+const { getHostEvent } = require('../utils/getFriends');
 
 module.exports.renderRegister = (req, res) => {
     const james = User.create({ fullName: 'james', id: "me" })
@@ -13,8 +14,14 @@ module.exports.renderRegister = (req, res) => {
 }
 
 module.exports.getUsers = async (req, res) => {
-    const users = await User.findAll();
-    return res.status(200).send(users)
+    try {
+        const users = await User.findAll();
+     res.status(200).send(users) 
+    } catch (error) {
+        res.status(500).json({message:error.message})
+        
+    }
+ 
 }
 
 module.exports.get = async (req, res) => {
@@ -105,7 +112,7 @@ module.exports.login = async (req, res) => {
 }
 
 module.exports.getProfile = async (req, res) => {
-    const id = req.params.id || req.session.user_id;
+    const id = req.query.id || req.session.user_id;
     try {
         const getUser = await User.findOne({ where: { id } })
         res.send(getUser)
@@ -165,7 +172,7 @@ module.exports.sendsms = async (req, res) => {
 
 
 exports.thirdPartyAuth = async (req,res) => {
-    const { auth_type, user_id } = req.params;
+    const { auth_type, user_id } = req.query;
     try{
         const user = await User.findByPk(user_id)
         req.session.user_id = user.dataValues.id;
@@ -221,6 +228,25 @@ exports.searchUser= async (req,res) => {
         return res.status(400).json({message:err.message})
     }
 
+}
+
+exports.HostAnalytics= async(req,res)=>{
+     const{id}= req.body
+     try{
+         /**
+          * grab all events id done by host attribute will be event id
+          * search through the event categories table with each id and grab its categories put it in an object
+          * where event are keys categories are values
+          * count for all categories
+          * display value
+          */
+         const [event,categories,categoriesCount] = await getHostEvent(id)
+     
+         res.status(200).json({event,categories,categoriesCount})
+     }catch(err){
+        console.log(err)
+         return res.status(400).json({message:err.message})
+     }
 }
 
 

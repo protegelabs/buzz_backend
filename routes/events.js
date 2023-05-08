@@ -6,6 +6,9 @@ const catchAsync = require('../utils/catchAsync')
 const { request } = require('express');
 const events = require('../controllers/events')
 
+router.route('/event')
+    .get(events.getEvent)
+    
 router.route('/events')
     .get(events.getAllEvents)
     .post(events.searchEvent)

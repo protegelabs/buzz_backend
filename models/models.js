@@ -1,7 +1,7 @@
 const { DataTypes, FLOAT, TIME } = require('sequelize');
 
 const { sequelize } = require('../config/sequelize')
-const { STRING, INTEGER, DATE, BOOLEAN } = DataTypes
+const { STRING, INTEGER, DATE, BOOLEAN, TINYINT } = DataTypes
 
 // Define models for each table 
 // pushing to dev
@@ -151,6 +151,23 @@ const Event = sequelize.define('Event', {
     modelName: 'events'
 
 });
+Event.addScope('distance', (latitude, longitude, distance, unit = "km") => {
+    const constant = unit == "km" ? 6371 : 3959;
+    const haversine = `(
+        ${constant} * acos(
+            cos(radians(${latitude}))
+            * cos(radians(latitude))
+            * cos(radians(longitude) - radians(${longitude}))
+            + sin(radians(${latitude})) * sin(radians(latitude))
+        )
+    )`;
+    return {
+        attributes: [
+            [sequelize.literal(haversine), 'distance'],
+        ],
+        having: sequelize.literal(`distance <= ${distance}`)
+    }
+})
 
 
 //3. POST SCHEMA
@@ -361,6 +378,63 @@ const Story = sequelize.define('Story', {
     modelName: 'story'
 });
 
+const EventCategory = sequelize.define("event_category", {
+    id: {
+        unique: true,
+        type: STRING,
+        primaryKey: true
+
+    },
+    event_id: {
+        type: STRING,
+        unique: true,
+        allowNull: false
+    },
+    party: {
+        type: TINYINT
+    },
+    convention: {
+        type: TINYINT
+    },
+    trade: {
+        type: TINYINT
+    },
+    seminar: {
+        type: TINYINT
+    },
+    meeting: {
+        type: TINYINT
+    },
+    business: {
+        type: TINYINT
+    },
+    wedding: {
+        type: TINYINT
+    },
+    corporation: {
+        type: TINYINT
+    },
+    exhibition: {
+        type: TINYINT
+    },
+    festival: {
+        type: TINYINT
+    },
+    fair: {
+        type: TINYINT
+    },
+    parade: {
+        type: TINYINT
+    },
+    food_festival: {
+        type: TINYINT
+    },
+}, {
+    // Other model options go here
+    tableName: 'event_category',
+    modelName: 'event_category'
+})
+
 
 
 // // Define relationships between tables
@@ -393,4 +467,4 @@ const Story = sequelize.define('Story', {
 
 sequelize.sync()
 
-module.exports = { User, Event, Post, Comment, Favourite, Friend, Purchase, Follow, Story };
+module.exports = { User, Event,EventCategory, Post, Comment, Favourite, Friend, Purchase, Follow, Story };

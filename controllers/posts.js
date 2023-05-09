@@ -4,8 +4,6 @@ const { Op, where } = require('sequelize');
 const uniqid = require('uniqid');
 
 
-
-
 module.exports.getAllPosts = async (req, res) => {
     const post = await Post.findAll();
     return res.send(post)
@@ -28,7 +26,9 @@ module.exports.getPost = async (req, res) => {
     console.log(id);
     try {
         const post = await Post.findOne({ where: { id } });
+        // const reactions = await Reaction.findAll({ where: { post_id : id } });
         return res.send(post)
+        // return res.send({post, reactions});
     } catch (error) {
         return res.send('sorry an error occured')
     }
@@ -36,7 +36,7 @@ module.exports.getPost = async (req, res) => {
 
 module.exports.createPost = async (req, res) => {
     const { content, pic1, pic2, pic3, pic4 } = req.body
-    const host = req.session.user_id || req.body.user_id
+    const user_id = req.session.user_id || req.body.user_id
     const id = uniqid();
     try {
         const newPost = await Post.create({ id, user_id, content, pic1, pic2, pic3, pic4 })

@@ -435,6 +435,59 @@ const EventCategory = sequelize.define("event_category", {
     modelName: 'event_category'
 })
 
+const Review = sequelize.define('Review', {
+    id: {
+        type: STRING,
+        primaryKey: true,
+        allowNull: false,
+    },
+    event_id: {
+        type: STRING,
+        allowNull: false,
+    },
+    user_id: {
+        type: STRING,
+        allowNull: false,
+    },
+    review: {
+        type: STRING,
+        allowNull: false,
+    },
+    rating: {
+        type: INTEGER,
+        allowNull: false,
+    }
+
+}, {
+    // Other model options go here
+    tableName: 'reviews',
+    modelName: 'reviews'
+});
+
+/*const Reaction = sequelize.define('Reaction', {
+    id: {
+        type: STRING,
+        primaryKey: true,
+        allowNull: false,
+    },
+    user_id: {
+        type: STRING,
+        allowNull: false,
+    },
+    post_id: {
+        type: STRING,
+        allowNull: false,
+    },
+    like: {
+        type: STRING,
+        allowNull: false,
+    }
+}, {
+    // Other model options go here
+    tableName: 'reactions',
+    modelName: 'reactions'
+});*/
+
 
 
 // // Define relationships between tables
@@ -467,4 +520,4 @@ const EventCategory = sequelize.define("event_category", {
 
 sequelize.sync()
 
-module.exports = { User, Event,EventCategory, Post, Comment, Favourite, Friend, Purchase, Follow, Story };
+module.exports = { User, Event, EventCategory, Post, Comment, Favourite, Friend, Purchase, Follow, Review, Story };

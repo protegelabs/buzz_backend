@@ -64,7 +64,7 @@ module.exports.editEvent = async (req, res) => {
 
 exports.searchEvent = async (req, res) => {
     const { event_name, ...rest } = req.body;
-    try{
+    try {
         return await Event.findAll({
             where: {
                 name: {
@@ -73,22 +73,22 @@ exports.searchEvent = async (req, res) => {
                 ...rest
             }
         })
-        .then((data) => {
-            return res.json({ events: data })
-        })
+            .then((data) => {
+                return res.json({ events: data })
+            })
 
     } catch (err) {
         return res.status(400).json({ message: err.message })
 
     }
 }
-exports.closestEvent= async(req,res)=>{
-     const{id,longitude,latitude }= req.body
-     try{
-            const distance = 50; // 50km
-            const nearest = await Event.scope({ 
-                method: ['distance', latitude, longitude, distance] 
-            })
+exports.closestEvent = async (req, res) => {
+    const { id, longitude, latitude } = req.body
+    try {
+        const distance = 50; // 50km
+        const nearest = await Event.scope({
+            method: ['distance', latitude, longitude, distance]
+        })
             .findAll({
                 attributes: [
                     'id'
@@ -99,9 +99,9 @@ exports.closestEvent= async(req,res)=>{
                 order: sequelize.col('distance'),
                 limit: 5
             });
-          return  res.status(200).json(nearest)
-           
-     }catch(err){
-       return  res.status(400).json({message:err.message})
-     }
+        return res.status(200).json(nearest)
+
+    } catch (err) {
+        return res.status(400).json({ message: err.message })
+    }
 }

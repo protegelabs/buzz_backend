@@ -11,7 +11,7 @@ router.route('/reactions')
 
 router.route('/user/reactions')
     .get(reactions.getUserReactions)
-    .put(reactions.createReaction)
+    .post(reactions.createReaction)
 
 
 

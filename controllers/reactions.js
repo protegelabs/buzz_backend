@@ -24,11 +24,11 @@ module.exports.getUserReactions = async (req, res) => {
 }
 
 module.exports.createReaction = async (req, res) => {
-    const { content, pic1, pic2, pic3, pic4 } = req.body
+    const { post_id, reaction } = req.body
     const user_id = req.session.user_id || req.body.user_id
     const id = uniqid();
     try {
-        const newReaction = await Reaction.create({ id, user_id, content, pic1, pic2, pic3, pic4 })
+        const newReaction = await Reaction.create({ id, user_id, post_id, reaction })
         return res.send(newReaction)
     } catch (error) {
         return res.status(400).json({ message: error.message })

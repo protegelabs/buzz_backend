@@ -22,7 +22,7 @@ exports.friendRequest = async (req, res) => {
 
 exports.getFriends = async (req, res) => {
     const id = req.body.id || req.session.user_id
-    
+
     console.log(req.body);
 
     try {

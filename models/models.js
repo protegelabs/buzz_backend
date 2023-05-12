@@ -449,6 +449,14 @@ const Review = sequelize.define('Review', {
         type: STRING,
         allowNull: false,
     },
+    username: {
+        type: STRING,
+        allowNull: false,
+    },
+    profile_pic: {
+        type: STRING,
+        allowNull: false,
+    },
     review: {
         type: STRING,
         allowNull: false,
@@ -464,7 +472,7 @@ const Review = sequelize.define('Review', {
     modelName: 'reviews'
 });
 
-/*const Reaction = sequelize.define('Reaction', {
+const Reaction = sequelize.define('Reaction', {
     id: {
         type: STRING,
         primaryKey: true,
@@ -474,11 +482,19 @@ const Review = sequelize.define('Review', {
         type: STRING,
         allowNull: false,
     },
+    username: {
+        type: STRING,
+        allowNull: false,
+    },
+    profile_pic: {
+        type: STRING,
+        allowNull: false,
+    },
     post_id: {
         type: STRING,
         allowNull: false,
     },
-    like: {
+    reaction: {
         type: STRING,
         allowNull: false,
     }
@@ -486,7 +502,7 @@ const Review = sequelize.define('Review', {
     // Other model options go here
     tableName: 'reactions',
     modelName: 'reactions'
-});*/
+});
 
 
 
@@ -520,4 +536,4 @@ const Review = sequelize.define('Review', {
 
 sequelize.sync()
 
-module.exports = { User, Event, EventCategory, Post, Comment, Favourite, Friend, Purchase, Follow, Review, Story };
+module.exports = { User, Event, EventCategory, Post, Comment, Favourite, Friend, Purchase, Follow, Review, Story, Reaction };

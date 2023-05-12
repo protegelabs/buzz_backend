@@ -1,5 +1,5 @@
 const session = require('express-session');
-const { Post } = require('../models/models');
+const { Post, Reaction, User } = require('../models/models');
 const { Op, where } = require('sequelize');
 const uniqid = require('uniqid');
 
@@ -26,9 +26,9 @@ module.exports.getPost = async (req, res) => {
     console.log(id);
     try {
         const post = await Post.findOne({ where: { id } });
-        // const reactions = await Reaction.findAll({ where: { post_id : id } });
-        return res.send(post)
-        // return res.send({post, reactions});
+        const reactions = await Reaction.findAll({ where: { post_id: id } });
+        // return res.send(post)
+        return res.send({ post, reactions });
     } catch (error) {
         return res.send('sorry an error occured')
     }

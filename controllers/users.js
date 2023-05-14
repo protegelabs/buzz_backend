@@ -6,7 +6,7 @@ const { Op } = require('sequelize')
 const { hashPassword } = require('../utils/hashPassword')
 const { Mail, randNum } = require('../utils/validate')
 const uniqid = require('uniqid');
-const { getHostEvent } = require('../utils/getFriends');
+const { getHostEvent, getPurchaseFollow } = require('../utils/getFriends');
 
 module.exports.renderRegister = (req, res) => {
     const james = User.create({ fullName: 'james', id: "me" })
@@ -240,9 +240,10 @@ exports.HostAnalytics= async(req,res)=>{
           * count for all categories
           * display value
           */
-         const [event,categories,categoriesCount] = await getHostEvent(id)
+         const [event] = await getHostEvent(id)
+         const purchase = await getPurchaseFollow(id,event)
      
-         res.status(200).json({event,categories,categoriesCount})
+         res.status(200).json({event,purchase})
      }catch(err){
         console.log(err)
          return res.status(400).json({message:err.message})

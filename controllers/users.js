@@ -112,7 +112,7 @@ module.exports.login = async (req, res) => {
 }
 
 module.exports.getProfile = async (req, res) => {
-    const id = req.params.id || req.session.user_id;
+    const id = req.query.id || req.session.user_id;
     try {
         const getUser = await User.findOne({ where: { id } })
         res.send(getUser)
@@ -172,7 +172,7 @@ module.exports.sendsms = async (req, res) => {
 
 
 exports.thirdPartyAuth = async (req,res) => {
-    const { auth_type, user_id } = req.params;
+    const { auth_type, user_id } = req.query;
     try{
         const user = await User.findByPk(user_id)
         req.session.user_id = user.dataValues.id;

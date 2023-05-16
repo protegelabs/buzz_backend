@@ -54,6 +54,7 @@ exports.getHostEvent = async (id) => {
             },
             attributes: ['id']
         })
+        
         const categories = await Promise.all(event.map(async ({ id }) => {
             const t = await EventCategory.findOne({
                 where: {

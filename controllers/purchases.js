@@ -1,5 +1,5 @@
 const session = require('express-session');
-const { Purchase, Event } = require('../models/models')
+const { Purchase, Event, User } = require('../models/models')
 const { Op } = require('sequelize')
 const uniqid = require('uniqid')
 const dotenv = require('dotenv');
@@ -126,7 +126,22 @@ module.exports.paymentVerification = async (req, res) => {
     })
 };
 
+exports.getattendees = async (req, res) => {
+    const { event_id } = req.body
+    try {
+        const attendee = await Purchase.findAll({
+            where: {
+                event_id
+            },
 
+            attributes: ['id', 'username', 'profile_pic']
+
+        })
+        res.status(200).json({ attendee,attendeeCount:attendee.length })
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+}
 
 module.exports.test = (req, res) => {
 

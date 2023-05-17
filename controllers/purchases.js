@@ -137,14 +137,14 @@ exports.getattendees = async (req, res) => {
             attributes: ['id', 'username', 'profile_pic']
 
         })
-        res.status(200).json({ attendee,attendeeCount:attendee.length })
+        res.status(200).json({ attendee, attendeeCount: attendee.length })
     } catch (err) {
         res.status(400).json({ message: err.message })
     }
 }
 
 module.exports.purchaseList = async (req, res) => {
-    const event_id = req.session.user_id || req.body.event_id;
+    const event_id = req.session.event_id || req.body.event_id;
     // console.log(req.session)
     try {
         const event = await Purchase.findAll({ where: { event_id } });

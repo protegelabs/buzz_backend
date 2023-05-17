@@ -13,6 +13,8 @@ router.route('/user/purchase')
     .get(purchases.getPurchase)
     .put(purchases.createPurchase)
 
+router.route('/user/attendee')
+    .get(purchases.getattendees)
 
 router.route('/user/allpurchases')
     .get(purchases.getUserPurchases)

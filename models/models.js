@@ -309,7 +309,7 @@ const Purchase = sequelize.define('Purchase', {
         allowNull: false,
         primaryKey: true,
     },
-    user_id: {
+    UserId: {
         type: STRING,
         allowNull: false,
 
@@ -537,6 +537,8 @@ const Reaction = sequelize.define('Reaction', {
 // Comment.belongsTo(User);
 // Comment.belongsTo(Event);
 // Comment.belongsTo(Post);
+User.hasMany(Purchase);
+Purchase.belongsTo(User);
 
 sequelize.sync()
 

@@ -1,0 +1,149 @@
+{
+    "user_id":"216mabyllg8d721u",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"0"
+}
+
+{
+    "user_id":"216mabyllg8d7aut",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"1"
+}
+
+{
+    "user_id":"216mabyllg8d7j1r",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"1"
+}
+
+{
+    "user_id":"216mabyllg8d7tf4",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"1"
+
+}
+
+{
+    "user_id":"216mabyllg8d959l",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"1"
+}
+
+{
+    "user_id":"216mabyllg8dh833",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"1"
+}
+
+{
+    "user_id":"216mabyllg8dhejn",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"1"
+}
+
+{
+    "user_id":"216mabyllg8d827n",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"1"
+}
+
+{
+    "user_id":"216mabyllg8d8dy1",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"1"
+}
+
+{
+    "user_id":"216mabyllg8da1sv",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"1"
+}
+
+{
+    "user_id":"216mabyllg8daeyl",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"1"
+}
+{
+    "user_id":"216mabyllg8dami7",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"1"
+}
+
+{
+    "user_id":"216mabyllg8dateu",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"1"
+}
+
+{
+    "user_id":"216mabyllg8dgzzr",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"1"
+}
+
+{
+    "user_id":"216mabyllg8czkjr",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"1"
+}
+
+{
+    "user_id":"216mabyllg8d6tdo",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"1"
+}
+
+{
+    "user_id":"216mabyllg8d10d8",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"0"
+}
+
+{
+    "user_id":"216mabyllg8cwsbe",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"0"
+}
+
+{
+    "user_id":"216ma7zxlg6v2iur",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"0"
+}
+
+{
+    "user_id":"216mabyllg8d0quf",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"0"
+}
+
+{
+    "user_id":"216mabyllg8d1oie",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"0"
+}
+
+{
+    "user_id":"216mabyllg8d2cwk",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"0"
+}
+
+{
+    "user_id":"216mabyllg8d2med",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"0"
+}
+
+{
+    "user_id":"216mabyllg8d1epo",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"0"
+}
+
+{
+    "user_id":"216mabyllg8d0avz",
+    "post_id":"216ma9wclhkka1db",
+    "reaction":"0"
+}

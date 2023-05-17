@@ -128,7 +128,14 @@ module.exports.paymentVerification = async (req, res) => {
 
 
 
-module.exports.test = (req, res) => {
-
+module.exports.purchaseList = async (req, res) => {
+    const event_id = req.session.user_id || req.body.event_id;
+    // console.log(req.session)
+    try {
+        const event = await Purchase.findAll({ where: { event_id } });
+        return res.send(event)
+    } catch (error) {
+        return res.send('sorry an error occured')
+    }
 }
 

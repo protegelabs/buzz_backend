@@ -314,6 +314,14 @@ const Purchase = sequelize.define('Purchase', {
         allowNull: false,
 
     },
+    username: {
+        type: STRING,
+        allowNull: false,
+    },
+    profile_pic: {
+        type: STRING,
+        allowNull: false,
+    },
     event_id: {
         type: STRING,
         allowNull: false,
@@ -451,11 +459,9 @@ const Review = sequelize.define('Review', {
     },
     username: {
         type: STRING,
-        allowNull: false,
     },
     profile_pic: {
         type: STRING,
-        allowNull: false,
     },
     review: {
         type: STRING,
@@ -484,11 +490,9 @@ const Reaction = sequelize.define('Reaction', {
     },
     username: {
         type: STRING,
-        allowNull: false,
     },
     profile_pic: {
         type: STRING,
-        allowNull: false,
     },
     post_id: {
         type: STRING,

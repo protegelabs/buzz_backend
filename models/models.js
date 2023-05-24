@@ -1,7 +1,7 @@
-const { DataTypes, FLOAT } = require('sequelize');
+const { DataTypes, FLOAT, TIME } = require('sequelize');
 
 const { sequelize } = require('../config/sequelize')
-const { STRING, INTEGER, DATE, BOOLEAN } = DataTypes
+const { STRING, INTEGER, DATE, BOOLEAN, TINYINT } = DataTypes
 
 // Define models for each table 
 // pushing to dev
@@ -75,13 +75,13 @@ const User = sequelize.define('User', {
     location: {
         type: STRING,
     },
-    authtype:{
+    authtype: {
         type: STRING,
         allowNull: false,
-        defaultValue:"email",
+        defaultValue: "email",
         validate: {
             isIn: {
-                args: [['facebook', 'google','email']],
+                args: [['facebook', 'google', 'email']],
                 msg: "Auth type doesnt exist"
             }
         }
@@ -138,12 +138,36 @@ const Event = sequelize.define('Event', {
         type: INTEGER,
         allowNull: true
     },
+    sold: {
+        type: INTEGER,
+        defaultValue: 0,
+    },
+    time: {
+        type: TIME,
+    },
 }, {
     // Other model options go here
     tableName: 'events',
     modelName: 'events'
 
 });
+Event.addScope('distance', (latitude, longitude, distance, unit = "km") => {
+    const constant = unit == "km" ? 6371 : 3959;
+    const haversine = `(
+        ${constant} * acos(
+            cos(radians(${latitude}))
+            * cos(radians(latitude))
+            * cos(radians(longitude) - radians(${longitude}))
+            + sin(radians(${latitude})) * sin(radians(latitude))
+        )
+    )`;
+    return {
+        attributes: [
+            [sequelize.literal(haversine), 'distance'],
+        ],
+        having: sequelize.literal(`distance <= ${distance}`)
+    }
+})
 
 
 //3. POST SCHEMA
@@ -162,7 +186,19 @@ const Post = sequelize.define('Post', {
         type: STRING,
         allowNull: true,
     },
-    picture: {
+    pic1: {
+        type: STRING,
+        allowNull: true,
+    },
+    pic2: {
+        type: STRING,
+        allowNull: true,
+    },
+    pic3: {
+        type: STRING,
+        allowNull: true,
+    },
+    pic4: {
         type: STRING,
         allowNull: true,
     },
@@ -273,10 +309,18 @@ const Purchase = sequelize.define('Purchase', {
         allowNull: false,
         primaryKey: true,
     },
-    user_id: {
+    UserId: {
         type: STRING,
         allowNull: false,
 
+    },
+    username: {
+        type: STRING,
+        allowNull: false,
+    },
+    profile_pic: {
+        type: STRING,
+        allowNull: false,
     },
     event_id: {
         type: STRING,
@@ -342,6 +386,128 @@ const Story = sequelize.define('Story', {
     modelName: 'story'
 });
 
+const EventCategory = sequelize.define("event_category", {
+    id: {
+        unique: true,
+        type: STRING,
+        primaryKey: true
+
+    },
+    event_id: {
+        type: STRING,
+        unique: true,
+        allowNull: false
+    },
+    party: {
+        type: TINYINT
+    },
+    convention: {
+        type: TINYINT
+    },
+    trade: {
+        type: TINYINT
+    },
+    seminar: {
+        type: TINYINT
+    },
+    meeting: {
+        type: TINYINT
+    },
+    business: {
+        type: TINYINT
+    },
+    wedding: {
+        type: TINYINT
+    },
+    corporation: {
+        type: TINYINT
+    },
+    exhibition: {
+        type: TINYINT
+    },
+    festival: {
+        type: TINYINT
+    },
+    fair: {
+        type: TINYINT
+    },
+    parade: {
+        type: TINYINT
+    },
+    food_festival: {
+        type: TINYINT
+    },
+}, {
+    // Other model options go here
+    tableName: 'event_category',
+    modelName: 'event_category'
+})
+
+const Review = sequelize.define('Review', {
+    id: {
+        type: STRING,
+        primaryKey: true,
+        allowNull: false,
+    },
+    event_id: {
+        type: STRING,
+        allowNull: false,
+    },
+    user_id: {
+        type: STRING,
+        allowNull: false,
+    },
+    username: {
+        type: STRING,
+    },
+    profile_pic: {
+        type: STRING,
+    },
+    review: {
+        type: STRING,
+        allowNull: false,
+    },
+    rating: {
+        type: INTEGER,
+        allowNull: false,
+    }
+
+}, {
+    // Other model options go here
+    tableName: 'reviews',
+    modelName: 'reviews'
+});
+
+const Reaction = sequelize.define('Reaction', {
+    id: {
+        type: STRING,
+        primaryKey: true,
+        allowNull: false,
+    },
+    user_id: {
+        type: STRING,
+        allowNull: false,
+    },
+    username: {
+        type: STRING,
+    },
+    profile_pic: {
+        type: STRING,
+    },
+    post_id: {
+        type: STRING,
+        allowNull: false,
+    },
+    reaction: {
+        type: STRING,
+        allowNull: false,
+    }
+}, {
+    // Other model options go here
+    tableName: 'reactions',
+    modelName: 'reactions'
+});
+
 
 
 // // Define relationships between tables
@@ -371,7 +537,9 @@ const Story = sequelize.define('Story', {
 // Comment.belongsTo(User);
 // Comment.belongsTo(Event);
 // Comment.belongsTo(Post);
+User.hasMany(Purchase);
+Purchase.belongsTo(User);
 
 sequelize.sync()
 
-module.exports = { User, Event, Post, Comment, Favourite, Friend, Purchase, Follow, Story };
+module.exports = { User, Event, EventCategory, Post, Comment, Favourite, Friend, Purchase, Follow, Review, Story, Reaction };

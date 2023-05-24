@@ -1,5 +1,5 @@
 const session = require('express-session');
-const { Event } = require('../models/models')
+const { Event, Review, User } = require('../models/models')
 const { Op, where } = require('sequelize')
 const uniqid = require('uniqid')
 
@@ -19,7 +19,6 @@ module.exports.getHostEvents = async (req, res) => {
     } catch (error) {
         return res.send('sorry an error occured')
     }
-
 }
 
 module.exports.getEvent = async (req, res) => {
@@ -27,16 +26,17 @@ module.exports.getEvent = async (req, res) => {
     console.log(id);
     try {
         const event = await Event.findOne({ where: { id } });
-        return res.send(event)
+        const reviews = await Review.findAll({ where: { event_id: id } });
+        // return res.send(event)
+        return res.send({ event, reviews })
     } catch (error) {
         return res.send('sorry an error occured')
     }
-
 }
 
 module.exports.createEvent = async (req, res) => {
-    const { name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets } = req.body
-    const host = req.session.user_id || req.body.host
+    const { name, price, location, longitude, latitude, date, discount, is_active, event_pic, tickets } = req.body
+    const host_id = req.session.user_id || req.body.host
     console.log("host is", host)
     const id = uniqid();
     try {
@@ -50,7 +50,7 @@ module.exports.createEvent = async (req, res) => {
 
 module.exports.editEvent = async (req, res) => {
     const { name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets } = req.body
-    const id = req.body.id || req.params.event_id;
+    const id = req.body.event_id || req.params.event_id;
     try {
         const newEvent = await Event.update({ name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets }, {
             where: { id }
@@ -62,23 +62,46 @@ module.exports.editEvent = async (req, res) => {
 }
 
 
-exports.searchEvent= async(req,res)=>{
+exports.searchEvent = async (req, res) => {
     const { event_name, ...rest } = req.body;
-    try{
-       return await Event.findAll({
+    try {
+        return await Event.findAll({
             where: {
-                event_name: {
+                name: {
                     [Op.like]: `%${event_name}%`
                 },
                 ...rest
             }
-        }) 
-        .then((data) => {
-            return res.json({ events: data })
         })
+            .then((data) => {
+                return res.json({ events: data })
+            })
 
-    } catch(err) {
-        return res.status(400).json({message:err.message})
+    } catch (err) {
+        return res.status(400).json({ message: err.message })
 
+    }
+}
+exports.closestEvent = async (req, res) => {
+    const { id, longitude, latitude } = req.body
+    try {
+        const distance = 50; // 50km
+        const nearest = await Event.scope({
+            method: ['distance', latitude, longitude, distance]
+        })
+            .findAll({
+                attributes: [
+                    'id'
+                ],
+                where: {
+                    status: 1
+                },
+                order: sequelize.col('distance'),
+                limit: 5
+            });
+        return res.status(200).json(nearest)
+
+    } catch (err) {
+        return res.status(400).json({ message: err.message })
     }
 }

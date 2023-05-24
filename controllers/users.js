@@ -5,7 +5,8 @@ const { User } = require('../models/models')
 const { Op } = require('sequelize')
 const { hashPassword } = require('../utils/hashPassword')
 const { Mail, randNum } = require('../utils/validate')
-const uniqid = require('uniqid')
+const uniqid = require('uniqid');
+const { getHostEvent, getPurchaseFollow } = require('../utils/getFriends');
 
 module.exports.renderRegister = (req, res) => {
     const james = User.create({ fullName: 'james', id: "me" })
@@ -15,12 +16,12 @@ module.exports.renderRegister = (req, res) => {
 module.exports.getUsers = async (req, res) => {
     try {
         const users = await User.findAll();
-     res.status(200).send(users) 
+        res.status(200).send(users)
     } catch (error) {
-        res.status(500).json({message:error.message})
-        
+        res.status(500).json({ message: error.message })
+
     }
- 
+
 }
 
 module.exports.get = async (req, res) => {
@@ -111,7 +112,7 @@ module.exports.login = async (req, res) => {
 }
 
 module.exports.getProfile = async (req, res) => {
-    const id = req.params.id || req.session.user_id;
+    const id = req.query.id || req.session.user_id;
     try {
         const getUser = await User.findOne({ where: { id } })
         res.send(getUser)
@@ -170,14 +171,14 @@ module.exports.sendsms = async (req, res) => {
 
 
 
-exports.thirdPartyAuth = async (req,res) => {
-    const { auth_type, user_id } = req.params;
-    try{
+exports.thirdPartyAuth = async (req, res) => {
+    const { auth_type, user_id } = req.query;
+    try {
         const user = await User.findByPk(user_id)
         req.session.user_id = user.dataValues.id;
         return res.json({ user_data: user.dataValues })
-    } catch(err){
-        res.status(400).json({ message:err.message })
+    } catch (err) {
+        res.status(400).json({ message: err.message })
     }
 }
 
@@ -196,10 +197,10 @@ exports.thirdPartyAuthRegister = async (req, res) => {
 
 }
 
-exports.searchUser= async (req,res) => {
+exports.searchUser = async (req, res) => {
     const query = req.body.query;
     console.log(req.body);
-    
+
     try {
         console.log(query)
         return await User.findAll({
@@ -207,26 +208,47 @@ exports.searchUser= async (req,res) => {
                 [Op.or]: [
                     {
                         username: {
-                            [Op.like]:`%${query}%`
+                            [Op.like]: `%${query}%`
                         }
                     },
                     {
                         name: {
-                            [Op.like]:`%${query}%`
+                            [Op.like]: `%${query}%`
                         }
                     }
                 ]
             },
             limit: 7
         })
-        .then((resp) => {
-            return res.status(200).json({ users: resp });
-        })
+            .then((resp) => {
+                return res.status(200).json({ users: resp });
+            })
 
-    } catch(err) {
-        return res.status(400).json({message:err.message})
+    } catch (err) {
+        return res.status(400).json({ message: err.message })
     }
 
+}
+
+exports.HostAnalytics = async (req, res) => {
+    console.log(req.session)
+    const id = req.session.user_id || req.body.user_id
+    try {
+        /**
+         * grab all events id done by host attribute will be event id
+         * search through the event categories table with each id and grab its categories put it in an object
+         * where event are keys categories are values
+         * count for all categories
+         * display value
+         */
+        const [event] = await getHostEvent(id)
+        const purchase = await getPurchaseFollow(id, event)
+
+        res.status(200).json({ event, purchase })
+    } catch (err) {
+        console.log(err)
+        return res.status(400).json({ message: err.message })
+    }
 }
 
 

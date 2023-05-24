@@ -309,7 +309,7 @@ const Purchase = sequelize.define('Purchase', {
         allowNull: false,
         primaryKey: true,
     },
-    UserId: {
+    user_id: {
         type: STRING,
         allowNull: false,
 

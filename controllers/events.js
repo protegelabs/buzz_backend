@@ -91,6 +91,9 @@ exports.closestEvent = async (req, res) => {
             method: ['distance', latitude, longitude, distance]
         })
             .findAll({
+                where:{
+                  is_active: 1
+                },
                 order: sequelize.col('distance'),
                 limit: 5
             });

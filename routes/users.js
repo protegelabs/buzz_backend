@@ -38,8 +38,6 @@ router.post('/validate/email', users.emailverify)
 router.route('/host')
     .get(users.HostAnalytics)
 
-
-
-router.get('/logout', users.logout)
+router.post('/logout', users.logout)
 
 module.exports = router;

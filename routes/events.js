@@ -20,6 +20,7 @@ router.route('/host/Event')
 
 router.route('/host/AllEvents')
     .get(events.getHostEvents)
-
+router.route('/location')
+    .get(events.closestEvent)
 
 module.exports = router;

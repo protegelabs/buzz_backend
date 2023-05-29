@@ -3,6 +3,7 @@ const { Event, Review, User } = require('../models/models')
 const { Op, where } = require('sequelize')
 const uniqid = require('uniqid')
 const { sequelize } = require('../config/sequelize')
+const Url = require('url');
 
 
 
@@ -84,7 +85,8 @@ exports.searchEvent = async (req, res) => {
     }
 }
 exports.closestEvent = async (req, res) => {
-    const { id, longitude, latitude } = req.body
+    const parsedurl = Url.parse(req.url,true)
+    const { id, longitude, latitude } = parsedurl
     try {
         const constant = 6371 
         const haversine = `(

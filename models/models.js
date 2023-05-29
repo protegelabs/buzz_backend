@@ -165,7 +165,7 @@ Event.addScope('distance', (latitude, longitude, distance, unit = "km") => {
         attributes: [
             [sequelize.literal(haversine), 'distance'],
         ],
-        having: sequelize.literal(`distance <= ${distance}`)
+        where: sequelize.where(sequelize.literal(haversine), '<=', distance)
     }
 })
 

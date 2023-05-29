@@ -2,6 +2,7 @@ const session = require('express-session');
 const { Event, Review, User } = require('../models/models')
 const { Op, where } = require('sequelize')
 const uniqid = require('uniqid')
+const { sequelize } = require('../config/sequelize')
 
 
 
@@ -90,15 +91,13 @@ exports.closestEvent = async (req, res) => {
             method: ['distance', latitude, longitude, distance]
         })
             .findAll({
-                where: {
-                    status: 1
-                },
                 order: sequelize.col('distance'),
                 limit: 5
             });
         return res.status(200).json(nearest)
 
     } catch (err) {
+        console.log(err)
         return res.status(400).json({ message: err.message })
     }
 }

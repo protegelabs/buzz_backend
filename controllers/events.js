@@ -86,7 +86,7 @@ exports.searchEvent = async (req, res) => {
 }
 exports.closestEvent = async (req, res) => {
     const parsedurl = Url.parse(req.url,true)
-    const { id, longitude, latitude } = parsedurl
+    const { id, longitude, latitude } = parsedurl.query
     try {
         const constant = 6371 
         const haversine = `(

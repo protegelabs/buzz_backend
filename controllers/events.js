@@ -90,9 +90,6 @@ exports.closestEvent = async (req, res) => {
             method: ['distance', latitude, longitude, distance]
         })
             .findAll({
-                attributes: [
-                    'id'
-                ],
                 where: {
                     status: 1
                 },

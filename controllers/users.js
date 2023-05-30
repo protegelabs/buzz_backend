@@ -252,6 +252,10 @@ exports.HostAnalytics = async (req, res) => {
 }
 
 
+module.exports.session = (req, res) => {
+    return res.status(200).send(req.session);
+}
+
 module.exports.logout = (req, res) => {
     req.session.destroy;
     return res.status(200).send('logged out');

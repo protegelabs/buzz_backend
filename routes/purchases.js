@@ -10,21 +10,24 @@ router.route('/purchases')
     .get(purchases.getAllPurchases)
 
 router.route('/user/purchase')
-    .get(purchases.getPurchase)
+    .post(purchases.getPurchase)
     .put(purchases.createPurchase)
 
 router.route('/user/attendee')
-    .get(purchases.getattendees)
+    .post(purchases.getattendees)
 
 router.route('/user/allpurchases')
-    .get(purchases.getUserPurchases)
+    .post(purchases.getUserPurchases)
 
 router.route('/pay')
     .post(purchases.makePayment)
-    .get(purchases.paymentVerification)
+
+
+router.route('/payment/verify')
+    .post(purchases.paymentVerification)
 
 router.route('/attendance')
-    .get(purchases.purchaseList)
+    .post(purchases.purchaseList)
 
 
 module.exports = router;

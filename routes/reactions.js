@@ -7,10 +7,10 @@ const reactions = require('../controllers/reactions')
 
 router.route('/reactions')
     .get(reactions.getAllReactions)
+    .post(reactions.getUserReactions)
     .put(reactions.deleteReaction)
 
 router.route('/user/reactions')
-    .get(reactions.getUserReactions)
     .post(reactions.createReaction)
 
 

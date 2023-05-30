@@ -7,7 +7,7 @@ const { request } = require('express');
 const events = require('../controllers/events')
 
 router.route('/event')
-    .get(events.getEvent)
+    .post(events.getEvent)
 
 router.route('/events')
     .get(events.getAllEvents)
@@ -18,8 +18,9 @@ router.route('/host/Event')
     .post(events.createEvent)
     .put(events.editEvent)
 
-router.route('/host/AllEvents')
-    .get(events.getHostEvents)
+router.route('/host/events')
+    .post(events.getHostEvents)
+
 router.route('/location')
     .get(events.closestEvent)
 

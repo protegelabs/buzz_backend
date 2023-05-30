@@ -30,13 +30,16 @@ router.route('/profile')
 router.route('/edit-password')
     .put(users.changePassword)
 
+router.route('/session')
+    .get(users.session)
+
 router.post('/validate/email', users.emailverify)
 // router.post('/validate/sms', users.sendsms)
 // router.route('/sesh')
 //     .get(users.sesh);
 
 router.route('/host')
-    .get(users.HostAnalytics)
+    .post(users.HostAnalytics)
 
 router.post('/logout', users.logout)
 

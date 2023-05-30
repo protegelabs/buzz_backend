@@ -13,7 +13,7 @@ module.exports.getAllEvents = async (req, res) => {
 }
 
 module.exports.getHostEvents = async (req, res) => {
-    const host = req.session.user_id || req.body.id;
+    const host = req.session.user_id || req.body.user_id;
     console.log(req.session)
     try {
         const event = await Event.findAll({ where: { host } });
@@ -85,10 +85,10 @@ exports.searchEvent = async (req, res) => {
     }
 }
 exports.closestEvent = async (req, res) => {
-    const parsedurl = Url.parse(req.url,true)
+    const parsedurl = Url.parse(req.url, true)
     const { id, longitude, latitude } = parsedurl.query
     try {
-        const constant = 6371 
+        const constant = 6371
         const haversine = `(
             ${constant} * acos(
                 cos(radians(${latitude}))
@@ -113,12 +113,12 @@ exports.closestEvent = async (req, res) => {
                     'host_id',
                     'discount',
                     'event_pic',
-                    'tickets'    
+                    'tickets'
                 ],
                 where: {
                     [Op.and]: [
                         sequelize.where(sequelize.literal(haversine), '<=', distance),
-            
+
                     ]
                 },
                 order: sequelize.col('distance'),

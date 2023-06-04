@@ -86,7 +86,7 @@ exports.searchEvent = async (req, res) => {
 }
 exports.closestEvent = async (req, res) => {
     const parsedurl = Url.parse(req.url,true)
-    const { id, longitude, latitude } = parsedurl.query
+    const { id, longitude, latitude ,range} = parsedurl.query
     try {
         const constant = 6371 
         const haversine = `(
@@ -97,7 +97,7 @@ exports.closestEvent = async (req, res) => {
                 + sin(radians(${latitude})) * sin(radians(latitude))
             )
         )`;
-        const distance = 50; // 50km
+        const distance = range || 50; // 50km
         const nearest = await Event.scope({
             method: ['distance', latitude, longitude, distance]
         })

@@ -8,8 +8,9 @@ const { friendRequest, getFriends, changeFriendStatus, getPendingRequest } = req
 router.route('/friends/request')
     .post(friendRequest)
     .put(getPendingRequest)
+
 router.route('/friends')
-    .get(getFriends)
+    .post(getFriends)
     .put(changeFriendStatus)
 
 

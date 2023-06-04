@@ -8,9 +8,12 @@ const { createFav, getEventFavorite, getFavourites, deleteFav } = require('../co
 
 router.route('/user/fav')
     .post(createFav)
-    .get(getFavourites)
     .delete(deleteFav)
+
 router.route('/host/fav')
     .get(getEventFavorite)
+
+router.route('/fav')
+    .post(getFavourites)
 
 module.exports = router;

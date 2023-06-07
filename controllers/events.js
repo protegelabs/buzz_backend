@@ -132,3 +132,62 @@ exports.closestEvent = async (req, res) => {
         return res.status(400).json({ message: err.message })
     }
 }
+
+exports.TrendingEvents = async (req, res) => {
+    try {
+     
+      const trendingEventsByPurchases = await Event.findAll({
+        attributes: [
+          'id',
+          'name',
+          'price',
+          'location',
+          'date',
+          'event_pic',
+          [
+            sequelize.literal(`(
+              SELECT COUNT(*)
+              FROM purchase
+              WHERE purchase.event_id = Event.id
+            )`),
+            'purchaseCount'
+          ]
+        ],
+        order: [[sequelize.literal('purchaseCount'), 'DESC']],
+        limit: 10 // You can adjust the limit as per your requirements
+      });
+  
+      // Retrieve the top trending events based on the number of favorites
+      const trendingEventsByFavorites = await Event.findAll({
+        attributes: [
+          'id',
+          'name',
+          'price',
+          'location',
+          'date',
+          'event_pic',
+          [
+            sequelize.literal(`(
+              SELECT COUNT(*)
+              FROM favourites
+              WHERE favourites.event_id = Event.id
+            )`),
+            'favoriteCount'
+          ]
+        ],
+        order: [[sequelize.literal('favoriteCount'), 'DESC']],
+        limit: 10 // You can adjust the limit as per your requirements
+      });
+  
+      res.json({
+        trendingEventsByPurchases,
+        trendingEventsByFavorites
+      });
+    } catch (error) {
+      console.error('Error retrieving trending events:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  };
+  
+
+  

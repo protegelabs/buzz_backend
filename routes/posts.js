@@ -9,13 +9,15 @@ const posts = require('../controllers/posts')
 router.route('/posts')
     .get(posts.getAllPosts)
 
+router.route('/post')
+    .post(posts.getPost)
+
 router.route('/host/post')
-    .get(posts.getPost)
     .post(posts.createPost)
     .put(posts.editPost)
 
 router.route('/host/allposts')
-    .get(posts.getHostPosts)
+    .post(posts.getHostPosts)
 
 router.route('/delete/post')
     .put(posts.deletePost)

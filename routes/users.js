@@ -11,8 +11,8 @@ router.route('/register')
 
 
 router.route('/users')
-    .get(users.searchUser)
-    .post(users.getUsers)
+    .get(users.getUsers)
+    .post(users.searchUser)
 
 
 router.route('/login')
@@ -22,7 +22,6 @@ router.route('/login')
 router.route('/third-party-auth')
     .get(users.thirdPartyAuth)
 
-
 router.route('/profile')
     .get(users.getProfile)
     .put(users.editProfile)
@@ -31,14 +30,17 @@ router.route('/profile')
 router.route('/edit-password')
     .put(users.changePassword)
 
+router.route('/session')
+    .get(users.session)
+
 router.post('/validate/email', users.emailverify)
 // router.post('/validate/sms', users.sendsms)
 // router.route('/sesh')
 //     .get(users.sesh);
 
+router.route('/host')
+    .post(users.HostAnalytics)
 
-
-
-router.get('/logout', users.logout)
+router.post('/logout', users.logout)
 
 module.exports = router;

@@ -40,7 +40,8 @@ module.exports.createPurchase = async (req, res) => {
     const { event_id } = req.body
     const user_id = req.session.user_id || req.body.user_id
     const username = req.session.user.username || req.body.username
-    const profifle_pic = req.session.user.profile_pic || req.body.profile_pic
+    const profile_pic = req.session.user.profile_pic || req.body.profile_pic
+    
     console.log("user_id is", user_id)
     const id = uniqid();
     try {

@@ -7,7 +7,8 @@ const users = require('../controllers/users')
 
 
 router.route('/register')
-    .post(users.register);
+    .post(users.register)
+    .put(users.isUsernameOrEmailUnique);
 
 
 router.route('/users')

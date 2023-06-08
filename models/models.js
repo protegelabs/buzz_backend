@@ -77,13 +77,12 @@ const User = sequelize.define('User', {
     },
     authtype: {
         type: STRING,
-        allowNull: false,
-        defaultValue: "email",
+        allowNull: true,
         validate: {
             isIn: {
                 args: [['facebook', 'google', 'email']],
                 msg: "Auth type doesnt exist"
-            }
+            },
         }
     }
 }, {

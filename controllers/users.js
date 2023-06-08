@@ -28,10 +28,10 @@ exports.isUsernameOrEmailUnique = async (req,res)=>{
        const {username,email}= req.body
        if (email === undefined || null){
        const user = await User.findOne({where:{username}})
-        return res.send(true)
+        return res.send({username:user.username})
        }else if(username === undefined || null){
         const user = await User.findOne({where:{email:email.toLowerCase()}})
-        return res.send(true)
+        return res.send({email:user.email})
        }else{
        return res.send(false)
        }

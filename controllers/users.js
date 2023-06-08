@@ -27,16 +27,18 @@ exports.isUsernameOrEmailUnique = async (req,res)=>{
     try {
        const {username,email}= req.body
        if (email === undefined || null){
-       const user = await User.findOne({where:{username}})
-        return res.send({username:user.username})
+       const user = await User.count({where:{username}})
+         console.log(username)
+        return res.status(200).send({user:user})
        }else if(username === undefined || null){
-        const user = await User.findOne({where:{email:email.toLowerCase()}})
-        return res.send({email:user.email})
+        const user = await User.count({where:{email:email.toLowerCase()}})
+        return res.status(200).send({user:user})
        }else{
-       return res.send(false)
+       return res.status(200).send(false)
        }
      
     } catch (e) {
+        console.log(e)
         return res.status(400).json({ message: e.message }); 
     }
 }

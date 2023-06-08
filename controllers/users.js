@@ -23,6 +23,23 @@ module.exports.getUsers = async (req, res) => {
     }
 
 }
+exports.isUsernameOrEmailUnique = async (req,res)=>{
+    try {
+       const {username,email}= req.body
+       if (email === undefined || null){
+       const user = await User.findOne({where:{username}})
+        return res.send(true)
+       }else if(username === undefined || null){
+        const user = await User.findOne({where:{email:email.toLowerCase()}})
+        return res.send(true)
+       }else{
+       return res.send(false)
+       }
+     
+    } catch (e) {
+        return res.status(400).json({ message: e.message }); 
+    }
+}
 
 module.exports.get = async (req, res) => {
     const users = await User.findAll();

@@ -38,7 +38,7 @@ module.exports.getEvent = async (req, res) => {
 
 module.exports.createEvent = async (req, res) => {
     const { name, price, location, longitude, latitude, date, discount, is_active, event_pic, tickets } = req.body
-    const host_id = req.session.user_id || req.body.host
+    const host_id = req.session.user_id || req.body.host_id
     const id = uniqid();
     try {
         const newEvent = await Event.create({ id, name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets })

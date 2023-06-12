@@ -54,6 +54,11 @@ const User = sequelize.define('User', {
     heat: {
         type: INTEGER,
     },
+    heatTime:{
+        type: DATE,
+        
+
+    },
     profile_pic: {
         type: STRING,
     },

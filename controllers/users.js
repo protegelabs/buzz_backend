@@ -2,11 +2,11 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const express = require('express')
 const { User } = require('../models/models')
-const { Op } = require('sequelize')
+const { Op, where } = require('sequelize')
 const { hashPassword } = require('../utils/hashPassword')
 const { Mail, randNum } = require('../utils/validate')
 const uniqid = require('uniqid');
-const { getHostEvent, getPurchaseFollow } = require('../utils/getFriends');
+const { getHostEvent, getPurchaseFollow, has24HoursPassed } = require('../utils/getFriends');
 
 module.exports.renderRegister = (req, res) => {
     const james = User.create({ fullName: 'james', id: "me" })
@@ -23,23 +23,23 @@ module.exports.getUsers = async (req, res) => {
     }
 
 }
-exports.isUsernameOrEmailUnique = async (req,res)=>{
+exports.isUsernameOrEmailUnique = async (req, res) => {
     try {
-       const {username,email}= req.body
-       if (email === undefined || null){
-       const user = await User.count({where:{username}})
-         console.log(username)
-        return res.status(200).send({user:user})
-       }else if(username === undefined || null){
-        const user = await User.count({where:{email:email.toLowerCase()}})
-        return res.status(200).send({user:user})
-       }else{
-       return res.status(200).send(false)
-       }
-     
+        const { username, email } = req.body
+        if (email === undefined || null) {
+            const user = await User.count({ where: { username } })
+            console.log(username)
+            return res.status(200).send({ user: user })
+        } else if (username === undefined || null) {
+            const user = await User.count({ where: { email: email.toLowerCase() } })
+            return res.status(200).send({ user: user })
+        } else {
+            return res.status(200).send(false)
+        }
+
     } catch (e) {
         console.log(e)
-        return res.status(400).json({ message: e.message }); 
+        return res.status(400).json({ message: e.message });
     }
 }
 
@@ -86,7 +86,7 @@ module.exports.register = async (req, res) => {
                 type, phone_number, bio, password: hash,
                 heat, profile_pic,
                 is_active, dob, gender, location,
-                authtype: auth_type
+                authtype: auth_type,heatTime:new Date()
             })
             req.session.user_id = id
             return res.status(201).send(newUser.dataValues)
@@ -279,4 +279,37 @@ module.exports.logout = (req, res) => {
     req.session.destroy;
     return res.status(200).send('logged out');
 }
+
+exports.UpdateHeat = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        // Find the user by ID
+        console.log(userId)
+        const user = await User.findOne({ where: { id: userId } });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+           console.log(user.heatTime)
+        if (user.heatTime && !has24HoursPassed(user.heatTime)) {
+            return res.status(400).json({ error: 'Heat can only be updated once every 24 hours.' });
+        } else {
+            user.heat += 2;
+
+            user.heatTime = new Date();
+
+            // Save the updated user
+            await user.save();
+
+           return res.status(200).json({ message: 'Heat value updated successfully.', user });
+        }
+
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+};
 

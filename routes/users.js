@@ -14,7 +14,8 @@ router.route('/register')
 router.route('/users')
     .get(users.getUsers)
     .post(users.searchUser)
-
+router.route('/users/heat')
+.put(users.UpdateHeat)
 
 router.route('/login')
     // .get(users.renderLogin)

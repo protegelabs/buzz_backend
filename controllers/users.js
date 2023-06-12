@@ -282,7 +282,9 @@ module.exports.logout = (req, res) => {
 
 exports.UpdateHeat = async (req, res) => {
     try {
+        const options = {  month: 'short',day: '2-digit', hour: 'numeric', minute: 'numeric', second: 'numeric' }
         const { userId } = req.body;
+        let date;
 
         // Find the user by ID
         console.log(userId)
@@ -294,16 +296,20 @@ exports.UpdateHeat = async (req, res) => {
 
            console.log(user.heatTime)
         if (user.heatTime && !has24HoursPassed(user.heatTime)) {
-            return res.status(400).json({ error: 'Heat can only be updated once every 24 hours.' });
+            date = new Date(user.heatTime)
+            const time24HoursFromNow =  new Date(date.getTime() + (24 * 60 * 60 * 1000));
+            return res.status(400).json({ error: `Heat can only be updated after ${time24HoursFromNow.toLocaleDateString('en-US', options)}.`,timefornext:time24HoursFromNow });
         } else {
             user.heat += 2;
 
             user.heatTime = new Date();
+            date = new Date(user.heatTime)
+            const time24HoursFromNow =  new Date(date.getTime() + (24 * 60 * 60 * 1000));
 
             // Save the updated user
             await user.save();
 
-           return res.status(200).json({ message: 'Heat value updated successfully.', user });
+           return res.status(200).json({ message: `Heat value updated successfully.next heat at ${time24HoursFromNow.toLocaleDateString('en-US', options)}. `,timefornext:time24HoursFromNow });
         }
 
 

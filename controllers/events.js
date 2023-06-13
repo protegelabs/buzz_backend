@@ -85,7 +85,8 @@ exports.searchEvent = async (req, res) => {
 }
 exports.closestEvent = async (req, res) => {
     const parsedurl = Url.parse(req.url, true)
-    const { id, longitude, latitude } = parsedurl.query
+    const { id, longitude, latitude, range } = parsedurl.query
+
     try {
         const constant = 6371
         const haversine = `(
@@ -96,7 +97,7 @@ exports.closestEvent = async (req, res) => {
                 + sin(radians(${latitude})) * sin(radians(latitude))
             )
         )`;
-        const distance = 50; // 50km
+        const distance = range || 50; // 50km
         const nearest = await Event.scope({
             method: ['distance', latitude, longitude, distance]
         })
@@ -130,3 +131,63 @@ exports.closestEvent = async (req, res) => {
         return res.status(400).json({ message: err.message })
     }
 }
+
+exports.TrendingEvents = async (req, res) => {
+    try {
+
+        const trendingEventsByPurchases = await Event.findAll({
+            attributes: [
+                'id',
+                'name',
+                'price',
+                'location',
+                'date',
+                'event_pic',
+                [
+                    sequelize.literal(`(
+              SELECT COUNT(*)
+              FROM purchase
+              WHERE purchase.event_id = Event.id
+            )`),
+                    'purchaseCount'
+                ]
+            ],
+            order: [[sequelize.literal('purchaseCount'), 'DESC']],
+            limit: 10 // You can adjust the limit as per your requirements
+        });
+
+        // Retrieve the top trending events based on the number of favorites
+        const trendingEventsByFavorites = await Event.findAll({
+            attributes: [
+                'id',
+                'name',
+                'price',
+                'location',
+                'date',
+                'event_pic',
+                [
+                    sequelize.literal(`(
+              SELECT COUNT(*)
+              FROM favourites
+              WHERE favourites.event_id = Event.id
+            )`),
+                    'favoriteCount'
+                ]
+            ],
+            order: [[sequelize.literal('favoriteCount'), 'DESC']],
+            limit: 10 // You can adjust the limit as per your requirements
+        });
+
+        res.json({
+            trendingEventsByPurchases,
+            trendingEventsByFavorites
+        });
+    } catch (error) {
+        console.error('Error retrieving trending events:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
+
+

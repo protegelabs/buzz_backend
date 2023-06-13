@@ -24,8 +24,9 @@ exports.getFavourites = async (req, res) => {
 exports.getEventFavorite = async (req, res) => {
     const { event_id } = req.body
     try {
-        const fav = await Favourite.findAll({ where: { event_id } })
-        res.status(200).json({ fav, favnum: fav.length })
+        //const fav = await Favourite.findAll({ where: { event_id } })
+        const { rows, count } = await Favourite.findAndCountAll({ where: { event_id } })
+        res.status(200).json({ fav: rows, favnum: count })
     } catch (err) {
         res.status(400).json({ message: err.message })
     }

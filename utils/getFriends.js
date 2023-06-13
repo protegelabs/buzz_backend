@@ -119,3 +119,16 @@ exports.getPurchaseFollow = async (id, events) => {
 
 
 }
+exports.has24HoursPassed= (lastDate)=> {
+    // Calculate the current date and time
+    const currentDate = new Date();
+  
+    // Calculate the difference in milliseconds between the current date and the last date
+    const timeDiff = currentDate - lastDate;
+  
+    // Convert milliseconds to hours
+    const hoursDiff = Math.floor(timeDiff / (1000 * 60 * 60));
+    
+    // Check if 24 hours have passed
+    return hoursDiff >= 24;
+  }

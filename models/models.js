@@ -54,6 +54,11 @@ const User = sequelize.define('User', {
     heat: {
         type: INTEGER,
     },
+    heatTime:{
+        type: DATE,
+        
+
+    },
     profile_pic: {
         type: STRING,
     },
@@ -77,13 +82,12 @@ const User = sequelize.define('User', {
     },
     authtype: {
         type: STRING,
-        allowNull: false,
-        defaultValue: "email",
+        allowNull: true,
         validate: {
             isIn: {
                 args: [['facebook', 'google', 'email']],
                 msg: "Auth type doesnt exist"
-            }
+            },
         }
     }
 }, {

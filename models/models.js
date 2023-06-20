@@ -146,9 +146,12 @@ const Event = sequelize.define('Event', {
         type: INTEGER,
         defaultValue: 0,
     },
-    time: {
-        type: TIME,
+    timeStart: {
+        type: STRING,
     },
+    timeEnd:{
+        type: STRING
+    }
 }, {
     // Other model options go here
     tableName: 'events',

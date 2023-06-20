@@ -16,6 +16,7 @@ router.route('/events')
 
 router.route('/host/Event')
     .get(events.getEvent)
+    
     .post(events.createEvent)
     .put(events.editEvent)
 

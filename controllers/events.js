@@ -37,7 +37,7 @@ module.exports.getEvent = async (req, res) => {
 }
 
 module.exports.createEvent = async (req, res) => {
-    const { name, price, location, longitude, latitude, date, discount, is_active, event_pic, tickets } = req.body
+    const { name, price, location, longitude, latitude, date, discount, is_active, event_pic, tickets, timeStart, timeEnd } = req.body
     const host_id = req.session.user_id || req.body.host_id
     const id = uniqid();
     try {
@@ -177,6 +177,9 @@ exports.TrendingEvents = async (req, res) => {
             order: [[sequelize.literal('favoriteCount'), 'DESC']],
             limit: 10 // You can adjust the limit as per your requirements
         });
+
+      
+
 
         res.json({
             trendingEventsByPurchases,

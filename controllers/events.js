@@ -143,6 +143,8 @@ exports.TrendingEvents = async (req, res) => {
                 'location',
                 'date',
                 'event_pic',
+                'timeStart',
+                'timeEnd',
                 [
                     sequelize.literal(`(
               SELECT COUNT(*)

@@ -85,7 +85,7 @@ const User = sequelize.define('User', {
         allowNull: true,
         validate: {
             isIn: {
-                args: [['facebook', 'google', 'email']],
+                args: [['facebook', 'google','buzz']],
                 msg: "Auth type doesnt exist"
             },
         }

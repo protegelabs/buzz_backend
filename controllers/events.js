@@ -13,10 +13,10 @@ module.exports.getAllEvents = async (req, res) => {
 }
 
 module.exports.getHostEvents = async (req, res) => {
-    const host = req.session.user_id || req.body.user_id;
+    const host_id = req.session.user_id || req.body.user_id;
     console.log(req.session)
     try {
-        const event = await Event.findAll({ where: { host } });
+        const event = await Event.findAll({ where: { host_id } });
         return res.send(event)
     } catch (error) {
         return res.send('sorry an error occured')
@@ -150,6 +150,8 @@ exports.TrendingEvents = async (req, res) => {
                 'location',
                 'date',
                 'event_pic',
+                'timeStart',
+                'timeEnd',
                 [
                     sequelize.literal(`(
               SELECT COUNT(*)

@@ -22,7 +22,8 @@ router.route('/host/Event')
 
 router.route('/host/events')
     .post(events.getHostEvents)
-
+router.route('/search')
+.post(events.createCategories)
 router.route('/location')
     .get(events.closestEvent)
 

@@ -1,5 +1,5 @@
 const session = require('express-session');
-const { Event, Review, User,Purchase,EventCategory } = require('../models/models')
+const { Event, Review, User, Purchase, EventCategory } = require('../models/models')
 const { Op, where } = require('sequelize')
 const uniqid = require('uniqid')
 const { sequelize } = require('../config/sequelize')
@@ -31,10 +31,10 @@ module.exports.getEvent = async (req, res) => {
             await Event.findByPk(id),
             await Review.findAll({ where: { event_id: id } })
         ])
-        
+
         const [host, attendance_count] = await Promise.all([
-            await User.findByPk(event.host_id, { 
-                attributes: ['name', 'id', 'profile_pic'] 
+            await User.findByPk(event.host_id, {
+                attributes: ['name', 'id', 'profile_pic']
             }),
             await Purchase.count({ where: { event_id: event.id } })
         ])
@@ -50,13 +50,13 @@ module.exports.createEvent = async (req, res) => {
     const host_id = req.session.user_id || req.body.host_id
     const id = uniqid();
     try {
-        const newEvent = await Event.create({ id, name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets,timeStart,timeEnd })
-        const newcat = categories.map((category)=>{
-            return {[category]:1}
-         })
+        const newEvent = await Event.create({ id, name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets, timeStart, timeEnd })
+        const newcat = categories.map((category) => {
+            return { [category]: 1 }
+        })
         // Create a new EventCategory instance
         const eventCategory = await EventCategory.create({
-            id:uniqid(),
+            id: uniqid(),
             id,
             ...newcat,
         });
@@ -244,34 +244,29 @@ exports.SearchByTags = async (req, res) => {
                 },
             ],
         });
+      
 
-        res.json(events);
+          const eventsWithCategories = events.map((event) => {
+            const eventCategories = categoryList.filter((category) =>
+            event.dataValues.event_category.dataValues[category] === 1
+            );
+      
+            return {
+              ...event.toJSON(),
+              event_category: eventCategories,
+            };
+          });
+      
+      
+
+        res.json(eventsWithCategories);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
 
-exports.createCategories = async (req, res) => {
 
-    try {
-        const { event_id, categories } = req.body;
-         const newcat = categories.map((category)=>{
-            return {[category]:1}
-         })
-        // Create a new EventCategory instance
-        const eventCategory = await EventCategory.create({
-            id:uniqid(),
-            event_id,
-            ...newcat,
-        });
-
-        res.json(eventCategory);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-}
 
 
 

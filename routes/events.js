@@ -16,14 +16,14 @@ router.route('/events')
 
 router.route('/host/Event')
     .get(events.getEvent)
-    
+
     .post(events.createEvent)
     .put(events.editEvent)
 
 router.route('/host/events')
     .post(events.getHostEvents)
 router.route('/search')
-.post(events.createCategories)
+    .post(events.SearchByTags)
 router.route('/location')
     .get(events.closestEvent)
 

@@ -405,18 +405,23 @@ const EventCategory = sequelize.define("event_category", {
         allowNull: false
     },
     Music: {
+        defaultValue:0,
         type: TINYINT
     },
     Art: {
+        defaultValue:0,
         type: TINYINT
     },
     Tech: {
+        defaultValue:0,
         type: TINYINT
     },
     Food: {
+        defaultValue:0,
         type: TINYINT
     },
     Movies: {
+        defaultValue:0,
         type: TINYINT
     }
 }, {

@@ -1,5 +1,5 @@
 const uniqid = require('uniqid');
-const { Follow } = require('../models/models');
+const { Follow, User } = require('../models/models');
 exports.createFollow = async (req, res) => {
     const { host, user_id } = req.body
     try {
@@ -14,18 +14,29 @@ exports.getFollows = async (req, res) => {
     const { user_id } = req.body
     try {
         const fav = await Follow.findAll({ where: { follower: user_id } })
-        res.status(200).json({ fav })
+        const promises = fav.map(async(follow) => await User.findByPk(follow.host, { 
+            attributes: ['id', 'name', 'profile_pic']
+        }))
+        const hostsFollowed = await Promise.all(promises)
+        return res.status(200).json({ hosts: hostsFollowed, follow_count: fav.length })
     } catch (err) {
-        res.status(400).json({ message: err.message })
+        return res.status(400).json({ message: err.message })
     }
 }
 exports.getHostFollow = async (req, res) => {
     const { host } = req.body
     try {
-        const fav = await Follow.findAll({ where: { host } })
-        res.status(200).json({ fav, followcount: fav.length })
+        const fav = await Follow.findAll({ where: { host } });
+        const promises = fav.map(async(follow) => await User.findByPk(follow.host, { 
+            attributes: ['id', 'name', 'profile_pic']
+        }))
+        const usersFollowingHost = await Promise.all(promises)
+        return res.status(200).json({ 
+            following: usersFollowingHost, 
+            following_count: fav.length 
+        })
     } catch (err) {
-        res.status(400).json({ message: err.message })
+        return res.status(400).json({ message: err.message })
     }
 }
 

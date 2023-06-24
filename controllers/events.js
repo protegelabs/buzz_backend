@@ -1,5 +1,5 @@
 const session = require('express-session');
-const { Event, Review, User } = require('../models/models')
+const { Event, Review, User, EventCategory } = require('../models/models')
 const { Op, where } = require('sequelize')
 const uniqid = require('uniqid')
 const { sequelize } = require('../config/sequelize')
@@ -37,11 +37,20 @@ module.exports.getEvent = async (req, res) => {
 }
 
 module.exports.createEvent = async (req, res) => {
-    const { name, price, location, longitude, latitude, date, discount, is_active, event_pic, tickets, timeStart, timeEnd } = req.body
+    const { name, price, location, longitude, latitude, date, discount, is_active, event_pic, tickets, timeStart, timeEnd, categories } = req.body
     const host_id = req.session.user_id || req.body.host_id
     const id = uniqid();
     try {
-        const newEvent = await Event.create({ id, name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets })
+        const newEvent = await Event.create({ id, name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets,timeStart,timeEnd })
+        const newcat = categories.map((category)=>{
+            return {[category]:1}
+         })
+        // Create a new EventCategory instance
+        const eventCategory = await EventCategory.create({
+            id:uniqid(),
+            id,
+            ...newcat,
+        });
         return res.send(newEvent)
     } catch (error) {
         return res.status(400).json({ message: error.message })
@@ -182,7 +191,7 @@ exports.TrendingEvents = async (req, res) => {
             limit: 10 // You can adjust the limit as per your requirements
         });
 
-      
+
 
 
         res.json({
@@ -194,6 +203,69 @@ exports.TrendingEvents = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+exports.filterEvents = async (req, res) => {
+    const { tags, location, TicketPriceRange, EventLocationRange, } = req.body
+    try {
+        const newEvent = await Event.create({})
+        return res.send(newEvent)
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+}
+
+exports.SearchByTags = async (req, res) => {
+    try {
+        const { categories } = req.body;
+
+        // Convert the categories parameter to an array if it's a string
+        const categoryList = Array.isArray(categories) ? categories : [categories];
+
+        // Find events with matching event categories
+        const events = await Event.findAll({
+            include: [
+                {
+                    model: EventCategory,
+                    where: {
+                        [Op.or]: categoryList.reduce((acc, category) => {
+                            acc[category] = 1;
+                            return acc;
+                        }, {}),
+                    },
+                    attributes: [...categoryList],
+                },
+            ],
+        });
+
+        res.json(events);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.createCategories = async (req, res) => {
+
+    try {
+        const { event_id, categories } = req.body;
+         const newcat = categories.map((category)=>{
+            return {[category]:1}
+         })
+        // Create a new EventCategory instance
+        const eventCategory = await EventCategory.create({
+            id:uniqid(),
+            event_id,
+            ...newcat,
+        });
+
+        res.json(eventCategory);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+
+
 
 
 

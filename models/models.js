@@ -404,45 +404,21 @@ const EventCategory = sequelize.define("event_category", {
         unique: true,
         allowNull: false
     },
-    party: {
+    Music: {
         type: TINYINT
     },
-    convention: {
+    Art: {
         type: TINYINT
     },
-    trade: {
+    Tech: {
         type: TINYINT
     },
-    seminar: {
+    Food: {
         type: TINYINT
     },
-    meeting: {
+    Movies: {
         type: TINYINT
-    },
-    business: {
-        type: TINYINT
-    },
-    wedding: {
-        type: TINYINT
-    },
-    corporation: {
-        type: TINYINT
-    },
-    exhibition: {
-        type: TINYINT
-    },
-    festival: {
-        type: TINYINT
-    },
-    fair: {
-        type: TINYINT
-    },
-    parade: {
-        type: TINYINT
-    },
-    food_festival: {
-        type: TINYINT
-    },
+    }
 }, {
     // Other model options go here
     tableName: 'event_category',
@@ -516,36 +492,51 @@ const Reaction = sequelize.define('Reaction', {
 
 
 
-// // Define relationships between tables
-// User.hasMany(Post, { foreignKey: 'user_id' });
-// User.hasMany(Event, { foreignKey: 'host_id' });
-// User.hasMany(Friend, { foreignKey: 'friend_id' });
-// User.hasMany(Follow, { foreignKey: 'follower' });
-// User.hasMany(Favourite, { foreignKey: 'user_id' });
-// User.hasMany(Purchase, { foreignKey: 'user_id' });
-// User.hasMany(Comment, { foreignKey: 'user_id' });
-// Post.belongsTo(User);
-// Post.hasMany(Comment, { foreignKey: 'post' });
+// Define relationships between tables
+User.hasMany(Post, { foreignKey: 'user_id' });
+User.hasMany(Event, { foreignKey: 'host_id' });
+User.hasMany(Friend, { foreignKey: 'user_id' });
+User.hasMany(Follow, { foreignKey: 'follower' });
+User.hasMany(Favourite, { foreignKey: 'user_id' });
+User.hasMany(Purchase, { foreignKey: 'user_id' });
+User.hasMany(Comment, { foreignKey: 'user_id' });
 
-// Event.belongsTo(User);
-// Event.hasMany(Comment, { foreignKey: 'event_id' });
-// Event.hasMany(Purchase, { foreignKey: 'event_id' });
+Post.belongsTo(User, { foreignKey: 'user_id' });
+Post.hasMany(Comment, { foreignKey: 'post' });
 
-// Friend.belongsTo(User);
+Event.belongsTo(User, { foreignKey: 'host_id' });
+Event.hasMany(Comment, { foreignKey: 'event_id' });
+Event.hasMany(Purchase, { foreignKey: 'event_id' });
 
-// Purchase.belongsTo(User);
-// Purchase.belongsTo(Event);
+Friend.belongsTo(User, { foreignKey: 'user_id' });
 
-// Follow.belongsTo(User);
+Purchase.belongsTo(User, { foreignKey: 'user_id' });
+Purchase.belongsTo(Event, { foreignKey: 'event_id' });
 
-// Favourite.belongsTo(User);
+Follow.belongsTo(User, { foreignKey: 'follower' });
 
-// Comment.belongsTo(User);
-// Comment.belongsTo(Event);
-// Comment.belongsTo(Post);
-// User.hasMany(Purchase);
-// Purchase.belongsTo(User);
+Favourite.belongsTo(User, { foreignKey: 'user_id' });
 
-sequelize.sync()
+Comment.belongsTo(User, { foreignKey: 'user_id' });
+Comment.belongsTo(Event, { foreignKey: 'event_id' });
+Comment.belongsTo(Post, { foreignKey: 'post' });
+
+Review.belongsTo(User, { foreignKey: 'user_id' });
+Review.belongsTo(Event, { foreignKey: 'event_id' });
+
+Story.belongsTo(User, { foreignKey: 'user_id' });
+
+Reaction.belongsTo(User, { foreignKey: 'user_id' });
+Reaction.belongsTo(Post, { foreignKey: 'post_id' });
+
+// Optional: Add associations for EventCategory
+EventCategory.belongsTo(Event, { foreignKey: 'event_id' });
+Event.hasOne(EventCategory, { foreignKey: 'event_id' });
+
+// Optional: Add associations for additional models
+
+// Sync the models with the database
+sequelize.sync();
+
 
 module.exports = { User, Event, EventCategory, Post, Comment, Favourite, Friend, Purchase, Follow, Review, Story, Reaction };

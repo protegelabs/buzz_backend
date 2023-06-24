@@ -1,5 +1,5 @@
 const session = require('express-session');
-const { Event, Review, User, EventCategory } = require('../models/models')
+const { Event, Review, User,Purchase,EventCategory } = require('../models/models')
 const { Op, where } = require('sequelize')
 const uniqid = require('uniqid')
 const { sequelize } = require('../config/sequelize')
@@ -27,10 +27,19 @@ module.exports.getEvent = async (req, res) => {
     const id = req.query.event_id || req.body.event_id;
     console.log(id);
     try {
-        const event = await Event.findOne({ where: { id } });
-        const reviews = await Review.findAll({ where: { event_id: id } });
+        const [event, reviews] = await Promise.all([
+            await Event.findByPk(id),
+            await Review.findAll({ where: { event_id: id } })
+        ])
+        
+        const [host, attendance_count] = await Promise.all([
+            await User.findByPk(event.host_id, { 
+                attributes: ['name', 'id', 'profile_pic'] 
+            }),
+            await Purchase.count({ where: { event_id: event.id } })
+        ])
         // return res.send(event)
-        return res.send({ event, reviews })
+        return res.send({ event, reviews, host, attendance_count })
     } catch (error) {
         return res.send('sorry an error occured')
     }

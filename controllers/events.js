@@ -50,12 +50,12 @@ module.exports.createEvent = async (req, res) => {
     const host_id = req.session.user_id || req.body.host_id
     const event_id = uniqid();
     try {
-        const newEvent = await Event.create({ id:event_id, name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets, timeStart, timeEnd })
+        const newEvent = await Event.create({ id: event_id, name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets, timeStart, timeEnd })
         const newcat = categories.map((category) => {
             return { [category]: 1 }
         })
-      
-         const eventCategory = await EventCategory.create( {
+
+        const eventCategory = await EventCategory.create({
             id: uniqid(),
             event_id,
             ...Object.assign({}, ...newcat)
@@ -227,44 +227,79 @@ exports.SearchByTags = async (req, res) => {
         const { categories } = req.body;
 
         // Convert the categories parameter to an array if it's a string
-        const categoryList = Array.isArray(categories) ? categories : [categories];
-
-        // Find events with matching event categories
-        const events = await Event.findAll({
-            include: [
-                {
-                    model: EventCategory,
-                    where: {
-                        [Op.or]: categoryList.reduce((acc, category) => {
-                            acc[category] = 1;
-                            return acc;
-                        }, {}),
+        let categoryList = Array.isArray(categories) ? categories : [categories];
+        if (categoryList.includes("All")) {
+             categoryList =[ "Music", "Art","Tech", "Food","Movies"] // 2nd parameter means remove one item only
+            const events = await Event.findAll({
+                include: [
+                    {
+                        model: EventCategory,
+                        where: {
+                            [Op.or]: {
+                                Music: 1,
+                                Art: 1,
+                                Tech: 1,
+                                Food: 1,
+                                Movies: 1
+                            }
+                        },
+                        attributes: [...categoryList],
                     },
-                    attributes: [...categoryList],
-                },
-            ],
-        });
-      
+                ],
+            });
+            const eventsWithCategories = events.map((event) => {
+                const eventCategories = categoryList.filter((category) =>
 
-          const eventsWithCategories = events.map((event) => {
-            const eventCategories = categoryList.filter((category) =>
-            event.dataValues.event_category.dataValues[category] === 1
-            );
-      
-            return {
-              ...event.toJSON(),
-              event_category: eventCategories,
-            };
-          });
-      
-      
+                    event.dataValues.event_category.dataValues[category] === 1
+                );
 
-        res.json(eventsWithCategories);
+                return {
+                    ...event.toJSON(),
+                    event_category: eventCategories,
+                };
+            });
+            res.json(eventsWithCategories);
+        } else {
+            const events = await Event.findAll({
+                include: [
+                    {
+                        model: EventCategory,
+                        where: {
+                            [Op.or]: categoryList.reduce((acc, category) => {
+                                acc[category] = 1;
+                                return acc;
+                            }, {}),
+                        },
+                        attributes: [...categoryList],
+                    },
+                ],
+            });
+
+
+            const eventsWithCategories = events.map((event) => {
+                const eventCategories = categoryList.filter((category) =>
+                    event.dataValues.event_category.dataValues[category] === 1
+                );
+
+                return {
+                    ...event.toJSON(),
+                    event_category: eventCategories,
+                };
+            });
+
+
+
+            res.json(eventsWithCategories);
+        }
+        // Find events with matching event categories
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+
 
 
 

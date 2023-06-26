@@ -260,10 +260,17 @@ exports.HostAnalytics = async (req, res) => {
          * count for all categories
          * display value
          */
-        const [event] = await getHostEvent(id)
+        const [event, categories, categoriesCount] = await getHostEvent(id)
         const purchase = await getPurchaseFollow(id, event)
 
-        res.status(200).json({ event, purchase })
+        const eventIds = event.map((event) => event.id)
+        
+        res.status(200).json({ 
+            events: eventIds, 
+            purchase, 
+            categories, 
+            categories_count: categoriesCount 
+        })
     } catch (err) {
         console.log(err)
         return res.status(400).json({ message: err.message })

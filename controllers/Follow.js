@@ -1,5 +1,9 @@
 const uniqid = require('uniqid');
-const { Follow, User } = require('../models/models');
+const { Follow, User, Event, Review } = require('../models/models');
+const { sequelize } = require('../config/sequelize');
+const { Op } = require('sequelize');
+
+
 exports.createFollow = async (req, res) => {
     const { host, user_id } = req.body
     try {
@@ -23,6 +27,30 @@ exports.getFollows = async (req, res) => {
         return res.status(400).json({ message: err.message })
     }
 }
+
+const getHostRating = async (host_id) => {
+    const hostEvents = await Event.findAll({ 
+        attributes: ['id'],
+        where: { host_id } 
+    });
+    const hostEventIds = hostEvents.map((event) => event.id)
+
+    const reviews = await Review.findAll({
+        attributes: [
+            [
+                sequelize.fn('AVG', sequelize.col('rating')),
+                'average_rating'
+            ]
+        ],
+        where: {
+            event_id: {
+                [Op.in]: hostEventIds
+            }
+        }
+    })
+    return reviews.average_rating
+}
+
 exports.getHostFollow = async (req, res) => {
     const { host } = req.body
     try {
@@ -30,10 +58,19 @@ exports.getHostFollow = async (req, res) => {
         const promises = fav.map(async(follow) => await User.findByPk(follow.host, { 
             attributes: ['id', 'name', 'profile_pic']
         }))
-        const usersFollowingHost = await Promise.all(promises)
+        
+        const [usersFollowingHost, hostRating] = await Promise.all([
+            promises,
+            await getHostRating(host)
+        ])
+
         return res.status(200).json({ 
             following: usersFollowingHost, 
-            following_count: fav.length 
+            following_count: fav.length, 
+            //SHould be changed to followers and followers_count later
+            //Make sure to inform teh frontend team once updated
+
+            rating: hostRating || 0
         })
     } catch (err) {
         return res.status(400).json({ message: err.message })

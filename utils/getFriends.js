@@ -30,56 +30,50 @@ exports.getFriends = async (id) => {
 }
 
 exports.getHostEvent = async (id) => {
-    let event = []
     let categories = []
-    const categoriesCount = {
-        party: 0,
-        convention: 0,
-        trade: 0,
-        seminar: 0,
-        meeting: 0,
-        business: 0,
-        wedding: 0,
-        corporation: 0,
-        exhibition: 0,
-        festival: 0,
-        fair: 0,
-        parade: 0,
-        food_festival: 0,
-    }
-
-
+    
     try {
-        event = await Event.findAll({
+        const event = await Event.findAll({
             where: {
                 host_id: id
             },
             attributes: ['id']
         })
-        if (event.length > 0) {
-            categories = await Promise.all(event.map(async ({ id }) => {
-                const t = await EventCategory.findOne({
-                    where: {
-                        event_id: id
-                    }
-                })
-                return t
-            }))
 
-            if (categories.length > 0) {
-                categories.forEach(element => {
-                    for (const minicat in element) {
-                        for (const cat in categoriesCount) {
-                            if (cat === minicat) {
-                                categoriesCount[cat] = categoriesCount[cat] + element.dataValues[minicat]
-                            }
-                        }
-                    }
-                })
-            }
-        } else {
-            return [event]
+        if(event.length < 0) return [event, categories]
+
+        categories = await Promise.all(
+            event.map(async ({ id }) => {
+            const t = await EventCategory.findOne({
+                where: {
+                    event_id: id
+                }
+            })
+            return t
+        }))
+
+        if(categories.length < 0) return [event, categories]
+
+        const categoriesCount = {
+            Music: 0,
+            Art: 0,
+            Workshop: 0,
+            Movie: 0,
+            Food: 0,
+            Tech: 0,
+            Sports: 0
         }
+
+        categories.forEach(element => {
+            for (const minicat in element) {
+                for (const cat in categoriesCount) {
+                    if (cat === minicat) {
+                        categoriesCount[cat] = categoriesCount[cat] + element.dataValues[minicat]
+                    }
+                }
+            }
+        })
+
 
         return [event, categories, categoriesCount]
     } catch (error) {

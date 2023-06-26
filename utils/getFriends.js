@@ -55,24 +55,14 @@ exports.getHostEvent = async (id) => {
         if(categories.length < 0) return [event, categories]
 
         const categoriesCount = {
-            Music: 0,
-            Art: 0,
-            Workshop: 0,
-            Movie: 0,
-            Food: 0,
-            Tech: 0,
-            Sports: 0
+            Music: categories.filter((category) => category.Art === 1).length,
+            Art: categories.filter((category) => category.Art === 1).length,
+            Workshop: categories.filter((category) => category.Workshop=== 1).length,
+            Movies: categories.filter((category) => category.Movies === 1).length,
+            Food: categories.filter((category) => category.Food === 1).length,
+            Tech: categories.filter((category) => category.Tech === 1).length,
+            Sports: categories.filter((category) => category.Sports === 1).length
         }
-
-        categories.forEach(element => {
-            for (const minicat in element) {
-                for (const cat in categoriesCount) {
-                    if (cat === minicat) {
-                        categoriesCount[cat] = categoriesCount[cat] + element.dataValues[minicat]
-                    }
-                }
-            }
-        })
 
 
         return [event, categories, categoriesCount]

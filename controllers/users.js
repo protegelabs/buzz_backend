@@ -251,7 +251,8 @@ exports.searchUser = async (req, res) => {
 
 exports.HostAnalytics = async (req, res) => {
     console.log(req.session)
-    const id = req.session.user_id || req.body.user_id
+    const host_id = req.session.user_id || req.body.user_id;
+
     try {
         /**
          * grab all events id done by host attribute will be event id
@@ -260,15 +261,15 @@ exports.HostAnalytics = async (req, res) => {
          * count for all categories
          * display value
          */
-        const [event, categories, categoriesCount] = await getHostEvent(id)
-        const purchase = await getPurchaseFollow(id, event)
-
+        const [event, categoriesCount] = await getHostEvent(host_id)
         const eventIds = event.map((event) => event.id)
+
+        const purchase = await getPurchaseFollow(host_id, eventIds)
+
         
         res.status(200).json({ 
             events: eventIds, 
             purchase, 
-            categories, 
             categories_count: categoriesCount 
         })
     } catch (err) {

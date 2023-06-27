@@ -73,28 +73,115 @@ exports.getHostEvent = async (id) => {
 
 }
 
-exports.getPurchaseFollow = async (id, events) => {
+exports.getPurchaseFollow = async (host_id, events) => {
     /**get the events
      * loop through and count for te tickets each event sold
      * find total ticket sold
      */
     const arr = []
     try {
-        const purchaseCount = await Promise.all(
-            events.map(async ({ id }) => {
-                const ticket = await Purchase.count(
-                    { where: { event_id: id } }
-                )
+        const firstDayOfMonth = 1;
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
 
-                arr.push(ticket)
-                return { [id]: ticket }
-            })
-        )
-        const followcount = await Follow.count({ where: { host: id } })
+        const [
+            purchaseCntForEachEventInCurrMonth, 
+            purchaseCntForEachEventInPrevMonth,
+            followersThisMonth,
+            followersLastMonth,
+
+            followcount,
+            purchaseCount
+        ] = await Promise.all([
+            await Promise.all(
+                events.map(async (id) => {
+                    const ticketCount = await Purchase.count(
+                        { 
+                            where: { 
+                                [Op.and] : [
+                                    { event_id: id },
+                                    { 
+                                        createdAt: {
+                                            [Op.gte]: new Date(currentYear, currentMonth, firstDayOfMonth)
+                                        }
+                                    }
+                                ]
+                                 
+                            } 
+                        }
+                    )
+    
+                    return ticketCount
+                })
+            ),
+            await Promise.all(
+                events.map(async (id) => {
+                    const ticketCount = await Purchase.count(
+                        { 
+                            where: { 
+                                [Op.and] : [
+                                    { event_id: id },
+                                    { 
+                                        createdAt: {
+                                            [Op.lt]: new Date(currentYear, currentMonth, firstDayOfMonth),
+                                            [Op.gte]: new Date(currentYear, currentMonth-1, firstDayOfMonth)
+                                        }
+                                    }
+                                ]
+                                 
+                            } 
+                        }
+                    )
+    
+                    return ticketCount
+                })
+            ),
+            await Follow.count({
+                where: { 
+                    createdAt: {
+                        [Op.gte]: new Date(currentYear, currentMonth, firstDayOfMonth)
+                    }
+                }
+            }),
+            await Follow.count({
+                where: { 
+                    createdAt: {
+                        [Op.lt]: new Date(currentYear, currentMonth, firstDayOfMonth),
+                        [Op.gte]: new Date(currentYear, currentMonth-1, firstDayOfMonth)
+                    }
+                }
+            }),
+            await Follow.count({ where: { host: host_id } }),
+            await Promise.all(
+                events.map(async (id) => {
+                    const ticket = await Purchase.count(
+                        { where: { event_id: id } }
+                    )
+    
+                    arr.push(ticket)
+                    return { [id]: ticket }
+                })
+            )
+        ])
+
+        const purchaseCountForCurrMonth = purchaseCntForEachEventInCurrMonth.reduce((a, b) => a + b, 0)
+        const purchaseCountForPrevMonth = purchaseCntForEachEventInPrevMonth.reduce((a, b) => a + b, 0)
+        const ticketSalesChange = purchaseCountForCurrMonth/purchaseCountForPrevMonth;
+
+        const followersChange = followersThisMonth / followersLastMonth;
+
 
         const total = arr.reduce((a, b) => a + b, 0)
         // console.log(purchaseCount)
-        return { purchaseCount, totalSold: total, followcount }
+        return { 
+            purchase_count_per_event: purchaseCount, 
+
+            total_sold: total, 
+            total_sold_difference: ticketSalesChange,
+
+            follow_count: followcount,
+            followers_difference: followersChange
+        }
     } catch (error) {
         console.log({ message: error.message })
     }

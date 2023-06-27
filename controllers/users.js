@@ -261,7 +261,7 @@ exports.HostAnalytics = async (req, res) => {
          * count for all categories
          * display value
          */
-        const [event, categoriesCount] = await getHostEvent(host_id)
+        const [event, _, categoriesCount] = await getHostEvent(host_id)
         const eventIds = event.map((event) => event.id)
 
         const purchase = await getPurchaseFollow(host_id, eventIds)

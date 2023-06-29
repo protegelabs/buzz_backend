@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const catchAsync = require('../utils/catchAsync')
-const { friendRequest, getFriends, changeFriendStatus, getPendingRequest,findFriends } = require('../controllers/friends')
+const { friendRequest, getFriends, changeFriendStatus, getPendingRequest, findFriends } = require('../controllers/friends')
 
 router.route('/friends/request')
     .post(friendRequest)
@@ -13,7 +13,7 @@ router.route('/friends')
     .post(getFriends)
     .put(changeFriendStatus)
 router.route('/friends/invite')
-.post(findFriends)
+    .post(findFriends)
 
 
 

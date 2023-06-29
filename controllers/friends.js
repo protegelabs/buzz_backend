@@ -118,7 +118,7 @@ exports.getPendingRequest = async (req, res) => {
                     { status: 'pending' }
                 ]
             },
-            attributes:[]
+            
         });
         return res.status(200).json({ pending: friends });
     } catch (err) {

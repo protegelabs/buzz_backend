@@ -1,7 +1,7 @@
 const session = require('express-session');
 
 
-const { Friend,User,Purchase } = require('../models/models');
+const { Friend,User,Purchase,Event } = require('../models/models');
 const { Op } = require('sequelize');
 const uniqid = require('uniqid');
 
@@ -58,10 +58,19 @@ exports.findFriends = async (req, res) => {
             },
             include: {
                 model: Event,
+                attributes:["id"],
                 include: {
-                    model: User
+                    model: User,
+                    attributes:[
+                        "id",
+                        "username",
+                        "profile_pic"
+                    ],
+                  
                 }
-            }
+            },
+            attributes:[]
+            
         });
 
         // Extract the attendees

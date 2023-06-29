@@ -71,7 +71,7 @@ exports.findFriends = async (req, res) => {
 
             return event
         }))
-        console.log(eventAttendees)
+     
 
         // Extract the attendees
 

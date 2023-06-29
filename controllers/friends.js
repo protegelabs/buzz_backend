@@ -109,7 +109,7 @@ exports.changeFriendStatus = async (req, res) => {
 
 
 exports.getPendingRequest = async (req, res) => {
-    const id = res.session.user_id || req.body.user_id
+    const id = req.body.user_id
     try {
         const friends = await Friend.findAll({
             where: {
@@ -117,7 +117,8 @@ exports.getPendingRequest = async (req, res) => {
                     { friend_id: id },
                     { status: 'pending' }
                 ]
-            }
+            },
+            attributes:[]
         });
         return res.status(200).json({ pending: friends });
     } catch (err) {

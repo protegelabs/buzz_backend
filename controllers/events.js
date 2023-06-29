@@ -32,14 +32,15 @@ module.exports.getEvent = async (req, res) => {
             await Review.findAll({ where: { event_id: id } })
         ])
 
-        const [host, attendance_count] = await Promise.all([
+        const [host, attendance_count,category] = await Promise.all([
             await User.findByPk(event.host_id, {
                 attributes: ['name', 'id', 'profile_pic']
             }),
-            await Purchase.count({ where: { event_id: event.id } })
+            await Purchase.count({ where: { event_id: event.id } }),
+            await EventCategory.findAll({where:{event_id:event.id}})
         ])
         // return res.send(event)
-        return res.send({ event, reviews, host, attendance_count })
+        return res.send({ event, reviews, host, attendance_count ,category})
     } catch (error) {
         return res.send('sorry an error occured')
     }

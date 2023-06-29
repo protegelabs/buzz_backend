@@ -1,7 +1,7 @@
 const session = require('express-session');
 
 
-const { Friend,User,Purchase,Event } = require('../models/models');
+const { Friend, User, Purchase, Event } = require('../models/models');
 const { Op } = require('sequelize');
 const uniqid = require('uniqid');
 
@@ -56,27 +56,27 @@ exports.findFriends = async (req, res) => {
             where: {
                 user_id: userId
             },
-            include: {
-                model: Event,
-                attributes:["id"],
-                include: {
-                    model: User,
-                    attributes:[
-                        "id",
-                        "username",
-                        "profile_pic"
-                    ],
-                  
-                }
-            },
-            attributes:[]
-            
+            attributes: ["event_id"]
+
         });
 
-        // Extract the attendees
-      
+        const eventAttendees = await Promise.all(
+            attendedEvents.map(async ({ event_id }) => {
+            const event = await Purchase.findAll({
+                where: {
+                    event_id
+                },
+                attributes: ["user_id","username"]
+            })
 
-      return  res.send(attendedEvents);
+            return event
+        }))
+        console.log(eventAttendees)
+
+        // Extract the attendees
+
+
+        return res.send(eventAttendees.flat());
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });

@@ -66,7 +66,7 @@ exports.findFriends = async (req, res) => {
                     where: {
                         event_id
                     },
-                    attributes: ["user_id", "username"]
+                    attributes: ["user_id", "username","profile_pic"]
                 })
 
                 return event

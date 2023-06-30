@@ -69,7 +69,7 @@ exports.deleteStory = async (req, res) => {
     if (story){
       story.destroy()
       await story.save()
-      return res.send(story)
+      return res.send("done")
 
     }else{
       return res.send({message:"story not found"})

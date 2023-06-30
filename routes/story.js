@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const catchAsync = require('../utils/catchAsync')
-const { getFriendStories,uploadstories,deleteStory,getUserStories } = require('../controllers/story')
+const { getFriendStories, uploadstories, deleteStory, getUserStories } = require('../controllers/story')
 
 
 

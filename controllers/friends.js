@@ -62,16 +62,16 @@ exports.findFriends = async (req, res) => {
 
         const eventAttendees = await Promise.all(
             attendedEvents.map(async ({ event_id }) => {
-            const event = await Purchase.findAll({
-                where: {
-                    event_id
-                },
-                attributes: ["user_id","username"]
-            })
+                const event = await Purchase.findAll({
+                    where: {
+                        event_id
+                    },
+                    attributes: ["user_id", "username"]
+                })
 
-            return event
-        }))
-     
+                return event
+            }))
+
 
         // Extract the attendees
 
@@ -118,7 +118,7 @@ exports.getPendingRequest = async (req, res) => {
                     { status: 'pending' }
                 ]
             },
-            
+
         });
         return res.status(200).json({ pending: friends });
     } catch (err) {

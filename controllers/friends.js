@@ -1,7 +1,7 @@
 const session = require('express-session');
 
 
-const { Friend, User } = require('../models/models');
+const { Friend, User, Purchase, Event } = require('../models/models');
 const { Op } = require('sequelize');
 const uniqid = require('uniqid');
 
@@ -46,6 +46,43 @@ exports.getFriends = async (req, res) => {
 
 }
 
+exports.findFriends = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        // Find the events attended by the user
+        const attendedEvents = await Purchase.findAll({
+            where: {
+                user_id: userId
+            },
+            attributes: ["event_id"]
+
+        });
+
+        const eventAttendees = await Promise.all(
+            attendedEvents.map(async ({ event_id }) => {
+                const event = await Purchase.findAll({
+                    where: {
+                        event_id
+                    },
+                    attributes: ["user_id", "username","profile_pic"]
+                })
+
+                return event
+            }))
+
+
+        // Extract the attendees
+
+
+        return res.send(eventAttendees.flat());
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
 
 exports.changeFriendStatus = async (req, res) => {
     const { sender, status } = req.body;
@@ -71,7 +108,7 @@ exports.changeFriendStatus = async (req, res) => {
 
 
 exports.getPendingRequest = async (req, res) => {
-    const id = res.session.user_id || req.body.user_id
+    const id = req.body.user_id
     try {
         const friends = await Friend.findAll({
             where: {
@@ -79,7 +116,8 @@ exports.getPendingRequest = async (req, res) => {
                     { friend_id: id },
                     { status: 'pending' }
                 ]
-            }
+            },
+
         });
         return res.status(200).json({ pending: friends });
     } catch (err) {

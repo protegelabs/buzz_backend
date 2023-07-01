@@ -21,7 +21,7 @@ exports.getFriends = async (id) => {
             },
             attributes: ['user_id']
         });
-        return Promise.all([friendRecieved, friendSent])
+        return await Promise.all([friendRecieved, friendSent])
 
 
     } catch (err) {

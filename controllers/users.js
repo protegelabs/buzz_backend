@@ -205,14 +205,17 @@ exports.thirdPartyAuth = async (req, res) => {
 exports.thirdPartyAuthRegister = async (req, res) => {
     const { auth_type, user_id, email, ...rest } = req.body;
     try {
-        const user = await User.create({
+        const newUser = await User.create({
             authtype: auth_type,
             id: user_id,
-            //email: email.toLowerCase(),
-            //...rest
+            email: email.toLowerCase(),
+            ...rest
         })
-    } catch (e) {
+        req.session.user_id = user_id
+        return res.status(201).send(newUser.dataValues)
 
+    } catch (e) {
+        return res.status(400).json({ message: "Bad Request" })
     }
 
 }

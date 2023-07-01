@@ -23,6 +23,7 @@ router.route('/login')
 
 router.route('/third-party-auth')
     .get(users.thirdPartyAuth)
+    .post(users.thirdPartyAuthRegister)
 
 router.route('/profile')
     .get(users.getProfile)

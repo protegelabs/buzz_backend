@@ -7,7 +7,7 @@ const moment = require('moment');
 
 
 exports.getFriendStories = async (req, res) => {
-  const { id } = req.body
+  const { id } = req.query
   try {
     const twentyFourHoursAgo = moment().subtract(24, 'hours');
     const storylist = []

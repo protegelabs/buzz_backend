@@ -1,7 +1,7 @@
 const session = require('express-session');
 
 
-const { Friend } = require('../models/models');
+const { Friend, User } = require('../models/models');
 const { Op } = require('sequelize');
 const uniqid = require('uniqid');
 
@@ -39,7 +39,6 @@ exports.getFriends = async (req, res) => {
                 ]
             }
         });
-        console.log(friends)
         return res.status(200).json({ friends });
     } catch (error) {
         return res.status(400).json({ message: error.message })

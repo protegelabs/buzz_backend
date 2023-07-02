@@ -19,7 +19,7 @@ exports.friendRequest = async (req, res) => {
         }
     })
 
-    if(!existingFriendRecord) return res.json({ error: "Alredy sent Friend Request" });
+    if(existingFriendRecord) return res.json({ error: "Alredy sent Friend Request" });
 
     try {
         const id = uniqid();

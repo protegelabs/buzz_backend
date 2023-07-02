@@ -81,6 +81,7 @@ exports.getPurchaseFollow = async (host_id, events) => {
     const arr = []
     try {
         const firstDayOfMonth = 1;
+        const today = new Date().getDate()
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
 
@@ -91,7 +92,8 @@ exports.getPurchaseFollow = async (host_id, events) => {
             followersLastMonth,
 
             followcount,
-            purchaseCount
+            purchaseCount,
+            soldToday
         ] = await Promise.all([
             await Promise.all(
                 events.map(async (id) => {
@@ -161,7 +163,26 @@ exports.getPurchaseFollow = async (host_id, events) => {
                     arr.push(ticket)
                     return { [id]: ticket }
                 })
-            )
+            ),
+            await Promise.all(
+                events.map(async (id) => {
+                    const ticketCount = await Purchase.count(
+                        { 
+                            where: { 
+                                [Op.and] : [
+                                    { event_id: id },
+                                    { 
+                                        createdAt: new Date(currentYear, currentMonth, today)
+                                    }
+                                ]
+                                 
+                            } 
+                        }
+                    )
+    
+                    return ticketCount
+                })
+            ),
         ])
 
         const purchaseCountForCurrMonth = purchaseCntForEachEventInCurrMonth.reduce((a, b) => a + b, 0)
@@ -180,7 +201,9 @@ exports.getPurchaseFollow = async (host_id, events) => {
             total_sold_difference: ticketSalesChange,
 
             follow_count: followcount,
-            followers_difference: followersChange
+            followers_difference: followersChange,
+
+            sold_today: soldToday
         }
     } catch (error) {
         console.log({ message: error.message })

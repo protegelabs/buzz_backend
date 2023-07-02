@@ -1,14 +1,21 @@
 const uniqid = require('uniqid');
 const { Favourite } = require('../models/models');
+
 exports.createFav = async (req, res) => {
     const { event_id } = req.body
     const user_id = req.body.user_id || req.session.user.id
     const id = uniqid()
+
+    const existingFavourite = await Favourite.findOne({
+        where: { event_id, user_id }
+    })
+    if(existingFavourite) return res.json({ error: "Already exists in Favourites" })
+    
     try {
         const fav = await Favourite.create({ id, event_id, user_id })
-        res.status(200).json({ fav })
+        return res.status(200).json({ fav })
     } catch (err) {
-        res.status(400).json({ message: err.message })
+        return res.status(400).json({ message: err.message })
     }
 }
 

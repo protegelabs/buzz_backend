@@ -32,15 +32,15 @@ module.exports.getEvent = async (req, res) => {
             await Review.findAll({ where: { event_id: id } })
         ])
 
-        const [host, attendance_count,category] = await Promise.all([
+        const [host, attendance_count, category] = await Promise.all([
             await User.findByPk(event.host_id, {
                 attributes: ['name', 'id', 'profile_pic']
             }),
             await Purchase.count({ where: { event_id: event.id } }),
-            await EventCategory.findAll({where:{event_id:event.id}})
+            await EventCategory.findAll({ where: { event_id: event.id } })
         ])
         // return res.send(event)
-        return res.send({ event, reviews, host, attendance_count ,category})
+        return res.send({ event, reviews, host, attendance_count, category })
     } catch (error) {
         return res.send('sorry an error occured')
     }
@@ -153,7 +153,7 @@ exports.closestEvent = async (req, res) => {
 
 exports.TrendingEvents = async (req, res) => {
     try {
-        categoryList =[ "Music", "Art","Tech", "Food","Movies"]
+        categoryList = ["Music", "Art", "Tech", "Food", "Movies"]
         const trendingEventsByPurchases = await Event.findAll({
             attributes: [
                 'id',
@@ -206,15 +206,17 @@ exports.TrendingEvents = async (req, res) => {
                             Art: 1,
                             Tech: 1,
                             Food: 1,
-                            Movies: 1
+                            Movies: 1,
+                            All: 1,
+                            Workshops: 1
                         }
                     },
                     attributes: [...categoryList],
                 },
             ],
             order: [[sequelize.literal('favoriteCount'), 'DESC']],
-            limit:100
-           // You can adjust the limit as per your requirements
+            limit: 100
+            // You can adjust the limit as per your requirements
         });
         const eventsWithCategories = trendingEventsByFavorites.map((event) => {
             const eventCategories = categoryList.filter((category) =>
@@ -257,69 +259,38 @@ exports.SearchByTags = async (req, res) => {
 
         // Convert the categories parameter to an array if it's a string
         let categoryList = Array.isArray(categories) ? categories : [categories];
-        if (categoryList.includes("All")) {
-             categoryList =[ "Music", "Art","Tech", "Food","Movies"] // 2nd parameter means remove one item only
-            const events = await Event.findAll({
-                include: [
-                    {
-                        model: EventCategory,
-                        where: {
-                            [Op.or]: {
-                                Music: 1,
-                                Art: 1,
-                                Tech: 1,
-                                Food: 1,
-                                Movies: 1
-                            }
-                        },
-                        attributes: [...categoryList],
+
+        const events = await Event.findAll({
+            include: [
+                {
+                    model: EventCategory,
+                    where: {
+                        [Op.or]: categoryList.reduce((acc, category) => {
+                            acc[category] = 1;
+                            return acc;
+                        }, {}),
                     },
-                ],
-            });
-            const eventsWithCategories = events.map((event) => {
-                const eventCategories = categoryList.filter((category) =>
-
-                    event.dataValues.event_category.dataValues[category] === 1
-                );
-
-                return {
-                    ...event.toJSON(),
-                    event_category: eventCategories,
-                };
-            });
-            res.json(eventsWithCategories);
-        } else {
-            const events = await Event.findAll({
-                include: [
-                    {
-                        model: EventCategory,
-                        where: {
-                            [Op.or]: categoryList.reduce((acc, category) => {
-                                acc[category] = 1;
-                                return acc;
-                            }, {}),
-                        },
-                        attributes: [...categoryList],
-                    },
-                ],
-            });
+                    attributes: [...categoryList],
+                },
+            ],
+        });
 
 
-            const eventsWithCategories = events.map((event) => {
-                const eventCategories = categoryList.filter((category) =>
-                    event.dataValues.event_category.dataValues[category] === 1
-                );
+        const eventsWithCategories = events.map((event) => {
+            const eventCategories = categoryList.filter((category) =>
+                event.dataValues.event_category.dataValues[category] === 1
+            );
 
-                return {
-                    ...event.toJSON(),
-                    event_category: eventCategories,
-                };
-            });
+            return {
+                ...event.toJSON(),
+                event_category: eventCategories,
+            };
+        });
 
 
 
-            res.json(eventsWithCategories);
-        }
+        res.json(eventsWithCategories);
+
         // Find events with matching event categories
 
     } catch (error) {
@@ -330,7 +301,41 @@ exports.SearchByTags = async (req, res) => {
 
 
 
+exports.Populate = async (req, res) => {
 
+    try {
+
+
+        const event = await Event.findAll()
+       
+
+        const pop = await Promise.all(event.map(async ({ id }) => {
+            const categories = ["Music", "Tech", "Food", "Movies", "Workshops", "Art"];
+
+            // Select one random category
+            const selectedCategory = getRandomCategory(categories);
+            const selectedCategory2 = getRandomCategory(categories)
+            // Create the newcat array with the selected category
+            const newcat = [{ [selectedCategory]: 1 ,[selectedCategory2]:1}];
+            
+            function getRandomCategory(array) {
+              const randomIndex = Math.floor(Math.random() * array.length);
+              return array[randomIndex];
+            }
+            
+            
+            return await EventCategory.create({
+                id: uniqid(),
+                event_id: id,
+                ...Object.assign({}, ...newcat)
+            })
+        }))
+        // await EventCategory.destroy({ where: {} })
+        return res.send(pop)
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+}
 
 
 

@@ -86,7 +86,7 @@ module.exports.register = async (req, res) => {
                 type, phone_number, bio, password: hash,
                 heat, profile_pic,
                 is_active, dob, gender, location,
-                authtype: auth_type,heatTime:new Date()
+                authtype: auth_type, heatTime: new Date()
             })
             req.session.user_id = id
             return res.status(201).send(newUser.dataValues)
@@ -157,9 +157,10 @@ module.exports.editProfile = async (req, res) => {
 
 module.exports.changePassword = async (req, res) => {
     const { password } = req.body
-    const id = req.session.user_id || req.body.id
+    const id = req.body.id || req.session.user_id
+    const hash = await hashPassword(password)
     try {
-        const updatePassword = await User.update({ password }, {
+        const updatePassword = await User.update({ password: hash }, {
             where: { id }
         });
         return res.status(200).json(updatePassword)
@@ -204,14 +205,17 @@ exports.thirdPartyAuth = async (req, res) => {
 exports.thirdPartyAuthRegister = async (req, res) => {
     const { auth_type, user_id, email, ...rest } = req.body;
     try {
-        const user = await User.create({
+        const newUser = await User.create({
             authtype: auth_type,
             id: user_id,
-            //email: email.toLowerCase(),
-            //...rest
+            email: email.toLowerCase(),
+            ...rest
         })
-    } catch (e) {
+        req.session.user_id = user_id
+        return res.status(201).send(newUser.dataValues)
 
+    } catch (e) {
+        return res.status(400).json({ message: "Bad Request" })
     }
 
 }
@@ -266,11 +270,11 @@ exports.HostAnalytics = async (req, res) => {
 
         const purchase = await getPurchaseFollow(host_id, eventIds)
 
-        
-        res.status(200).json({ 
-            events: eventIds, 
-            purchase, 
-            categories_count: categoriesCount 
+
+        res.status(200).json({
+            events: eventIds,
+            purchase,
+            categories_count: categoriesCount
         })
     } catch (err) {
         console.log(err)
@@ -290,7 +294,7 @@ module.exports.logout = (req, res) => {
 
 exports.UpdateHeat = async (req, res) => {
     try {
-        const options = {  month: 'short',day: '2-digit', hour: 'numeric', minute: 'numeric', second: 'numeric' }
+        const options = { month: 'short', day: '2-digit', hour: 'numeric', minute: 'numeric', second: 'numeric' }
         const { userId } = req.body;
         let date;
 
@@ -302,22 +306,22 @@ exports.UpdateHeat = async (req, res) => {
             return res.status(404).json({ error: 'User not found.' });
         }
 
-           console.log(user.heatTime)
+        console.log(user.heatTime)
         if (user.heatTime && !has24HoursPassed(user.heatTime)) {
             date = new Date(user.heatTime)
-            const time24HoursFromNow =  new Date(date.getTime() + (24 * 60 * 60 * 1000));
-            return res.status(400).json({ error: `Heat can only be updated after ${time24HoursFromNow.toLocaleDateString('en-US', options)}.`,timefornext:time24HoursFromNow });
+            const time24HoursFromNow = new Date(date.getTime() + (24 * 60 * 60 * 1000));
+            return res.status(400).json({ error: `Heat can only be updated after ${time24HoursFromNow.toLocaleDateString('en-US', options)}.`, timefornext: time24HoursFromNow });
         } else {
             user.heat += 2;
 
             user.heatTime = new Date();
             date = new Date(user.heatTime)
-            const time24HoursFromNow =  new Date(date.getTime() + (24 * 60 * 60 * 1000));
+            const time24HoursFromNow = new Date(date.getTime() + (24 * 60 * 60 * 1000));
 
             // Save the updated user
             await user.save();
 
-           return res.status(200).json({ message: `Heat value updated successfully.next heat at ${time24HoursFromNow.toLocaleDateString('en-US', options)}. `,timefornext:time24HoursFromNow });
+            return res.status(200).json({ message: `Heat value updated successfully.next heat at ${time24HoursFromNow.toLocaleDateString('en-US', options)}. `, timefornext: time24HoursFromNow });
         }
 
 

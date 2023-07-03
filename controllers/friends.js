@@ -10,6 +10,17 @@ exports.friendRequest = async (req, res) => {
     const { receiver } = req.body;
     const sender = req.body.sender || req.session.user_id
     const senderName = req.body.senderName || req.session.user.name
+    
+    const existingFriendRecord = await Friend.findOne({
+        where: {
+            friend_id: receiver, 
+            user_id: sender, 
+            friendName: senderName
+        }
+    })
+
+    if(existingFriendRecord) return res.json({ error: "Alredy sent Friend Request" });
+
     try {
         const id = uniqid();
         const newFriendRequest = await Friend.create({ id, friend_id: receiver, user_id: sender, friendName: senderName });
@@ -39,7 +50,6 @@ exports.getFriends = async (req, res) => {
                 ]
             }
         });
-        console.log(friends)
         return res.status(200).json({ friends });
     } catch (error) {
         return res.status(400).json({ message: error.message })

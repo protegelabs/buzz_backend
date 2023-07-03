@@ -153,7 +153,7 @@ exports.closestEvent = async (req, res) => {
 
 exports.TrendingEvents = async (req, res) => {
     try {
-
+        categoryList =[ "Music", "Art","Tech", "Food","Movies"]
         const trendingEventsByPurchases = await Event.findAll({
             attributes: [
                 'id',
@@ -197,8 +197,35 @@ exports.TrendingEvents = async (req, res) => {
                     'favoriteCount'
                 ]
             ],
+            include: [
+                {
+                    model: EventCategory,
+                    where: {
+                        [Op.or]: {
+                            Music: 1,
+                            Art: 1,
+                            Tech: 1,
+                            Food: 1,
+                            Movies: 1
+                        }
+                    },
+                    attributes: [...categoryList],
+                },
+            ],
             order: [[sequelize.literal('favoriteCount'), 'DESC']],
-            limit: 10 // You can adjust the limit as per your requirements
+            limit:100
+           // You can adjust the limit as per your requirements
+        });
+        const eventsWithCategories = trendingEventsByFavorites.map((event) => {
+            const eventCategories = categoryList.filter((category) =>
+
+                event.dataValues.event_category.dataValues[category] === 1
+            );
+
+            return {
+                ...event.toJSON(),
+                event_category: eventCategories,
+            };
         });
 
 
@@ -206,7 +233,8 @@ exports.TrendingEvents = async (req, res) => {
 
         res.json({
             trendingEventsByPurchases,
-            trendingEventsByFavorites
+            eventsWithCategories,
+
         });
     } catch (error) {
         console.error('Error retrieving trending events:', error);

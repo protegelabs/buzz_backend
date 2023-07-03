@@ -153,7 +153,7 @@ exports.closestEvent = async (req, res) => {
 
 exports.TrendingEvents = async (req, res) => {
     try {
-        categoryList = ["Music", "Art", "Tech", "Food", "Movies"]
+        categoryList = ["Music", "Tech", "Food", "Movies", "Workshops", "Art","All"]
         const trendingEventsByPurchases = await Event.findAll({
             attributes: [
                 'id',

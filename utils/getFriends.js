@@ -195,15 +195,15 @@ exports.getPurchaseFollow = async (host_id, events) => {
         const total = arr.reduce((a, b) => a + b, 0)
         // console.log(purchaseCount)
         return { 
-            purchase_count_per_event: purchaseCount, 
+            purchase_count_per_event: purchaseCount ?? 0, 
 
-            total_sold: total, 
-            total_sold_difference: ticketSalesChange,
+            total_sold: total ?? 0, 
+            total_sold_difference: ticketSalesChange ?? 0,
 
-            follow_count: followcount,
-            followers_difference: followersChange,
+            follow_count: followcount ?? 0,
+            followers_difference: followersChange ?? 0,
 
-            sold_today: soldToday
+            sold_today: soldToday ?? 0
         }
     } catch (error) {
         console.log({ message: error.message })

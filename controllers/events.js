@@ -153,7 +153,7 @@ exports.closestEvent = async (req, res) => {
 
 exports.TrendingEvents = async (req, res) => {
     try {
-        categoryList = ["Music", "Tech", "Food", "Movies", "Workshops", "Art","All"]
+        categoryList = ["Music", "Tech", "Food", "Movies", "Workshops", "Art", "All"]
         const trendingEventsByPurchases = await Event.findAll({
             attributes: [
                 'id',
@@ -244,10 +244,40 @@ exports.TrendingEvents = async (req, res) => {
     }
 };
 exports.filterEvents = async (req, res) => {
-    const { tags, location, TicketPriceRange, EventLocationRange, } = req.body
+    const { tags, location, TicketPriceRange, } = req.body
     try {
-        const newEvent = await Event.create({})
-        return res.send(newEvent)
+        const Events = await Event.findAll({
+            where: {
+               price: {
+                [Op.between] : TicketPriceRange,
+
+               },
+               location :{
+                [Op.like]: `%${location}%`
+               }
+            },
+            include:{
+                model:EventCategory,
+                where:{
+                    [Op.or]: tags.reduce((acc, category) => {
+                        acc[category] = 1;
+                        return acc;
+                    }, {}),
+                }
+            }
+        })
+
+        const eventsWithCategories = Events.map((event) => {
+            const eventCategories = tags.filter((category) =>
+                event.dataValues.event_category.dataValues[category] === 1
+            );
+
+            return {
+                ...event.toJSON(),
+                event_category: eventCategories,
+            };
+        });
+        return res.send(eventsWithCategories)
     } catch (err) {
         res.status(400).json({ message: err.message })
     }
@@ -307,7 +337,7 @@ exports.Populate = async (req, res) => {
 
 
         const event = await Event.findAll()
-       
+
 
         const pop = await Promise.all(event.map(async ({ id }) => {
             const categories = ["Music", "Tech", "Food", "Movies", "Workshops", "Art"];
@@ -316,14 +346,14 @@ exports.Populate = async (req, res) => {
             const selectedCategory = getRandomCategory(categories);
             const selectedCategory2 = getRandomCategory(categories)
             // Create the newcat array with the selected category
-            const newcat = [{ [selectedCategory]: 1 ,[selectedCategory2]:1}];
-            
+            const newcat = [{ [selectedCategory]: 1, [selectedCategory2]: 1 }];
+
             function getRandomCategory(array) {
-              const randomIndex = Math.floor(Math.random() * array.length);
-              return array[randomIndex];
+                const randomIndex = Math.floor(Math.random() * array.length);
+                return array[randomIndex];
             }
-            
-            
+
+
             return await EventCategory.create({
                 id: uniqid(),
                 event_id: id,

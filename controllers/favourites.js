@@ -1,5 +1,5 @@
 const uniqid = require('uniqid');
-const { Favourite } = require('../models/models');
+const { Favourite, Event } = require('../models/models');
 
 exports.createFav = async (req, res) => {
     const { event_id } = req.body
@@ -22,8 +22,19 @@ exports.createFav = async (req, res) => {
 exports.getFavourites = async (req, res) => {
     const user_id = req.body.user_id || req.session.user_id
     try {
-        const fav = await Favourite.findAll({ where: { user_id } })
-        res.status(200).json({ fav })
+        const favourites = await Favourite.findAll({ 
+            where: { user_id },
+            attributes: ['event_id'] 
+        });
+        const events = await Promise.all(favourites.map(async ({ event_id }) => {
+            const event = await Event.findByPk(event_id, {
+                attributes: {
+                    exclude: ["host_id", 'longitude', 'latitude', 'sold']
+                }
+            });
+            return event
+        }))
+        return res.status(200).json({ fav: events })
     } catch (err) {
         res.status(400).json({ message: err.message })
     }

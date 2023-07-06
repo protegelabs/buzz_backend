@@ -38,16 +38,21 @@ module.exports.getPurchase = async (req, res) => {
 
 module.exports.createPurchase = async (req, res) => {
     const { event_id } = req.body
-    const user_id = req.session.user_id || req.body.user_id
-    const username = req.session.user.username || req.body.username
-    const profile_pic = req.session.user.profile_pic || req.body.profile_pic
+    const user_id = req.body.user_id || req.session?.user_id
+    const username =  req.body.username || req.session.user?.username
+    const profile_pic = req.body.profile_pic || req.session.user?.profile_pic
     
     console.log("user_id is", user_id)
     const id = uniqid();
     try {
-        const newPurchase = await Purchase.create({ id, user_id, username, profile_pic, event_id, })
-        const count = await Event.increment({ sold: 1 }, { where: { id: event_id } })
-        res.send(newPurchase)
+        const purchase = await Purchase.findOne({ where: { user_id, event_id } })
+        if(purchase) return res.send(purchase)
+
+        const [newPurchase, _] = await Promise.all([
+            await Purchase.create({ id, user_id, username, profile_pic, event_id, }),
+            await Event.increment({ sold: 1 }, { where: { id: event_id } })
+        ])
+        return res.send(newPurchase)
     } catch (error) {
         return res.status(400).json({ message: error.message })
     }

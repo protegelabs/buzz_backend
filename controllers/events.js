@@ -243,33 +243,48 @@ exports.TrendingEvents = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+const returnDifferentCategories = (tags) => {
+    if(tags !== typeof Array) return;
+
+    if(tags.includes("All")) return;
+
+    return {
+        model: EventCategory,
+        where: {
+            [Op.or]: tags.reduce((acc, category) => {
+                acc[category] = 1;
+                return acc;
+            }, {}),
+        }
+    }
+
+}
 exports.filterEvents = async (req, res) => {
-    const { tags, location, TicketPriceRange, } = req.body
+    const { tags, location, price_range } = req.body
     try {
         const Events = await Event.findAll({
             where: {
-               price: {
-                [Op.between] : TicketPriceRange,
-
-               },
-               location :{
-                [Op.like]: `%${location}%`
-               }
+                [Op.or]: [
+                    {
+                        price: {
+                         [Op.between] : price_range,
+         
+                        }
+                    },
+                    {
+                        location :{
+                         [Op.like]: `%${location}%`
+                        }
+                    },
+                ]
             },
-            include:{
-                model:EventCategory,
-                where:{
-                    [Op.or]: tags.reduce((acc, category) => {
-                        acc[category] = 1;
-                        return acc;
-                    }, {}),
-                }
-            }
+            include: returnDifferentCategories(tags)
         })
 
         const eventsWithCategories = Events.map((event) => {
-            const eventCategories = tags.filter((category) =>
-                event.dataValues.event_category.dataValues[category] === 1
+            const eventCategories = tags?.filter((category) =>
+                event?.dataValues.event_category?.dataValues[category] === 1
             );
 
             return {

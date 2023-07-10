@@ -1,5 +1,5 @@
 const session = require('express-session');
-const { Event, Review, User, Purchase, EventCategory } = require('../models/models')
+const { Event, Review, User, Purchase, EventCategory ,Ticket} = require('../models/models')
 const { Op, where } = require('sequelize')
 const uniqid = require('uniqid')
 const { sequelize } = require('../config/sequelize')
@@ -51,7 +51,7 @@ module.exports.createEvent = async (req, res) => {
     const host_id = req.session.user_id || req.body.host_id
     const event_id = uniqid();
     try {
-        const newEvent = await Event.create({ id: event_id, name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets, timeStart, timeEnd })
+        const newEvent = await Event.create({ id: event_id, name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic,  timeStart, timeEnd })
         const newcat = categories.map((category) => {
             return { [category]: 1 }
         })
@@ -61,6 +61,14 @@ module.exports.createEvent = async (req, res) => {
             event_id,
             ...Object.assign({}, ...newcat)
         });
+
+      await  Promise.all(tickets.map(async(item)=>{
+             return await Ticket.create({
+                id: uniqid(),
+                event_id,
+                ...item
+             })
+        }))
         return res.send(newEvent)
     } catch (error) {
         return res.status(400).json({ message: error.message })

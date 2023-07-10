@@ -502,6 +502,29 @@ const Reaction = sequelize.define('Reaction', {
     tableName: 'reactions',
     modelName: 'reactions'
 });
+const Ticket = sequelize.define('Ticket', {
+    id: {
+        type: STRING,
+        primaryKey: true,
+        allowNull: false,
+    },
+    event_id: {
+        type: STRING,
+        allowNull: false,
+    },
+    name: {
+        type: STRING,
+    },
+   price: {
+        type: STRING,
+        allowNull: false,
+    }
+}, {
+    // Other model options go here
+    tableName: 'tickets',
+    modelName: 'tickets'
+});
+
 
 
 
@@ -552,4 +575,4 @@ Event.hasOne(EventCategory, { foreignKey: 'event_id' });
 sequelize.sync();
 
 
-module.exports = { User, Event, EventCategory, Post, Comment, Favourite, Friend, Purchase, Follow, Review, Story, Reaction };
+module.exports = { User, Event, EventCategory, Post, Comment, Favourite, Friend, Purchase, Follow, Review, Story, Reaction,Ticket };

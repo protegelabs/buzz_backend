@@ -37,6 +37,7 @@ router.route('/session')
     .get(users.session)
 
 router.post('/validate/email', users.emailverify)
+router.post('/verify-otp', users.verifyOtp)
 // router.post('/validate/sms', users.sendsms)
 // router.route('/sesh')
 //     .get(users.sesh);

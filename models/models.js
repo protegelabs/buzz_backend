@@ -89,7 +89,13 @@ const User = sequelize.define('User', {
                 msg: "Auth type doesnt exist"
             },
         }
-    }
+    },
+    code: {
+        type: INTEGER,
+        allowNull: true,
+        defaultValue: null
+    },
+
 }, {
     // Other model options go here
     tableName: 'user',
@@ -575,4 +581,13 @@ Event.hasOne(EventCategory, { foreignKey: 'event_id' });
 sequelize.sync();
 
 
-module.exports = { User, Event, EventCategory, Post, Comment, Favourite, Friend, Purchase, Follow, Review, Story, Reaction,Ticket };
+module.exports = { 
+    User, 
+    Event, 
+    EventCategory, 
+    Post, Comment, 
+    Favourite, Friend, 
+    Purchase, Follow, 
+    Review, Story, 
+    Reaction,Ticket,
+};

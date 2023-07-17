@@ -1,7 +1,7 @@
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const express = require('express')
-const { User } = require('../models/models')
+const { User, OtpCode } = require('../models/models')
 const { Op, where } = require('sequelize')
 const { hashPassword } = require('../utils/hashPassword')
 const { Mail, randNum } = require('../utils/validate')
@@ -170,19 +170,51 @@ module.exports.changePassword = async (req, res) => {
 }
 
 module.exports.emailverify = async (req, res) => {
-    const id = req.session.user_id || req.body.id
+    const email = req.body.email;
+    const num = randNum()
+
     try {
-        const User = await User.findOne({ where: { id } })
-        const { email } = User
-        const num = randNum()
+        const [affectedRows] = await User.update({ code: num }, {
+            where: { email }
+        })
+        //const User = await User.findOne({ where: { email } })
+        if(affectedRows === 0) return res.status(200).json({ message: "Account does not exist" })
+        
         await Mail(email, num)
-        return res.status(200).json(num)
+
+        
+        return res.status(200).json({ 
+            message: "Email successfully sent",
+            otp_code: num
+        })
     } catch (e) {
         return res.status(400).json({ message: e.message })
     }
 
 }
 
+
+module.exports.verifyOtp = async (req, res) => {
+    const email = req.body.email;
+    const code = req.body.otp_code;
+
+    try {
+        const otpRecord = await User.findOne({
+            where: {
+                email,
+                code
+            }
+        })
+        if(!otpRecord) return res.status(200).json({ message: "Otp incorrect" });
+
+        return res.status(200).json({ 
+            message: "Otp Successful",
+        })
+    } catch (e) {
+        return res.status(400).json({ message: e.message })
+    }
+
+}
 
 module.exports.sendsms = async (req, res) => {
     let sms;

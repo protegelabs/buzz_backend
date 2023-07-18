@@ -38,6 +38,7 @@ exports.getFriends = async (req, res) => {
 
     try {
         const friends = await Friend.findAll({
+            attributes: ['user_id'],
             where: {
                 [Op.and]: [
                     {
@@ -50,7 +51,12 @@ exports.getFriends = async (req, res) => {
                 ]
             }
         });
-        return res.status(200).json({ friends });
+        const users = await Promise.all(friends.map(async ({ user_id }) => (
+            await User.findByPk(user_id, {
+                attributes: ['id', 'profile_pic', 'name', 'bio']
+            })
+        )))
+        return res.status(200).json({ friends: users });
     } catch (error) {
         return res.status(400).json({ message: error.message })
     }

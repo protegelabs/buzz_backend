@@ -334,7 +334,39 @@ const Purchase = sequelize.define('Purchase', {
         type: STRING,
         allowNull: false,
     },
+    
+    
+    email: {
+        type: STRING,
+        validate: {
+            isEmail: {
+                args: true,
+                msg: 'you didnt send an email'
+            }
+        },
+       
+    },
+    
+    phone_number: {
+        type: STRING,
+    },
+    
     event_id: {
+        type: STRING,
+        allowNull: false,
+
+    },
+    event_id: {
+        type: STRING,
+        allowNull: false,
+
+    },
+    host_id: {
+        type: STRING,
+        allowNull: false,
+
+    },
+    seats: {
         type: STRING,
         allowNull: false,
 

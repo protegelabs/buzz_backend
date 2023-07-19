@@ -360,14 +360,14 @@ const Purchase = sequelize.define('Purchase', {
 
     },
     seats: {
-        type: STRING,
+        type: INTEGER,
         allowNull: false,
         defaultValue: 1
     },
     amount: {
-        type: INTEGER,
+        type: FLOAT,
         allowNull: false,
-        defaultValue: 0,
+        defaultValue: 0.0,
     },
     status: {
         type: STRING,

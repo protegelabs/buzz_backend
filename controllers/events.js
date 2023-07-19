@@ -47,11 +47,27 @@ module.exports.getEvent = async (req, res) => {
 }
 
 module.exports.createEvent = async (req, res) => {
-    const { name, price, location, longitude, latitude, date, discount, is_active, event_pic, tickets, timeStart, timeEnd, categories } = req.body
+    const { 
+        name, price, 
+        location, longitude, 
+        latitude, date, discount, 
+        is_active, event_pic, 
+        tickets, timeStart, 
+        timeEnd, categories,
+        description 
+    } = req.body
     const host_id = req.session.user_id || req.body.host_id
     const event_id = uniqid();
     try {
-        const newEvent = await Event.create({ id: event_id, name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic,  timeStart, timeEnd })
+        const newEvent = await Event.create({ 
+            id: event_id, name, 
+            price, location, 
+            longitude, latitude, 
+            date, host_id, 
+            discount, is_active, 
+            event_pic,  timeStart, 
+            timeEnd, description 
+        })
         const newcat = categories.map((category) => {
             return { [category]: 1 }
         })

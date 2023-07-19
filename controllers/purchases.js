@@ -183,19 +183,22 @@ module.exports.cancelPurchase = async (req, res) => {
 module.exports.getHostBalance = async (req, res) => {
     const { host_id } = req.body;
     try {
-        const purchases = await Purchase.findAll({
-            where: {
-                host_id,
-                status: "active"
-            },
-            attributes: {
-                include: [
-                  [sequelize.fn('SUM', sequelize.col('amount')), 'withdraw_amount']
-                ]
-            },
-            group: 'createdAt'
-        })
-        return res.status(200).json({ withdraw_amount: purchases[0].amount, purchases: purchases })
+        const [withdrawAmount, purchases] = await Promise.all([
+            await Purchase.sum('amount', {
+                where: {
+                    host_id,
+                    status: "active"
+                },
+            }),
+            await Purchase.findAll({
+                where: {
+                    host_id,
+                    status: "active"
+                },
+                group: 'createdAt'
+            })
+        ])
+        return res.status(200).json({ withdraw_amount: withdrawAmount, purchases: purchases })
     }
     catch (err) {
         return res.status(500).send(err)

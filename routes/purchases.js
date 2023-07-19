@@ -29,5 +29,11 @@ router.route('/payment/verify')
 router.route('/attendance')
     .post(purchases.purchaseList)
 
+router.route('/host/balance')
+    .post(purchases.getHostBalance)
+
+router.route('/cancel')
+    .post(purchases.cancelPurchase)
+
 
 module.exports = router;

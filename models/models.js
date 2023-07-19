@@ -56,8 +56,6 @@ const User = sequelize.define('User', {
     },
     heatTime:{
         type: DATE,
-        
-
     },
     profile_pic: {
         type: STRING,
@@ -118,6 +116,10 @@ const Event = sequelize.define('Event', {
     price: {
         type: INTEGER,
         allowNull: false,
+    },
+    description: {
+        type: STRING,
+        defaultValue: "",
     },
     location: {
         type: STRING,
@@ -268,7 +270,6 @@ const Favourite = sequelize.define('Favourite', {
     event_id: {
         type: STRING,
         allowNull: false,
-
     },
 }, {
     // Other model options go here
@@ -334,11 +335,51 @@ const Purchase = sequelize.define('Purchase', {
         type: STRING,
         allowNull: false,
     },
+    email: {
+        type: STRING,
+        validate: {
+            isEmail: {
+                args: true,
+                msg: 'you didnt send an email'
+            }
+        },
+       
+    },
+    phone_number: {
+        type: STRING,
+    },
+    
     event_id: {
         type: STRING,
         allowNull: false,
 
     },
+    host_id: {
+        type: STRING,
+        allowNull: false,
+
+    },
+    seats: {
+        type: STRING,
+        allowNull: false,
+        defaultValue: 1
+    },
+    amount: {
+        type: INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+    },
+    status: {
+        type: STRING,
+        allowNull: false,
+        defaultValue: 'active',
+        validate: {
+            isIn: {
+                args: [['active', 'cancelled']],
+            },
+        }
+    }
+
 }, {
     // Other model options go here
     tableName: 'purchase',
@@ -411,7 +452,7 @@ const EventCategory = sequelize.define("event_category", {
         allowNull: false
     },
     All:{
-        defaultValue:1,
+        defaultValue: 1,
         type: TINYINT
     },
     Music: {
@@ -431,11 +472,15 @@ const EventCategory = sequelize.define("event_category", {
         type: TINYINT
     },
     Movies: {
-        defaultValue:0,
+        defaultValue: 0,
         type: TINYINT
     },
     Workshops:{
-        defaultValue:0,
+        defaultValue: 0,
+        type: TINYINT
+    },
+    Sports:{
+        defaultValue: 0,
         type: TINYINT
     }
 }, {

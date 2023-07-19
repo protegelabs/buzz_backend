@@ -1,5 +1,6 @@
 const session = require('express-session');
-const { Purchase, Event, User } = require('../models/models')
+const { Purchase, Event, User } = require('../models/models');
+const { sequelize } = require("../config/sequelize")
 const { Op } = require('sequelize')
 const uniqid = require('uniqid')
 const dotenv = require('dotenv');
@@ -41,6 +42,8 @@ module.exports.createPurchase = async (req, res) => {
     const user_id = req.body.user_id || req.session?.user_id
     const username =  req.body.username || req.session.user?.username
     const profile_pic = req.body.profile_pic || req.session.user?.profile_pic
+
+    const { email, phone_number, host_id, seats, amount } = req.body
     
     console.log("user_id is", user_id)
     const id = uniqid();
@@ -49,7 +52,7 @@ module.exports.createPurchase = async (req, res) => {
         if(purchase) return res.send(purchase)
 
         const [newPurchase, _] = await Promise.all([
-            await Purchase.create({ id, user_id, username, profile_pic, event_id, }),
+            await Purchase.create({ id, user_id, username, profile_pic, event_id, email, host_id, phone_number, seats, amount }),
             await Event.increment({ sold: 1 }, { where: { id: event_id } })
         ])
         return res.send(newPurchase)
@@ -157,6 +160,45 @@ module.exports.purchaseList = async (req, res) => {
         return res.send(event)
     } catch (error) {
         return res.send('sorry an error occured')
+    }
+}
+
+module.exports.cancelPurchase = async (req, res) => {
+    const { user_id, event_id } = req.body;
+
+    try {
+        await Purchase.update({ status: "cancelled" }, {
+            where: {
+                user_id,
+                event_id
+            }
+        })
+        return res.status(200).json({ message: "Event Cancelled" });
+    } 
+    catch (err) {
+        return res.status(200).json({ message: err })
+    }
+}
+
+module.exports.getHostBalance = async (req, res) => {
+    const { host_id } = req.body;
+    try {
+        const purchases = await Purchase.findAll({
+            where: {
+                host_id,
+                status: "active"
+            },
+            attributes: {
+                include: [
+                  [sequelize.fn('SUM', sequelize.col('amount')), 'withdraw_amount']
+                ]
+            },
+            group: 'createdAt'
+        })
+        return res.status(200).send(purchases)
+    }
+    catch (err) {
+        return res.status(500).send(err)
     }
 }
 

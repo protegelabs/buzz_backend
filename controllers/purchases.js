@@ -15,11 +15,36 @@ module.exports.getAllPurchases = async (req, res) => {
 }
 
 module.exports.getUserPurchases = async (req, res) => {
-    const user_id = req.session.user_id || req.body.user_id;
+    const user_id = req.body.user_id;
     console.log(req.session)
     try {
-        const event = await Purchase.findAll({ where: { user_id } });
-        return res.send(event)
+        const purchases = await Purchase.findAll({ where: { user_id } });
+        const events = await Promise.all(purchases.map(async (purchase) => {
+            const event = await Event.findByPk(purchase.event_id)//reduce the retrieved
+            const purchaseRecord = {
+                purchase: purchase,
+                event: event,
+            }
+
+            return purchaseRecord
+        }))
+
+        const currentDateAndTime = new Date()
+        const upcomingEvents = events.filter(({ event, purchase }) => {
+            const eventDate = new Date(event.date);
+            return eventDate > currentDateAndTime && purchase.status === "active"
+        });
+        const completedEvents = events.filter(({ event, purchase }) => {
+            const eventDate = new Date(event.date);
+            return eventDate <= currentDateAndTime && purchase.status === "active"
+        });
+        const cancelledEvents = events.filter(({ purchase }) => purchase.status === "cancelled")
+
+        return res.json({ 
+            upcoming: upcomingEvents, 
+            completed: completedEvents, 
+            cancelled: cancelledEvents,
+        })
     } catch (error) {
         return res.send('sorry an error occured')
     }
@@ -183,19 +208,22 @@ module.exports.cancelPurchase = async (req, res) => {
 module.exports.getHostBalance = async (req, res) => {
     const { host_id } = req.body;
     try {
-        const purchases = await Purchase.findAll({
-            where: {
-                host_id,
-                status: "active"
-            },
-            attributes: {
-                include: [
-                  [sequelize.fn('SUM', sequelize.col('amount')), 'withdraw_amount']
-                ]
-            },
-            group: 'createdAt'
-        })
-        return res.status(200).json({ withdraw_amount: purchases[0].amount, purchases: purchases })
+        const [withdrawAmount, purchases] = await Promise.all([
+            await Purchase.sum('amount', {
+                where: {
+                    host_id,
+                    status: "active"
+                },
+            }),
+            await Purchase.findAll({
+                where: {
+                    host_id,
+                    status: "active"
+                },
+                group: 'createdAt'
+            })
+        ])
+        return res.status(200).json({ withdraw_amount: withdrawAmount, purchases: purchases })
     }
     catch (err) {
         return res.status(500).send(err)

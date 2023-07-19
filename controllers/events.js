@@ -54,7 +54,8 @@ module.exports.createEvent = async (req, res) => {
         is_active, event_pic, 
         tickets, timeStart, 
         timeEnd, categories,
-        description 
+        description,
+        promotional_code 
     } = req.body
     const host_id = req.session.user_id || req.body.host_id
     const event_id = uniqid();
@@ -66,7 +67,7 @@ module.exports.createEvent = async (req, res) => {
             date, host_id, 
             discount, is_active, 
             event_pic,  timeStart, 
-            timeEnd, description 
+            timeEnd, description, promotional_code 
         })
         const newcat = categories.map((category) => {
             return { [category]: 1 }

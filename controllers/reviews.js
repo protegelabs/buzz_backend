@@ -8,14 +8,24 @@ module.exports.getAllReviews = async (req, res) => {
     return res.send(review)
 }
 
+module.exports.getReviewsForHost = async (req, res) => {
+    const { host_id } = req.body;
+
+    try {
+        const reviews = await Review.findAll({ where: { host_id} });
+        return res.send(reviews)
+    } catch (e) {
+        return res.status(500).send(e)
+    }
+
+}
+
 module.exports.createReview = async (req, res) => {
-    const { event_id, review, rating } = req.body
-    const user_id = req.session.user_id || req.body.user_id
-    const username = req.session.user.username || req.body.username
-    const profile_pic = req.session.profile_pic || req.body.profile_pic
+    const { event_id, review, rating, host_id, user_id, username, profile_pic } = req.body;
+
     const id = uniqid();
     try {
-        const newReview = await Review.create({ id, event_id, user_id, username, profile_pic, review, rating })
+        const newReview = await Review.create({ id, event_id, user_id, username, profile_pic, review, rating, host_id })
         return res.send(newReview)
     } catch (error) {
         return res.status(400).json({ message: error.message })

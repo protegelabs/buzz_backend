@@ -8,6 +8,7 @@ const reviews = require('../controllers/reviews')
 
 router.route('/reviews')
     .get(reviews.getAllReviews)
+    .post(reviews.getReviewsForHost)
 
 router.route('/review')
     .post(reviews.createReview)

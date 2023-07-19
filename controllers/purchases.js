@@ -15,11 +15,36 @@ module.exports.getAllPurchases = async (req, res) => {
 }
 
 module.exports.getUserPurchases = async (req, res) => {
-    const user_id = req.session.user_id || req.body.user_id;
+    const user_id = req.body.user_id;
     console.log(req.session)
     try {
-        const event = await Purchase.findAll({ where: { user_id } });
-        return res.send(event)
+        const purchases = await Purchase.findAll({ where: { user_id } });
+        const events = await Promise.all(purchases.map(async (purchase) => {
+            const event = await Event.findByPk(purchase.event_id)//reduce the retrieved
+            const purchaseRecord = {
+                purchase: purchase,
+                event: event,
+            }
+
+            return purchaseRecord
+        }))
+
+        const currentDateAndTime = new Date()
+        const upcomingEvents = events.filter(({ event, purchase }) => {
+            const eventDate = new Date(event.date);
+            return eventDate > currentDateAndTime && purchase.status === "active"
+        });
+        const completedEvents = events.filter(({ event, purchase }) => {
+            const eventDate = new Date(event.date);
+            return eventDate <= currentDateAndTime && purchase.status === "active"
+        });
+        const cancelledEvents = events.filter(({ purchase }) => purchase.status === "cancelled")
+
+        return res.json({ 
+            upcoming: upcomingEvents, 
+            completed: completedEvents, 
+            cancelled: cancelledEvents,
+        })
     } catch (error) {
         return res.send('sorry an error occured')
     }

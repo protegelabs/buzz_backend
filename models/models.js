@@ -138,7 +138,7 @@ const Event = sequelize.define('Event', {
     },
     discount: {
         type: INTEGER,
-        allowNull: true
+        allowNull: true,
     },
     is_active: {
         type: BOOLEAN,
@@ -159,7 +159,11 @@ const Event = sequelize.define('Event', {
     },
     timeEnd:{
         type: STRING
-    }
+    },
+    promotional_code: {
+        type: STRING,
+        allowNull: true,
+    },
 }, {
     // Other model options go here
     tableName: 'events',
@@ -360,14 +364,14 @@ const Purchase = sequelize.define('Purchase', {
 
     },
     seats: {
-        type: STRING,
+        type: INTEGER,
         allowNull: false,
         defaultValue: 1
     },
     amount: {
-        type: INTEGER,
+        type: FLOAT,
         allowNull: false,
-        defaultValue: 0,
+        defaultValue: 0.0,
     },
     status: {
         type: STRING,
@@ -500,6 +504,10 @@ const Review = sequelize.define('Review', {
         allowNull: false,
     },
     user_id: {
+        type: STRING,
+        allowNull: false,
+    },
+    host_id: {
         type: STRING,
         allowNull: false,
     },

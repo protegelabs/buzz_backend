@@ -195,7 +195,7 @@ module.exports.getHostBalance = async (req, res) => {
             },
             group: 'createdAt'
         })
-        return res.status(200).send(purchases)
+        return res.status(200).json({ withdraw_amount: purchases[0].amount, purchases: purchases })
     }
     catch (err) {
         return res.status(500).send(err)

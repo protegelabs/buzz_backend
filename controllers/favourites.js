@@ -53,7 +53,18 @@ exports.getFavourites = async (req, res) => {
             });
             return event
         }))
-        return res.status(200).json({ fav: events })
+        const eventsWithCategories = events.map((event) => {
+            const eventCategories = categoryList.filter((category) =>
+
+                event.dataValues.event_category.dataValues[category] === 1
+            );
+
+            return {
+                ...event.toJSON(),
+                event_category: eventCategories,
+            };
+        });
+        return res.status(200).json({ fav: eventsWithCategories })
     } catch (err) {
         res.status(400).json({ message: err.message })
     }

@@ -1,5 +1,5 @@
 const uniqid = require('uniqid');
-const { Favourite, Event } = require('../models/models');
+const { Favourite, Event, EventCategory } = require('../models/models');
 
 exports.createFav = async (req, res) => {
     const { event_id } = req.body
@@ -29,10 +29,24 @@ exports.getFavourites = async (req, res) => {
         const events = await Promise.all(favourites.map(async ({ event_id }) => {
             const event = await Event.findByPk(event_id, {
                 attributes: {
-                    exclude: ["host_id", 'longitude', 'latitude', 'sold']
+                    exclude: ["host_id", 'longitude', 'latitude', 'sold', 'price', 'description' ]
                 }
             });
-            return event
+
+            const categoriesData = await EventCategory.findOne({
+                where: { event_id },
+                attributes: {
+                    exclude: ['event_id']
+                }
+            })
+
+            /*
+            const categories = Object.keys(categoriesData).map(category => {
+                if(categoriesData[category].category === 1) {
+                    return category
+                }
+            })*/
+            return { event, categoriesData }
         }))
         return res.status(200).json({ fav: events })
     } catch (err) {

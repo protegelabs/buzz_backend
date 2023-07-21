@@ -78,7 +78,8 @@ module.exports.createPurchase = async (req, res) => {
 
         const [newPurchase, _] = await Promise.all([
             await Purchase.create({ id, user_id, username, profile_pic, event_id, email, host_id, phone_number, seats, amount }),
-            await Event.increment({ sold: 1 }, { where: { id: event_id } })
+            await Event.increment({ sold: 1 }, { where: { id: event_id } }),
+            await User.increment('heat', { by: 2, where: { id: user_id } })
         ])
         return res.send(newPurchase)
     } catch (error) {

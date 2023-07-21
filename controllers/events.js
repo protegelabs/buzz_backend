@@ -5,6 +5,8 @@ const uniqid = require('uniqid')
 const { sequelize } = require('../config/sequelize')
 const Url = require('url');
 
+require("dotenv")
+const { makePayment } = require("./purchases")
 
 
 module.exports.getAllEvents = async (req, res) => {
@@ -407,6 +409,79 @@ exports.Populate = async (req, res) => {
     }
 }
 
+module.exports.getFeaturedEvents = async (req, res) => {
+
+    const { user_age, user_location, limit } = req.body;
+    try {
+        const featuredEvents = await Event.findAll({
+            where: {
+                featured: true,
+                [Op.or]: [
+                    {
+                        [Op.and]: [
+                            {
+                                target_age_lower: {
+                                    [Op.gte]: user_age,
+                                },
+                            },
+                            {
+                                target_age_upper: {
+                                    [Op.lte]: user_age,
+                                }   
+                            }    
+                        ]
+                    },
+                    {
+                        location: {
+                            [Op.like]: `%${user_location}%`
+                        }
+                    }
+                ]
+            },
+            limit: limit
+        })
+
+        if(featuredEvents.length >= 10) {
+            return res.send(featuredEvents)
+        }
+
+        const additionalLength = 10 - featuredEvents.length
+        const additionalEvents = await Event.findAll({
+            where: {
+                location: {
+                    [Op.like]: `%${user_location}%`
+                }
+            },
+            limit: additionalLength
+        })
+
+        return res.send([...featuredEvents, ...additionalEvents])
+
+    } catch (e) {
+        return res.status(500).json({ message: e })
+    }
+}
+
+module.exports.promoteEvent = async (req, res) => {
+
+    const { event_id, age_range } = req.body;
+    const { upper, lower } = age_range;
+
+    const paystackPayment = await makePayment(req, res)
+    
+    //Doing this here incase verify doesn't work
+    const promoteEvent = await Event.update({ 
+        featured: false,
+        target_age_lower: lower,
+        target_age_upper: upper,
+        //may make default ending day after 7 days
+    }, {
+        where: {
+            id: event_id,
+        }
+    })
+
+}
 
 
 

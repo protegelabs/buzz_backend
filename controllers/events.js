@@ -462,6 +462,33 @@ module.exports.getFeaturedEvents = async (req, res) => {
     }
 }
 
+module.exports.audienceReach = async (req, res) => {
+    const { location, age_range } = req.body;
+    const { upper, lower } = age_range;
+
+    const currentDay = new Date().getDate();
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    try {
+        const users = await User.count({
+            where: {
+                location: {
+                    [Op.like]: `%${location}%`
+                },
+                dob: {
+                    [Op.lte]: new Date(currentYear-lower, currentMonth, currentDay),
+                    [Op.gte]: new Date(currentYear+upper, currentMonth, currentDay)
+                }
+            }
+        })
+        return res.json({ target_reach: users })
+    } catch (e){
+        return res.status(500).json({ message: e })
+    }
+
+}
+
 module.exports.promoteEvent = async (req, res) => {
 
     const { event_id, age_range } = req.body;

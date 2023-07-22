@@ -477,8 +477,8 @@ module.exports.audienceReach = async (req, res) => {
                     [Op.like]: `%${location}%`
                 },
                 dob: {
-                    [Op.lte]: new Date(currentYear-lower, currentMonth, currentDay),
-                    [Op.gte]: new Date(currentYear+upper, currentMonth, currentDay)
+                    [Op.lte]: new Date(currentYear+lower, currentMonth, currentDay),
+                    [Op.gte]: new Date(currentYear-upper, currentMonth, currentDay)
                 }
             }
         })
@@ -491,22 +491,28 @@ module.exports.audienceReach = async (req, res) => {
 
 module.exports.promoteEvent = async (req, res) => {
 
-    const { event_id, age_range } = req.body;
+    const { event_id, age_range, start_date, end_date } = req.body;
     const { upper, lower } = age_range;
-
-    const paystackPayment = await makePayment(req, res)
     
-    //Doing this here incase verify doesn't work
-    const promoteEvent = await Event.update({ 
-        featured: false,
-        target_age_lower: lower,
-        target_age_upper: upper,
-        //may make default ending day after 7 days
-    }, {
-        where: {
-            id: event_id,
-        }
-    })
+    try {
+        //Doing this here incase verify doesn't work
+        await Event.update({ 
+            featured: false,
+            target_age_lower: lower,
+            target_age_upper: upper,
+            featured_start_date: start_date,
+            featured_ending_date: end_date,
+            //may make default ending day after 7 days
+        }, {
+            where: {
+                id: event_id,
+            }
+        })
+        return res.json({ message: "Promoted Successfully" })
+    } 
+    catch (e){
+        return res.status(500).json({ message: e })
+    }
 
 }
 

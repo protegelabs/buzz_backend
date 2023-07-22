@@ -169,6 +169,10 @@ const Event = sequelize.define('Event', {
         defaultValue: false,
         allowNull: false,
     },
+    featured_starting_date: {
+        type: DATE,
+        allowNull: true,
+    },
     featured_ending_date: {
         type: DATE,
         allowNull: true,

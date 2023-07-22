@@ -21,7 +21,7 @@ exports.createFav = async (req, res) => {
 
 exports.getFavourites = async (req, res) => {
     const user_id = req.body.user_id || req.session.user_id
-    categoryList = ["Music", "Tech", "Food", "Movies", "Workshops", "Art", "All"]
+    let categoryList = ["Music", "Tech", "Food", "Movies", "Workshops", "Art", "All", "Sports"]
 
     try {
         const favourites = await Favourite.findAll({ 
@@ -48,17 +48,20 @@ exports.getFavourites = async (req, res) => {
                     return category
                 }
             })*/
+
+
+
             return { event, categoriesData }
         }))
         const eventsWithCategories = events.map((event) => {
             const eventCategories = categoryList.filter((category) =>
 
-                event.dataValues.event_category.dataValues[category] === 1
+            
+                event?.dataValues?.event_category?.dataValues[category] === 1
             );
 
             return {
-                ...event.toJSON(),
-                event_category: eventCategories,
+                ...event,
             };
         });
         return res.status(200).json({ fav: eventsWithCategories })

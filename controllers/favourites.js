@@ -49,9 +49,9 @@ exports.getFavourites = async (req, res) => {
                 }
             })*/
 
+            const categories = !categoriesData ? ["All"] : Object.keys(categoriesData.dataValues).filter((key) => categoriesData.dataValues[key] === 1)
 
-
-            return { event, categoriesData }
+            return { ...event.dataValues, categories }
         }))
         const eventsWithCategories = events.map((event) => {
             const eventCategories = categoryList.filter((category) =>

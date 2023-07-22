@@ -5,6 +5,8 @@ const uniqid = require('uniqid')
 const { sequelize } = require('../config/sequelize')
 const Url = require('url');
 
+require("dotenv")
+const { makePayment } = require("./purchases")
 
 
 module.exports.getAllEvents = async (req, res) => {
@@ -407,6 +409,112 @@ exports.Populate = async (req, res) => {
     }
 }
 
+module.exports.getFeaturedEvents = async (req, res) => {
+
+    const { user_age, user_location, limit } = req.body;
+    try {
+        const featuredEvents = await Event.findAll({
+            where: {
+                featured: true,
+                [Op.or]: [
+                    {
+                        [Op.and]: [
+                            {
+                                target_age_lower: {
+                                    [Op.gte]: user_age,
+                                },
+                            },
+                            {
+                                target_age_upper: {
+                                    [Op.lte]: user_age,
+                                }   
+                            }    
+                        ]
+                    },
+                    {
+                        location: {
+                            [Op.like]: `%${user_location}%`
+                        }
+                    }
+                ]
+            },
+            limit: limit
+        })
+
+        if(featuredEvents.length >= 10) {
+            return res.send(featuredEvents)
+        }
+
+        const additionalLength = 10 - featuredEvents.length
+        const additionalEvents = await Event.findAll({
+            where: {
+                location: {
+                    [Op.like]: `%${user_location}%`
+                }
+            },
+            limit: additionalLength
+        })
+
+        return res.send([...featuredEvents, ...additionalEvents])
+
+    } catch (e) {
+        return res.status(500).json({ message: e })
+    }
+}
+
+module.exports.audienceReach = async (req, res) => {
+    const { location, age_range } = req.body;
+    const { upper, lower } = age_range;
+
+    const currentDay = new Date().getDate();
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    try {
+        const users = await User.count({
+            where: {
+                location: {
+                    [Op.like]: `%${location}%`
+                },
+                dob: {
+                    [Op.lte]: new Date(currentYear+lower, currentMonth, currentDay),
+                    [Op.gte]: new Date(currentYear-upper, currentMonth, currentDay)
+                }
+            }
+        })
+        return res.json({ target_reach: users })
+    } catch (e){
+        return res.status(500).json({ message: e })
+    }
+
+}
+
+module.exports.promoteEvent = async (req, res) => {
+
+    const { event_id, age_range, start_date, end_date } = req.body;
+    const { upper, lower } = age_range;
+    
+    try {
+        //Doing this here incase verify doesn't work
+        await Event.update({ 
+            featured: false,
+            target_age_lower: lower,
+            target_age_upper: upper,
+            featured_start_date: start_date,
+            featured_ending_date: end_date,
+            //may make default ending day after 7 days
+        }, {
+            where: {
+                id: event_id,
+            }
+        })
+        return res.json({ message: "Promoted Successfully" })
+    } 
+    catch (e){
+        return res.status(500).json({ message: e })
+    }
+
+}
 
 
 

@@ -1,5 +1,5 @@
 const uniqid = require('uniqid');
-const { Favourite, Event } = require('../models/models');
+const { Favourite, Event, EventCategory } = require('../models/models');
 
 exports.createFav = async (req, res) => {
     const { event_id } = req.body
@@ -21,6 +21,8 @@ exports.createFav = async (req, res) => {
 
 exports.getFavourites = async (req, res) => {
     const user_id = req.body.user_id || req.session.user_id
+    let categoryList = ["Music", "Tech", "Food", "Movies", "Workshops", "Art", "All", "Sports"]
+
     try {
         const favourites = await Favourite.findAll({ 
             where: { user_id },
@@ -29,12 +31,40 @@ exports.getFavourites = async (req, res) => {
         const events = await Promise.all(favourites.map(async ({ event_id }) => {
             const event = await Event.findByPk(event_id, {
                 attributes: {
-                    exclude: ["host_id", 'longitude', 'latitude', 'sold']
+                    exclude: ["host_id", 'longitude', 'latitude', 'sold', 'price', 'description' ]
                 }
             });
-            return event
+
+            const categoriesData = await EventCategory.findOne({
+                where: { event_id },
+                attributes: {
+                    exclude: ['event_id']
+                }
+            })
+
+            /*
+            const categories = Object.keys(categoriesData).map(category => {
+                if(categoriesData[category].category === 1) {
+                    return category
+                }
+            })*/
+
+
+
+            return { event, categoriesData }
         }))
-        return res.status(200).json({ fav: events })
+        const eventsWithCategories = events.map((event) => {
+            const eventCategories = categoryList.filter((category) =>
+
+            
+                event?.dataValues?.event_category?.dataValues[category] === 1
+            );
+
+            return {
+                ...event,
+            };
+        });
+        return res.status(200).json({ fav: eventsWithCategories })
     } catch (err) {
         res.status(400).json({ message: err.message })
     }

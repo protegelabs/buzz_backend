@@ -1,7 +1,7 @@
 const { DataTypes, FLOAT, TIME } = require('sequelize');
 
 const { sequelize } = require('../config/sequelize')
-const { STRING, INTEGER, DATE, BOOLEAN, TINYINT } = DataTypes
+const { STRING, INTEGER, DATE, BOOLEAN, TINYINT, SMALLINT } = DataTypes
 
 // Define models for each table 
 // pushing to dev
@@ -164,6 +164,27 @@ const Event = sequelize.define('Event', {
         type: STRING,
         allowNull: true,
     },
+    featured: {
+        type: BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
+    },
+    featured_starting_date: {
+        type: DATE,
+        allowNull: true,
+    },
+    featured_ending_date: {
+        type: DATE,
+        allowNull: true,
+    },
+    target_age_lower: {
+        type: SMALLINT,
+        allowNull: true,
+    },
+    target_age_upper: {
+        type: SMALLINT,
+        allowNull: true
+    }
 }, {
     // Other model options go here
     tableName: 'events',

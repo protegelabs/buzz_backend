@@ -12,7 +12,7 @@ module.exports.getReviewsForHost = async (req, res) => {
     const { host_id } = req.body;
 
     try {
-        const reviews = await Review.findAll({ where: { host_id} });
+        const reviews = await Review.findAll({ where: { host_id } });
         return res.send(reviews)
     } catch (e) {
         return res.status(500).send(e)

@@ -12,7 +12,7 @@ router.route('/ticket-goal/create')
 router.route('/revenue-goal')
     .post(goals.getRevenueGoal)
 
-router.route('/ticket-goal/create')
+router.route('/revenue-goal/create')
     .post(goals.createRevenueGoal)
 
 

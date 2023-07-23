@@ -4,12 +4,16 @@ const goals = require('../controllers/goals')
 
 
 router.route('/ticket-goal')
+    .post(goals.getTicketGoal)
+
+router.route('/ticket-goal/create')
     .post(goals.createTicketGoal)
-    .get(goals.createTicketGoal)
 
 router.route('/revenue-goal')
+    .post(goals.getRevenueGoal)
+
+router.route('/ticket-goal/create')
     .post(goals.createRevenueGoal)
-    .get(goals.getRevenueGoal)
 
 
 module.exports = router;

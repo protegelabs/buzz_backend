@@ -605,6 +605,63 @@ const Ticket = sequelize.define('Ticket', {
     modelName: 'tickets'
 });
 
+const HostTicketGoal = sequelize.define('HostTicketGoal', {
+    id: {
+        type: STRING,
+        primaryKey: true,
+        allowNull: false,
+    },
+    host_id: {
+        type: STRING,
+        allowNull: false,
+    },
+    goal: {
+        type: INTEGER,
+        allowNull: false,
+    },
+    goal_start_day: {
+        type: DATE,
+        allowNull: false,
+    },
+    goal_end_day: {
+        type: DATE,
+        allowNull: false,
+    }
+}, {
+    // Other model options go here
+    tableName: 'host-ticket-goal',
+    modelName: 'host-ticket-goal'
+});
+
+const HostRevenueGoal = sequelize.define('HostRevenueGoal', {
+    id: {
+        type: STRING,
+        primaryKey: true,
+        allowNull: false,
+    },
+    host_id: {
+        type: STRING,
+        allowNull: false,
+    },
+    goal: {
+        type: INTEGER,
+        allowNull: false,
+    },
+    goal_start_day: {
+        type: DATE,
+        allowNull: false,
+    },
+    goal_end_day: {
+        type: DATE,
+        allowNull: false,
+    }
+}, {
+    // Other model options go here
+    tableName: 'host-revenue-goal',
+    modelName: 'host-revenue-goal'
+});
+
+
 
 
 
@@ -650,6 +707,8 @@ EventCategory.belongsTo(Event, { foreignKey: 'event_id' });
 Event.hasOne(EventCategory, { foreignKey: 'event_id' });
 
 // Optional: Add associations for additional models
+HostRevenueGoal.belongsTo(User, { foreignKey: 'host_id' });
+HostTicketGoal.belongsTo(User, { foreignKey: 'host_id' })
 
 // Sync the models with the database
 sequelize.sync();
@@ -664,4 +723,6 @@ module.exports = {
     Purchase, Follow, 
     Review, Story, 
     Reaction,Ticket,
+    HostRevenueGoal,
+    HostTicketGoal
 };

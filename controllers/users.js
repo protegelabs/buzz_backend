@@ -287,7 +287,7 @@ exports.searchUser = async (req, res) => {
 
 exports.HostAnalytics = async (req, res) => {
     console.log(req.session)
-    const host_id = req.session.user_id || req.body.user_id;
+    const host_id = req.body.host_id;
 
     try {
         /**

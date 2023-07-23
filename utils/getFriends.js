@@ -42,7 +42,7 @@ exports.getHostEvent = async (id) => {
 
         if(event.length < 0) return [event, categories]
 
-        categories = await Promise.all(
+        const category = await Promise.all(
             event.map(async ({ id }) => {
             const t = await EventCategory.findOne({
                 where: {
@@ -52,20 +52,22 @@ exports.getHostEvent = async (id) => {
             return t
         }))
 
-        if(categories.length < 0) return [event, categories]
+        if(category.length === 0) return [event, category]
 
+        
+        /*
         const categoriesCount = {
-            Music: categories.filter((category) => category.Art === 1).length,
-            Art: categories.filter((category) => category.Art === 1).length,
-            Workshop: categories.filter((category) => category.Workshop=== 1).length,
-            Movies: categories.filter((category) => category.Movies === 1).length,
-            Food: categories.filter((category) => category.Food === 1).length,
-            Tech: categories.filter((category) => category.Tech === 1).length,
-            Sports: categories.filter((category) => category.Sports === 1).length
-        }
+            Music: category.filter((category) => category?.Music === 1).length,
+            Art: category.filter((category) => category.Art && category?.Art === 1).length,
+            Workshop: category.filter((category) => category?.Workshop=== 1).length,
+            Movies: category.filter((category) => category?.Movies === 1).length,
+            Food: category.filter((category) => category?.Food === 1).length,
+            Tech: category.filter((category) => category?.Tech === 1).length,
+            Sports: category.filter((category) => category?.Sports === 1).length
+        }*/
 
-
-        return [event, categories, categoriesCount]
+        console.log(category)
+        return [event, category,]
     } catch (error) {
         console.log({ message: error.message })
 
@@ -98,31 +100,21 @@ exports.getPurchaseFollow = async (host_id, events) => {
             await Purchase.count(
                 { 
                     where: { 
-                        [Op.and] : [
-                            { host_id },
-                            { 
-                                createdAt: {
-                                    [Op.gte]: new Date(currentYear, currentMonth, firstDayOfMonth)
-                                }
-                            }
-                        ]
-                         
+                        host_id,
+                        createdAt: {
+                            [Op.gte]: new Date(currentYear, currentMonth, firstDayOfMonth)
+                        }                         
                     } 
                 }
             ),
             await Purchase.count(
                 { 
                     where: { 
-                        [Op.and] : [
-                            { host_id },
-                            { 
-                                createdAt: {
-                                    [Op.lt]: new Date(currentYear, currentMonth, firstDayOfMonth),
-                                    [Op.gte]: new Date(currentYear, currentMonth-1, firstDayOfMonth)
-                                }
-                            }
-                        ]
-                         
+                        host_id,
+                        createdAt: {
+                            [Op.lt]: new Date(currentYear, currentMonth, firstDayOfMonth),
+                            [Op.gte]: new Date(currentYear, currentMonth-1, firstDayOfMonth)
+                        }                         
                     } 
                 }
             ),

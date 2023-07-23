@@ -62,16 +62,16 @@ module.exports.getRevenueGoal = async (req, res) => {
 
         const purchaseSum = await Purchase.sum('amount', {
             where: {
-                host_id,
+                host_id: host_id,
                 createdAt: {
-                    [Op.gte]: revenueGoal.goal_start_day
+                    [Op.gte]: new Date(revenueGoal.dataValues.goal_start_day)
                 }
             }
         });
 
         return res.json({
-            goal: revenueGoal.goal,
-            progress: purchaseSum,
+            goal: revenueGoal.dataValues.goal,
+            progress: purchaseSum ?? 0,
             exists: true,
             goal_end_day: revenueGoal.goal_end_day
         })
@@ -141,20 +141,20 @@ module.exports.getTicketGoal = async (req, res) => {
 
         const ticketCount = await Purchase.count({
             where: {
-                host_id,
+                host_id: host_id,
                 createdAt: {
-                    [Op.gte]: revenueGoal.goal_start_day
+                    [Op.gte]: ticketGoal.dataValues.goal_start_day
                 }
             }
         });
 
         return res.json({
-            goal: revenueGoal.goal,
-            progress: ticketCount,
+            goal: ticketGoal.dataValues.goal,
+            progress: ticketCount ?? 0,
             exists: true,
-            goal_end_day: revenueGoal.goal_end_day
+            goal_end_day: ticketGoal.dataValues.goal_end_day
         })
     } catch (e) {
-        return res.status(500).json({ message: err })
+        return res.status(500).json({ message: e })
     }
 }

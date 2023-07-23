@@ -95,48 +95,36 @@ exports.getPurchaseFollow = async (host_id, events) => {
             purchaseCount,
             soldToday
         ] = await Promise.all([
-            await Promise.all(
-                events.map(async (id) => {
-                    const ticketCount = await Purchase.count(
-                        { 
-                            where: { 
-                                [Op.and] : [
-                                    { event_id: id },
-                                    { 
-                                        createdAt: {
-                                            [Op.gte]: new Date(currentYear, currentMonth, firstDayOfMonth)
-                                        }
-                                    }
-                                ]
-                                 
-                            } 
-                        }
-                    )
-    
-                    return ticketCount
-                })
+            await Purchase.count(
+                { 
+                    where: { 
+                        [Op.and] : [
+                            { host_id },
+                            { 
+                                createdAt: {
+                                    [Op.gte]: new Date(currentYear, currentMonth, firstDayOfMonth)
+                                }
+                            }
+                        ]
+                         
+                    } 
+                }
             ),
-            await Promise.all(
-                events.map(async (id) => {
-                    const ticketCount = await Purchase.count(
-                        { 
-                            where: { 
-                                [Op.and] : [
-                                    { event_id: id },
-                                    { 
-                                        createdAt: {
-                                            [Op.lt]: new Date(currentYear, currentMonth, firstDayOfMonth),
-                                            [Op.gte]: new Date(currentYear, currentMonth-1, firstDayOfMonth)
-                                        }
-                                    }
-                                ]
-                                 
-                            } 
-                        }
-                    )
-    
-                    return ticketCount
-                })
+            await Purchase.count(
+                { 
+                    where: { 
+                        [Op.and] : [
+                            { host_id },
+                            { 
+                                createdAt: {
+                                    [Op.lt]: new Date(currentYear, currentMonth, firstDayOfMonth),
+                                    [Op.gte]: new Date(currentYear, currentMonth-1, firstDayOfMonth)
+                                }
+                            }
+                        ]
+                         
+                    } 
+                }
             ),
             await Follow.count({
                 where: { 
@@ -154,42 +142,24 @@ exports.getPurchaseFollow = async (host_id, events) => {
                 }
             }),
             await Follow.count({ where: { host: host_id } }),
-            await Promise.all(
-                events.map(async (id) => {
-                    const ticket = await Purchase.count(
-                        { where: { event_id: id } }
-                    )
-    
-                    arr.push(ticket)
-                    return { [id]: ticket }
-                })
-            ),
-            await Promise.all(
-                events.map(async (id) => {
-                    const ticketCount = await Purchase.count(
-                        { 
-                            where: { 
-                                [Op.and] : [
-                                    { event_id: id },
-                                    { 
-                                        createdAt: new Date(currentYear, currentMonth, today)
-                                    }
-                                ]
-                                 
-                            } 
-                        }
-                    )
-    
-                    return ticketCount
-                })
-            ),
+            await Purchase.count({ 
+                where: { 
+                    host_id,  
+                }
+            }),
+            await Purchase.count({ 
+                where: { 
+                    host_id,  
+                    createdAt: new Date(currentYear, currentMonth, today)
+                }
+            })
         ])
 
         const purchaseCountForCurrMonth = purchaseCntForEachEventInCurrMonth.reduce((a, b) => a + b, 0)
         const purchaseCountForPrevMonth = purchaseCntForEachEventInPrevMonth.reduce((a, b) => a + b, 0)
         const ticketSalesChange = purchaseCountForCurrMonth/purchaseCountForPrevMonth;
 
-        const followersChange = followersThisMonth / followersLastMonth;
+        const followersChange = (followersThisMonth ?? 0) / (followersLastMonth ?? 1);
 
 
         const total = arr.reduce((a, b) => a + b, 0)

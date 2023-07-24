@@ -62,7 +62,15 @@ module.exports.getRevenueGoal = async (req, res) => {
 
         const purchaseSum = await Purchase.sum('amount', {
             where: {
-                host_id: host_id,
+                [Op.and]: [
+                    { host_id: host_id },
+                    { 
+                        host_id: {
+                            [Op.not]: null
+                        } 
+                    }
+                ]
+                ,
                 createdAt: {
                     [Op.gte]: new Date(revenueGoal.dataValues.goal_start_day)
                 }
@@ -141,7 +149,14 @@ module.exports.getTicketGoal = async (req, res) => {
 
         const ticketCount = await Purchase.count({
             where: {
-                host_id: host_id,
+                [Op.and]: [
+                    { host_id: host_id },
+                    {
+                        host_id: {
+                            [Op.not]: null
+                        }
+                    }
+                ],
                 createdAt: {
                     [Op.gte]: ticketGoal.dataValues.goal_start_day
                 }
@@ -150,7 +165,7 @@ module.exports.getTicketGoal = async (req, res) => {
 
         return res.json({
             goal: ticketGoal.dataValues.goal,
-            progress: ticketCount ?? 0,
+            progress: ticketCount,
             exists: true,
             goal_end_day: ticketGoal.dataValues.goal_end_day
         })

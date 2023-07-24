@@ -42,7 +42,7 @@ exports.getHostEvent = async (id) => {
 
         if(event.length < 0) return [event, categories]
 
-        categories = await Promise.all(
+        const category = await Promise.all(
             event.map(async ({ id }) => {
             const t = await EventCategory.findOne({
                 where: {
@@ -52,20 +52,22 @@ exports.getHostEvent = async (id) => {
             return t
         }))
 
-        if(categories.length < 0) return [event, categories]
+        if(category.length === 0) return [event, category]
 
+        
+        /*
         const categoriesCount = {
-            Music: categories.filter((category) => category.Art === 1).length,
-            Art: categories.filter((category) => category.Art === 1).length,
-            Workshop: categories.filter((category) => category.Workshop=== 1).length,
-            Movies: categories.filter((category) => category.Movies === 1).length,
-            Food: categories.filter((category) => category.Food === 1).length,
-            Tech: categories.filter((category) => category.Tech === 1).length,
-            Sports: categories.filter((category) => category.Sports === 1).length
-        }
+            Music: category.filter((category) => category?.Music === 1).length,
+            Art: category.filter((category) => category.Art && category?.Art === 1).length,
+            Workshop: category.filter((category) => category?.Workshop=== 1).length,
+            Movies: category.filter((category) => category?.Movies === 1).length,
+            Food: category.filter((category) => category?.Food === 1).length,
+            Tech: category.filter((category) => category?.Tech === 1).length,
+            Sports: category.filter((category) => category?.Sports === 1).length
+        }*/
 
-
-        return [event, categories, categoriesCount]
+        console.log(category)
+        return [event, category,]
     } catch (error) {
         console.log({ message: error.message })
 
@@ -73,7 +75,7 @@ exports.getHostEvent = async (id) => {
 
 }
 
-exports.getPurchaseFollow = async (host_id, events) => {
+exports.getPurchaseFollow = async (host_id) => {
     /**get the events
      * loop through and count for te tickets each event sold
      * find total ticket sold
@@ -86,8 +88,8 @@ exports.getPurchaseFollow = async (host_id, events) => {
         const currentYear = new Date().getFullYear();
 
         const [
-            purchaseCntForEachEventInCurrMonth, 
-            purchaseCntForEachEventInPrevMonth,
+            purchaseCountForCurrMonth, 
+            purchaseCountForPrevMonth,
             followersThisMonth,
             followersLastMonth,
 
@@ -98,45 +100,51 @@ exports.getPurchaseFollow = async (host_id, events) => {
             await Purchase.count(
                 { 
                     where: { 
-                        [Op.and] : [
-                            { host_id },
+                        [Op.and]: [
+                            { host_id: host_id },
                             { 
-                                createdAt: {
-                                    [Op.gte]: new Date(currentYear, currentMonth, firstDayOfMonth)
-                                }
+                                host_id: {
+                                    [Op.not]: null
+                                } 
                             }
-                        ]
-                         
+                        ],
+                        createdAt: {
+                            [Op.gte]: new Date(currentYear, currentMonth, firstDayOfMonth)
+                        }                         
                     } 
                 }
             ),
             await Purchase.count(
                 { 
                     where: { 
-                        [Op.and] : [
-                            { host_id },
+                        [Op.and]: [
+                            { host_id: host_id },
                             { 
-                                createdAt: {
-                                    [Op.lt]: new Date(currentYear, currentMonth, firstDayOfMonth),
-                                    [Op.gte]: new Date(currentYear, currentMonth-1, firstDayOfMonth)
-                                }
+                                host_id: {
+                                    [Op.not]: null
+                                } 
                             }
-                        ]
-                         
+                        ],
+                        createdAt: {
+                            [Op.lt]: new Date(currentYear, currentMonth, firstDayOfMonth),
+                            [Op.gte]: new Date(currentYear, currentMonth-1, firstDayOfMonth)
+                        }                         
                     } 
                 }
             ),
             await Follow.count({
                 where: { 
+                    host: host_id,
                     createdAt: {
-                        [Op.gte]: new Date(currentYear, currentMonth, firstDayOfMonth)
+                        [Op.gte]: new Date(currentYear, currentMonth, firstDayOfMonth).setHours(0, 0, 0, 0)
                     }
                 }
             }),
             await Follow.count({
                 where: { 
+                    host: host_id,
                     createdAt: {
-                        [Op.lt]: new Date(currentYear, currentMonth, firstDayOfMonth),
+                        [Op.lt]: new Date(currentYear, currentMonth, firstDayOfMonth).setHours(0, 0, 0, 0),
                         [Op.gte]: new Date(currentYear, currentMonth-1, firstDayOfMonth)
                     }
                 }
@@ -144,23 +152,33 @@ exports.getPurchaseFollow = async (host_id, events) => {
             await Follow.count({ where: { host: host_id } }),
             await Purchase.count({ 
                 where: { 
-                    host_id,  
+                    [Op.and]: [
+                        { host_id: host_id },
+                        { 
+                            host_id: {
+                                [Op.not]: null
+                            } 
+                        }
+                    ]
                 }
             }),
             await Purchase.count({ 
                 where: { 
                     host_id,  
-                    createdAt: new Date(currentYear, currentMonth, today)
+                    createdAt: {
+                        [Op.gt]: new Date().setHours(0, 0, 0, 0),
+                        [Op.lte]: new Date()
+                    }
                 }
             })
         ])
 
-        const purchaseCountForCurrMonth = purchaseCntForEachEventInCurrMonth.reduce((a, b) => a + b, 0)
-        const purchaseCountForPrevMonth = purchaseCntForEachEventInPrevMonth.reduce((a, b) => a + b, 0)
-        const ticketSalesChange = purchaseCountForCurrMonth/purchaseCountForPrevMonth;
+        const ticketSalesChange = purchaseCountForCurrMonth/(purchaseCountForPrevMonth || 1);
 
-        const followersChange = (followersThisMonth ?? 0) / (followersLastMonth ?? 1);
+        console.log(purchaseCountForPrevMonth, "last monnth")
+        console.log(purchaseCountForCurrMonth, "this month")
 
+        const followersChange = (followersThisMonth ?? 0) / (followersLastMonth || 1);
 
         const total = arr.reduce((a, b) => a + b, 0)
         // console.log(purchaseCount)
@@ -168,10 +186,10 @@ exports.getPurchaseFollow = async (host_id, events) => {
             purchase_count_per_event: purchaseCount ?? 0, 
 
             total_sold: total ?? 0, 
-            total_sold_difference: ticketSalesChange ?? 0,
+            total_sold_difference: (ticketSalesChange > 3 ? 3 : ticketSalesChange) ?? 0,
 
             follow_count: followcount ?? 0,
-            followers_difference: followersChange ?? 0,
+            followers_difference: (followersChange > 3 ? 3 : followersChange) ?? 0,
 
             sold_today: soldToday ?? 0
         }

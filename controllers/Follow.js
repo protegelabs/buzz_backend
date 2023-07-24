@@ -52,16 +52,17 @@ const getHostRating = async (host_id) => {
 }
 
 exports.getHostFollow = async (req, res) => {
-    const { host } = req.body
+    const { host_id } = req.body
     try {
-        const fav = await Follow.findAll({ where: { host } });
-        const promises = fav.map(async(follow) => await User.findByPk(follow.host, { 
+        const fav = await Follow.findAll({ where: { host: host_id } });
+        
+        const promises = fav.map(async(follow) => await User.findByPk(follow.dataValues.follower, { 
             attributes: ['id', 'name', 'profile_pic']
         }))
         
         const [usersFollowingHost, hostRating] = await Promise.all([
-            promises,
-            await getHostRating(host)
+            await Promise.all(promises),
+            await getHostRating(host_id)
         ])
 
         return res.status(200).json({ 

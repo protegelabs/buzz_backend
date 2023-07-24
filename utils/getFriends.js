@@ -75,7 +75,7 @@ exports.getHostEvent = async (id) => {
 
 }
 
-exports.getPurchaseFollow = async (host_id, events) => {
+exports.getPurchaseFollow = async (host_id) => {
     /**get the events
      * loop through and count for te tickets each event sold
      * find total ticket sold
@@ -88,8 +88,8 @@ exports.getPurchaseFollow = async (host_id, events) => {
         const currentYear = new Date().getFullYear();
 
         const [
-            purchaseCntForEachEventInCurrMonth, 
-            purchaseCntForEachEventInPrevMonth,
+            purchaseCountForCurrMonth, 
+            purchaseCountForPrevMonth,
             followersThisMonth,
             followersLastMonth,
 
@@ -100,7 +100,14 @@ exports.getPurchaseFollow = async (host_id, events) => {
             await Purchase.count(
                 { 
                     where: { 
-                        host_id,
+                        [Op.and]: [
+                            { host_id: host_id },
+                            { 
+                                host_id: {
+                                    [Op.not]: null
+                                } 
+                            }
+                        ],
                         createdAt: {
                             [Op.gte]: new Date(currentYear, currentMonth, firstDayOfMonth)
                         }                         
@@ -110,7 +117,14 @@ exports.getPurchaseFollow = async (host_id, events) => {
             await Purchase.count(
                 { 
                     where: { 
-                        host_id,
+                        [Op.and]: [
+                            { host_id: host_id },
+                            { 
+                                host_id: {
+                                    [Op.not]: null
+                                } 
+                            }
+                        ],
                         createdAt: {
                             [Op.lt]: new Date(currentYear, currentMonth, firstDayOfMonth),
                             [Op.gte]: new Date(currentYear, currentMonth-1, firstDayOfMonth)
@@ -120,15 +134,17 @@ exports.getPurchaseFollow = async (host_id, events) => {
             ),
             await Follow.count({
                 where: { 
+                    host: host_id,
                     createdAt: {
-                        [Op.gte]: new Date(currentYear, currentMonth, firstDayOfMonth)
+                        [Op.gte]: new Date(currentYear, currentMonth, firstDayOfMonth).setHours(0, 0, 0, 0)
                     }
                 }
             }),
             await Follow.count({
                 where: { 
+                    host: host_id,
                     createdAt: {
-                        [Op.lt]: new Date(currentYear, currentMonth, firstDayOfMonth),
+                        [Op.lt]: new Date(currentYear, currentMonth, firstDayOfMonth).setHours(0, 0, 0, 0),
                         [Op.gte]: new Date(currentYear, currentMonth-1, firstDayOfMonth)
                     }
                 }
@@ -136,23 +152,33 @@ exports.getPurchaseFollow = async (host_id, events) => {
             await Follow.count({ where: { host: host_id } }),
             await Purchase.count({ 
                 where: { 
-                    host_id,  
+                    [Op.and]: [
+                        { host_id: host_id },
+                        { 
+                            host_id: {
+                                [Op.not]: null
+                            } 
+                        }
+                    ]
                 }
             }),
             await Purchase.count({ 
                 where: { 
                     host_id,  
-                    createdAt: new Date(currentYear, currentMonth, today)
+                    createdAt: {
+                        [Op.gt]: new Date().setHours(0, 0, 0, 0),
+                        [Op.lte]: new Date()
+                    }
                 }
             })
         ])
 
-        const purchaseCountForCurrMonth = purchaseCntForEachEventInCurrMonth.reduce((a, b) => a + b, 0)
-        const purchaseCountForPrevMonth = purchaseCntForEachEventInPrevMonth.reduce((a, b) => a + b, 0)
-        const ticketSalesChange = purchaseCountForCurrMonth/purchaseCountForPrevMonth;
+        const ticketSalesChange = purchaseCountForCurrMonth/(purchaseCountForPrevMonth || 1);
 
-        const followersChange = (followersThisMonth ?? 0) / (followersLastMonth ?? 1);
+        console.log(purchaseCountForPrevMonth, "last monnth")
+        console.log(purchaseCountForCurrMonth, "this month")
 
+        const followersChange = (followersThisMonth ?? 0) / (followersLastMonth || 1);
 
         const total = arr.reduce((a, b) => a + b, 0)
         // console.log(purchaseCount)
@@ -160,10 +186,10 @@ exports.getPurchaseFollow = async (host_id, events) => {
             purchase_count_per_event: purchaseCount ?? 0, 
 
             total_sold: total ?? 0, 
-            total_sold_difference: ticketSalesChange ?? 0,
+            total_sold_difference: (ticketSalesChange > 3 ? 3 : ticketSalesChange) ?? 0,
 
             follow_count: followcount ?? 0,
-            followers_difference: followersChange ?? 0,
+            followers_difference: (followersChange > 3 ? 3 : followersChange) ?? 0,
 
             sold_today: soldToday ?? 0
         }

@@ -151,10 +151,18 @@ module.exports.withdraw = async (req, res) => {
         if (balance < parseInt(amount)) {
             return res.status(400).json({ message: "Balance less than amount" })
         }
-        const withdrawal = Withdrawal.create({ id, user_id, name, username, email, amount, bankName, accountName, accountNumber })
-        console.log('balance is', balance)
+        const newBalance = balance - parseInt(amount)
+        const withdrawal = await Withdrawal.create({ id, user_id, name, username, email, amount, bankName, accountName, accountNumber })
+        const updateBalance = await User.update({ balance: newBalance }, {
+            where: {
+                id: user_id
+            }
+        });
+
+
         return res.send(withdrawal)
     } catch (error) {
+        console.log(error)
         return res.status(400).json({ message: error.message })
     }
 }

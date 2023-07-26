@@ -683,7 +683,6 @@ const Withdrawal = sequelize.define('Withdrawal', {
     },
     username: {
         type: STRING,
-        unique: true,
     },
     email: {
         type: STRING,

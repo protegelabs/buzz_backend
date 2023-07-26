@@ -68,7 +68,7 @@ module.exports.createPurchase = async (req, res) => {
     const username =  req.body.username || req.session.user?.username
     const profile_pic = req.body.profile_pic || req.session.user?.profile_pic
 
-    const { email, phone_number, host_id, seats, amount } = req.body
+    const { email, phone_number, host_id, seats, amount, purchase_method } = req.body
     
     console.log("user_id is", user_id)
     const id = uniqid();
@@ -79,6 +79,7 @@ module.exports.createPurchase = async (req, res) => {
         const [newPurchase, _] = await Promise.all([
             await Purchase.create({ id, user_id, username, profile_pic, event_id, email, host_id, phone_number, seats, amount }),
             await Event.increment({ sold: 1 }, { where: { id: event_id } }),
+            purchase_method === "heat" ? await User.decrement('heat', { by: amount + 2, where: { id: user_id } }) :
             await User.increment('heat', { by: 2, where: { id: user_id } })
         ])
         return res.send(newPurchase)
@@ -224,7 +225,7 @@ module.exports.getHostBalance = async (req, res) => {
                 group: 'createdAt'
             })
         ])
-        return res.status(200).json({ withdraw_amount: withdrawAmount, purchases: purchases })
+        return res.status(200).json({ withdraw_amount: withdrawAmount ?? 0, purchases: purchases })
     }
     catch (err) {
         return res.status(500).send(err)

@@ -93,7 +93,7 @@ const User = sequelize.define('User', {
         allowNull: true,
         defaultValue: null
     },
-    refferal_code: {
+    referral_code: {
         type: STRING(6),
         allowNull: true,
         defaultValue: ""

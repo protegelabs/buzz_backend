@@ -24,6 +24,7 @@
     "passport-local": "^1.0.0",
     "paystack": "^2.0.1",
     "sequelize": "^6.29.0",
+    "shortid": "^2.2.16",
     "sqlite3": "^5.1.4",
     "twilio": "^4.8.0",
     "uniqid": "^5.4.0"

@@ -8,6 +8,7 @@ const { Mail, randNum } = require('../utils/validate')
 const uniqid = require('uniqid');
 const shortid = require('shortid'); //
 const { getHostEvent, getPurchaseFollow, has24HoursPassed } = require('../utils/getFriends');
+const { use } = require('passport');
 
 module.exports.renderRegister = (req, res) => {
     const james = User.create({ fullName: 'james', id: "me" })
@@ -382,13 +383,17 @@ exports.referral= async(req,res)=>{
         const userId = req.body.id;
         console.log(referralCode)
         // Find or create the user by ID
-        const [user, created] = await User.findOrCreate({
-          where: { id: userId },
-          defaults: {
-            // Set the referralCode field to the generated referral code
-            referralCode: referralCode,
-          },
+        const user = await User.findOne({
+          where: { id: userId }
         });
+
+        console.log(user.referral_code)
+        if (!user.referral_code ) {
+            // If the user already exists, update the referralCode field
+            user.referral_code = referralCode;
+            await user.save();
+          }
+      
 
         res.send(referralCode)
      }catch(err){

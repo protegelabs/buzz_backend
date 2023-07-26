@@ -1,5 +1,5 @@
 const session = require('express-session');
-const { Review } = require('../models/models');
+const { Review, User } = require('../models/models');
 const { Op, where } = require('sequelize');
 const uniqid = require('uniqid');
 
@@ -12,7 +12,7 @@ module.exports.getReviewsForHost = async (req, res) => {
     const { host_id } = req.body;
 
     try {
-        const reviews = await Review.findAll({ where: { host_id} });
+        const reviews = await Review.findAll({ where: { host_id } });
         return res.send(reviews)
     } catch (e) {
         return res.status(500).send(e)
@@ -25,7 +25,11 @@ module.exports.createReview = async (req, res) => {
 
     const id = uniqid();
     try {
-        const newReview = await Review.create({ id, event_id, user_id, username, profile_pic, review, rating, host_id })
+        const [newReview, _] = await Promise.all([
+            await Review.create({ id, event_id, user_id, username, profile_pic, review, rating, host_id }),
+            await User.increment('heat', { by: 5 })
+        
+        ])
         return res.send(newReview)
     } catch (error) {
         return res.status(400).json({ message: error.message })

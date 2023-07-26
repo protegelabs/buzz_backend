@@ -29,4 +29,15 @@ router.route('/search')
 router.route('/location')
     .get(events.closestEvent)
 
+router.route('/featured')
+    .post(events.getFeaturedEvents);
+
+router.route('/promote')
+    .post(events.promoteEvent);
+
+router.route('/audience-reach')
+    .post(events.audienceReach);
+
+
+
 module.exports = router;

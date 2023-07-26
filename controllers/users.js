@@ -6,6 +6,7 @@ const { Op, where } = require('sequelize')
 const { hashPassword } = require('../utils/hashPassword')
 const { Mail, randNum } = require('../utils/validate')
 const uniqid = require('uniqid');
+const shortid = require('shortid'); //
 const { getHostEvent, getPurchaseFollow, has24HoursPassed } = require('../utils/getFriends');
 
 module.exports.renderRegister = (req, res) => {
@@ -358,4 +359,36 @@ exports.UpdateHeat = async (req, res) => {
         res.status(500).json({ error: 'Internal server error.' });
     }
 };
+
+const generateReferralCode = () => {
+    // Generate a unique code using shortid
+    const uniqueCode = shortid.generate();
+  
+    // Take the first 6 characters of the unique code
+    const referralCode = uniqueCode.substring(0, 6);
+  
+    return referralCode;
+  };
+exports.referral= async(req,res)=>{
+     const{ id}= req.body
+     try{
+        const referralCode = generateReferralCode();
+
+        // Assuming you have the user ID from the authenticated request
+        const userId = req.body.id;
+        console.log(referralCode)
+        // Find or create the user by ID
+        const [user, created] = await User.findOrCreate({
+          where: { id: userId },
+          defaults: {
+            // Set the referralCode field to the generated referral code
+            referralCode: referralCode,
+          },
+        });
+
+        res.send(referralCode)
+     }catch(err){
+         res.status(400).json({message:err.message})
+     }
+}
 

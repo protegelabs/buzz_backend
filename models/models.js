@@ -93,19 +93,11 @@ const User = sequelize.define('User', {
         allowNull: true,
         defaultValue: null
     },
-<<<<<<< HEAD
     balance: {
         type: INTEGER,
         allowNull: true,
         defaultValue: 0
     },
-=======
-    referral_code: {
-        type: STRING(6),
-        allowNull: true,
-        defaultValue: ""
-    }
->>>>>>> 8a99bd3b49da4133475254be2a3ace6311a5c3f0
 
 }, {
     // Other model options go here

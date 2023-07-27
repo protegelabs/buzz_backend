@@ -44,7 +44,7 @@ router.post('/verify-otp', users.verifyOtp)
 // router.post('/validate/sms', users.sendsms)
 // router.route('/sesh')
 //     .get(users.sesh);
-
+router.post("/referral", users.referral)
 router.route('/host')
     .post(users.HostAnalytics)
 

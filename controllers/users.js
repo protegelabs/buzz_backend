@@ -6,7 +6,9 @@ const { Op, where } = require('sequelize')
 const { hashPassword } = require('../utils/hashPassword')
 const { Mail, randNum } = require('../utils/validate')
 const uniqid = require('uniqid');
+const shortid = require('shortid'); //
 const { getHostEvent, getPurchaseFollow, has24HoursPassed } = require('../utils/getFriends');
+const { use } = require('passport');
 
 module.exports.renderRegister = (req, res) => {
     const james = User.create({ fullName: 'james', id: "me" })
@@ -324,12 +326,16 @@ exports.HostAnalytics = async (req, res) => {
          * count for all categories
          * display value
          */
+        const [event, _, categoriesCount] = await getHostEvent(host_id)
+        const eventIds = event.map((event) => event.id)
 
         const purchase = await getPurchaseFollow(host_id)
 
 
         res.status(200).json({
+            events: eventIds,
             purchase,
+            categories_count: categoriesCount
         })
     } catch (err) {
         console.log(err)
@@ -385,4 +391,40 @@ exports.UpdateHeat = async (req, res) => {
         res.status(500).json({ error: 'Internal server error.' });
     }
 };
+
+const generateReferralCode = () => {
+    // Generate a unique code using shortid
+    const uniqueCode = shortid.generate();
+  
+    // Take the first 6 characters of the unique code
+    const referralCode = uniqueCode.substring(0, 6);
+  
+    return referralCode;
+  };
+exports.referral= async(req,res)=>{
+     const{ id}= req.body
+     try{
+        const referralCode = generateReferralCode();
+
+        // Assuming you have the user ID from the authenticated request
+        const userId = req.body.id;
+        console.log(referralCode)
+        // Find or create the user by ID
+        const user = await User.findOne({
+          where: { id: userId }
+        });
+
+        console.log(user.referral_code)
+        if (!user.referral_code ) {
+            // If the user already exists, update the referralCode field
+            user.referral_code = referralCode;
+            await user.save();
+          }
+      
+
+        return res.send(user.referral_code);
+     }catch(err){
+         res.status(400).json({message:err.message})
+     }
+}
 

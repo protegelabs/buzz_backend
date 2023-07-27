@@ -481,6 +481,9 @@ const EventCategory = sequelize.define("event_category", {
         unique: true,
         allowNull: false
     },
+    event_name: {
+        type: STRING,
+    },
     All: {
         defaultValue: 1,
         type: TINYINT

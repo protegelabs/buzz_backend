@@ -67,7 +67,8 @@ module.exports.register = async (req, res) => {
             dob,
             gender,
             location,
-            auth_type
+            auth_type,
+            referral_code
         } = req.body;
 
         //hash password and save to database
@@ -82,14 +83,17 @@ module.exports.register = async (req, res) => {
         if (check) {
             return res.status(400).send('user already exist')
         } else {
-            const newUser = await User.create({
-                id, name,
-                username, email: email.toLowerCase(),
-                type, phone_number, bio, password: hash,
-                heat, profile_pic,
-                is_active, dob, gender, location,
-                authtype: auth_type, heatTime: new Date()
-            })
+            const [newUser, _] = await Promise.all([
+                await User.create({
+                    id, name,
+                    username, email: email.toLowerCase(),
+                    type, phone_number, bio, password: hash,
+                    heat, profile_pic,
+                    is_active, dob, gender, location,
+                    authtype: auth_type, heatTime: new Date()
+                }),
+                await User.increment('heat', { by: 25 , where: { referral_code } })
+            ])
             req.session.user_id = id
             return res.status(201).send(newUser.dataValues)
         }

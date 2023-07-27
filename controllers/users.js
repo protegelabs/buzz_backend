@@ -395,7 +395,7 @@ exports.referral= async(req,res)=>{
           }
       
 
-        res.send(referralCode)
+        return res.send(user.referral_code);
      }catch(err){
          res.status(400).json({message:err.message})
      }

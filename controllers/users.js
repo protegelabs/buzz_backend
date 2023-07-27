@@ -1,7 +1,7 @@
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const express = require('express')
-const { User, OtpCode } = require('../models/models')
+const { User, OtpCode, Withdrawal } = require('../models/models')
 const { Op, where } = require('sequelize')
 const { hashPassword } = require('../utils/hashPassword')
 const { Mail, randNum } = require('../utils/validate')
@@ -136,9 +136,36 @@ module.exports.getProfile = async (req, res) => {
     const id = req.query.id || req.session.user_id;
     try {
         const getUser = await User.findOne({ where: { id } })
-        res.send(getUser)
+        return res.send(getUser)
     } catch (error) {
-        res.status(400).json({ message: error.message })
+        return res.status(400).json({ message: error.message })
+    }
+}
+
+module.exports.withdraw = async (req, res) => {
+    const user_id = req.body.user_id || req.session.user_id;
+    const { amount, bankName, accountName, accountNumber } = req.body
+    try {
+        const id = uniqid()
+        const user = await User.findOne({ where: { id: user_id } })
+        const { name, username, email } = user
+        const balance = parseInt(user.balance)
+        if (balance < parseInt(amount)) {
+            return res.status(400).json({ message: "Balance less than amount" })
+        }
+        const newBalance = balance - parseInt(amount)
+        const withdrawal = await Withdrawal.create({ id, user_id, name, username, email, amount, bankName, accountName, accountNumber })
+        const updateBalance = await User.update({ balance: newBalance }, {
+            where: {
+                id: user_id
+            }
+        });
+
+
+        return res.send(withdrawal)
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ message: error.message })
     }
 }
 
@@ -180,12 +207,12 @@ module.exports.emailverify = async (req, res) => {
             where: { email }
         })
         //const User = await User.findOne({ where: { email } })
-        if(affectedRows === 0) return res.status(200).json({ message: "Account does not exist" })
-        
+        if (affectedRows === 0) return res.status(200).json({ message: "Account does not exist" })
+
         await Mail(email, num)
 
-        
-        return res.status(200).json({ 
+
+        return res.status(200).json({
             message: "Email successfully sent",
             otp_code: num
         })
@@ -207,9 +234,9 @@ module.exports.verifyOtp = async (req, res) => {
                 code
             }
         })
-        if(!otpRecord) return res.status(200).json({ message: "Otp incorrect" });
+        if (!otpRecord) return res.status(200).json({ message: "Otp incorrect" });
 
-        return res.status(200).json({ 
+        return res.status(200).json({
             message: "Otp Successful",
         })
     } catch (e) {

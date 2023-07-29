@@ -25,10 +25,11 @@ module.exports.createReview = async (req, res) => {
 
     const id = uniqid();
     try {
+
         const [newReview, _] = await Promise.all([
             await Review.create({ id, event_id, user_id, username, profile_pic, review, rating, host_id }),
-            await User.increment('heat', { by: 5 })
-        
+            await User.increment('heat', { by: 5, where: { id: user_id } })
+
         ])
         return res.send(newReview)
     } catch (error) {

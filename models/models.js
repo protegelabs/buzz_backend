@@ -94,11 +94,14 @@ const User = sequelize.define('User', {
         defaultValue: null
     },
 
+
+
     balance: {
         type: INTEGER,
         allowNull: true,
         defaultValue: 0
     },
+
 
     referral_code: {
         type: STRING(6),
@@ -488,6 +491,9 @@ const EventCategory = sequelize.define("event_category", {
         type: STRING,
         unique: true,
         allowNull: false
+    },
+    event_name: {
+        type: STRING,
     },
     All: {
         defaultValue: 1,

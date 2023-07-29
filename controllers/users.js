@@ -21,7 +21,6 @@ module.exports.getUsers = async (req, res) => {
         res.status(200).send(users)
     } catch (error) {
         res.status(500).json({ message: error.message })
-
     }
 
 }
@@ -395,15 +394,15 @@ exports.UpdateHeat = async (req, res) => {
 const generateReferralCode = () => {
     // Generate a unique code using shortid
     const uniqueCode = shortid.generate();
-  
+
     // Take the first 6 characters of the unique code
     const referralCode = uniqueCode.substring(0, 6);
-  
+
     return referralCode;
-  };
-exports.referral= async(req,res)=>{
-     const{ id}= req.body
-     try{
+};
+exports.referral = async (req, res) => {
+    const { id } = req.body
+    try {
         const referralCode = generateReferralCode();
 
         // Assuming you have the user ID from the authenticated request
@@ -411,21 +410,21 @@ exports.referral= async(req,res)=>{
         console.log(referralCode)
         // Find or create the user by ID
         const user = await User.findOne({
-          where: { id: userId }
+            where: { id: userId }
         });
 
         console.log(user.referral_code)
-        if (!user.referral_code ) {
+        if (!user.referral_code) {
             // If the user already exists, update the referralCode field
             user.referral_code = referralCode;
             await user.save();
-          }
-      
+        }
+
 
         return res.send(user.referral_code);
-     }catch(err){
-         res.status(400).json({message:err.message})
-     }
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
 }
 
 exports.deleteaccount= async(req,res)=>{

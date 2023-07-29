@@ -37,6 +37,7 @@ module.exports.createReview = async (req, res) => {
     }
 }
 
+
 module.exports.deleteReview = async (req, res) => {
     const id = req.query.review_id || req.body.review_id;
     console.log(id);

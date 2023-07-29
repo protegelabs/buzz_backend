@@ -427,3 +427,14 @@ exports.referral = async (req, res) => {
     }
 }
 
+exports.deleteaccount= async(req,res)=>{
+     const{ email }= req.body
+     try{
+         const user = await User.destroy({where:{email:email.toLowerCase()}})
+
+         res.send("done")
+     }catch(err){
+         res.status(400).json({message:err.message})
+     }
+}
+

@@ -98,8 +98,10 @@ module.exports.createEvent = async (req, res) => {
 module.exports.editEvent = async (req, res) => {
     const { name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets } = req.body
     const id = req.body.event_id || req.params.event_id;
+    
+    
     try {
-        const newEvent = await Event.update({ name, price, location, longitude, latitude, date, host_id, discount, is_active, event_pic, tickets }, {
+        const newEvent = await Event.update({ ...req.body }, {
             where: { id }
         });
         return res.send(newEvent)
@@ -128,7 +130,8 @@ exports.searchEvent = async (req, res) => {
         return res.status(400).json({ message: err.message })
 
     }
-}
+};
+
 exports.closestEvent = async (req, res) => {
     const parsedurl = Url.parse(req.url, true)
     const { id, longitude, latitude, range } = parsedurl.query
@@ -201,6 +204,11 @@ exports.TrendingEvents = async (req, res) => {
                 ]
             ],
             order: [[sequelize.literal('purchaseCount'), 'DESC']],
+            where: {
+                date: {
+                    [Op.gte]: new Date()
+                },
+            },
             limit: 10 // You can adjust the limit as per your requirements
         });
 
@@ -235,13 +243,19 @@ exports.TrendingEvents = async (req, res) => {
                             Food: 1,
                             Movies: 1,
                             All: 1,
-                            Workshops: 1
+                            Workshops: 1,
+                            Sports: 1
                         }
                     },
                     attributes: [...categoryList],
                 },
             ],
             order: [[sequelize.literal('favoriteCount'), 'DESC']],
+            where: {
+                date: {
+                    [Op.gte]: new Date()
+                },
+            },
             limit: 100
             // You can adjust the limit as per your requirements
         });
@@ -416,6 +430,9 @@ module.exports.getFeaturedEvents = async (req, res) => {
         const featuredEvents = await Event.findAll({
             where: {
                 featured: true,
+                date: {
+                    [Op.gte]: new Date()
+                },
                 [Op.or]: [
                     {
                         [Op.and]: [
@@ -450,7 +467,10 @@ module.exports.getFeaturedEvents = async (req, res) => {
             where: {
                 location: {
                     [Op.like]: `%${user_location}%`
-                }
+                },
+                date: {
+                    [Op.gte]: new Date()
+                },
             },
             limit: additionalLength
         })

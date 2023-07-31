@@ -66,7 +66,8 @@ module.exports.register = async (req, res) => {
             dob,
             gender,
             location,
-            auth_type
+            auth_type,
+            referral_code
         } = req.body;
 
         //hash password and save to database
@@ -81,14 +82,17 @@ module.exports.register = async (req, res) => {
         if (check) {
             return res.status(400).send('user already exist')
         } else {
-            const newUser = await User.create({
-                id, name,
-                username, email: email.toLowerCase(),
-                type, phone_number, bio, password: hash,
-                heat, profile_pic,
-                is_active, dob, gender, location,
-                authtype: auth_type, heatTime: new Date()
-            })
+            const [newUser, _] = await Promise.all([
+                await User.create({
+                    id, name,
+                    username, email: email.toLowerCase(),
+                    type, phone_number, bio, password: hash,
+                    heat, profile_pic,
+                    is_active, dob, gender, location,
+                    authtype: auth_type, heatTime: new Date()
+                }),
+                await User.increment('heat', { by: 25 , where: { referral_code } })
+            ])
             req.session.user_id = id
             return res.status(201).send(newUser.dataValues)
         }
@@ -146,17 +150,20 @@ module.exports.withdraw = async (req, res) => {
         const id = uniqid()
         const user = await User.findOne({ where: { id: user_id } })
         const { name, username, email } = user
-        const balance = parseInt(user.balance)
+        //const balance = parseInt(user.balance)
+        /*
         if (balance < parseInt(amount)) {
             return res.status(400).json({ message: "Balance less than amount" })
-        }
-        const newBalance = balance - parseInt(amount)
+        }*/
+        //const newBalance = balance - parseInt(amount)
         const withdrawal = await Withdrawal.create({ id, user_id, name, username, email, amount, bankName, accountName, accountNumber })
+        
+        /*
         const updateBalance = await User.update({ balance: newBalance }, {
             where: {
                 id: user_id
             }
-        });
+        });*/
 
 
         return res.send(withdrawal)

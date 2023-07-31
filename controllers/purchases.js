@@ -1,5 +1,5 @@
 const session = require('express-session');
-const { Purchase, Event, User } = require('../models/models');
+const { Purchase, Event, User, Withdrawal } = require('../models/models');
 const { sequelize } = require("../config/sequelize")
 const { Op } = require('sequelize')
 const uniqid = require('uniqid')
@@ -210,7 +210,7 @@ module.exports.cancelPurchase = async (req, res) => {
 module.exports.getHostBalance = async (req, res) => {
     const { host_id } = req.body;
     try {
-        const [withdrawAmount, purchases] = await Promise.all([
+        const [withdrawAmount, purchases, alreadyRequestedAmount] = await Promise.all([
             await Purchase.sum('amount', {
                 where: {
                     host_id,
@@ -223,9 +223,16 @@ module.exports.getHostBalance = async (req, res) => {
                     status: "active"
                 },
                 group: 'createdAt'
+            }),
+            await Withdrawal.sum('amount', {
+                where: {
+                    user_id: host_id,
+                }
             })
         ])
-        return res.status(200).json({ withdraw_amount: withdrawAmount ?? 0, purchases: purchases })
+
+        const hostBalance = (withdrawAmount ?? 0) - (alreadyRequestedAmount ?? 0)
+        return res.status(200).json({ withdraw_amount: hostBalance, purchases: purchases })
     }
     catch (err) {
         return res.status(500).send(err)

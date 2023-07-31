@@ -150,17 +150,20 @@ module.exports.withdraw = async (req, res) => {
         const id = uniqid()
         const user = await User.findOne({ where: { id: user_id } })
         const { name, username, email } = user
-        const balance = parseInt(user.balance)
+        //const balance = parseInt(user.balance)
+        /*
         if (balance < parseInt(amount)) {
             return res.status(400).json({ message: "Balance less than amount" })
-        }
-        const newBalance = balance - parseInt(amount)
+        }*/
+        //const newBalance = balance - parseInt(amount)
         const withdrawal = await Withdrawal.create({ id, user_id, name, username, email, amount, bankName, accountName, accountNumber })
+        
+        /*
         const updateBalance = await User.update({ balance: newBalance }, {
             where: {
                 id: user_id
             }
-        });
+        });*/
 
 
         return res.send(withdrawal)

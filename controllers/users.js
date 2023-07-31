@@ -105,18 +105,16 @@ module.exports.login = async (req, res) => {
     try {
         //find user in the database
         const user = await User.findOne({
-            where: { email: email.toLowerCase() }
+            where: { email: email.toLowerCase() },
         })
 
         const newUser = user.dataValues
         if (newUser) {
             //check for username in database and ensure password matches, then grant access
             const check = await bcrypt.compare(password, newUser.password);
-            console.log(check)
+          
             if (check === true) {
-                req.session.user_id = newUser.id
-                req.session.user = newUser
-                return res.status(200).send(req.session)
+                return res.status(200).send({user_id:newUser.id,user:newUser})
             } else {
                 return res.status(400).json('wrong email or password')
             }

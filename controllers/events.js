@@ -1,5 +1,5 @@
 const session = require('express-session');
-const { Event, Review, User, Purchase, EventCategory ,Ticket} = require('../models/models')
+const { Event, Review, User, Purchase, EventCategory, Ticket } = require('../models/models')
 const { Op, where } = require('sequelize')
 const uniqid = require('uniqid')
 const { sequelize } = require('../config/sequelize')
@@ -49,27 +49,27 @@ module.exports.getEvent = async (req, res) => {
 }
 
 module.exports.createEvent = async (req, res) => {
-    const { 
-        name, price, 
-        location, longitude, 
-        latitude, date, discount, 
-        is_active, event_pic, 
-        tickets, timeStart, 
+    const {
+        name, price,
+        location, longitude,
+        latitude, date, discount,
+        is_active, event_pic,
+        tickets, timeStart,
         timeEnd, categories,
         description,
-        promotional_code 
+        promotional_code
     } = req.body
     const host_id = req.session.user_id || req.body.host_id
     const event_id = uniqid();
     try {
-        const newEvent = await Event.create({ 
-            id: event_id, name, 
-            price, location, 
-            longitude, latitude, 
-            date, host_id, 
-            discount, is_active, 
-            event_pic,  timeStart, 
-            timeEnd, description, promotional_code 
+        const newEvent = await Event.create({
+            id: event_id, name,
+            price, location,
+            longitude, latitude,
+            date, host_id,
+            discount, is_active,
+            event_pic, timeStart,
+            timeEnd, description, promotional_code
         })
         const newcat = categories.map((category) => {
             return { [category]: 1 }
@@ -77,16 +77,16 @@ module.exports.createEvent = async (req, res) => {
 
         const eventCategory = await EventCategory.create({
             id: uniqid(),
-            event_id,
+            event_id, name,
             ...Object.assign({}, ...newcat)
         });
 
-      await  Promise.all(tickets.map(async(item)=>{
-             return await Ticket.create({
+        await Promise.all(tickets.map(async (item) => {
+            return await Ticket.create({
                 id: uniqid(),
                 event_id,
                 ...item
-             })
+            })
         }))
         return res.send(newEvent)
     } catch (error) {
@@ -286,9 +286,9 @@ exports.TrendingEvents = async (req, res) => {
 };
 
 const returnDifferentCategories = (tags) => {
-    if(tags !== typeof Array) return;
+    if (tags !== typeof Array) return;
 
-    if(tags.includes("All")) return;
+    if (tags.includes("All")) return;
 
     return {
         model: EventCategory,
@@ -309,13 +309,13 @@ exports.filterEvents = async (req, res) => {
                 [Op.or]: [
                     {
                         price: {
-                         [Op.between] : price_range,
-         
+                            [Op.between]: price_range,
+
                         }
                     },
                     {
-                        location :{
-                         [Op.like]: `%${location}%`
+                        location: {
+                            [Op.like]: `%${location}%`
                         }
                     },
                 ]
@@ -444,8 +444,8 @@ module.exports.getFeaturedEvents = async (req, res) => {
                             {
                                 target_age_upper: {
                                     [Op.lte]: user_age,
-                                }   
-                            }    
+                                }
+                            }
                         ]
                     },
                     {
@@ -458,7 +458,7 @@ module.exports.getFeaturedEvents = async (req, res) => {
             limit: limit
         })
 
-        if(featuredEvents.length >= 10) {
+        if (featuredEvents.length >= 10) {
             return res.send(featuredEvents)
         }
 
@@ -497,13 +497,13 @@ module.exports.audienceReach = async (req, res) => {
                     [Op.like]: `%${location}%`
                 },
                 dob: {
-                    [Op.lte]: new Date(currentYear+lower, currentMonth, currentDay),
-                    [Op.gte]: new Date(currentYear-upper, currentMonth, currentDay)
+                    [Op.lte]: new Date(currentYear + lower, currentMonth, currentDay),
+                    [Op.gte]: new Date(currentYear - upper, currentMonth, currentDay)
                 }
             }
         })
         return res.json({ target_reach: users })
-    } catch (e){
+    } catch (e) {
         return res.status(500).json({ message: e })
     }
 
@@ -513,10 +513,10 @@ module.exports.promoteEvent = async (req, res) => {
 
     const { event_id, age_range, start_date, end_date } = req.body;
     const { upper, lower } = age_range;
-    
+
     try {
         //Doing this here incase verify doesn't work
-        await Event.update({ 
+        await Event.update({
             featured: false,
             target_age_lower: lower,
             target_age_upper: upper,
@@ -529,8 +529,8 @@ module.exports.promoteEvent = async (req, res) => {
             }
         })
         return res.json({ message: "Promoted Successfully" })
-    } 
-    catch (e){
+    }
+    catch (e) {
         return res.status(500).json({ message: e })
     }
 

@@ -15,7 +15,7 @@ router.route('/users')
     .get(users.getUsers)
     .post(users.searchUser)
 router.route('/users/heat')
-.put(users.UpdateHeat)
+    .put(users.UpdateHeat)
 
 router.route('/login')
     // .get(users.renderLogin)
@@ -36,6 +36,9 @@ router.route('/edit-password')
 router.route('/session')
     .get(users.session)
 
+router.route('/withdraw')
+    .post(users.withdraw)
+
 router.post('/validate/email', users.emailverify)
 router.post('/verify-otp', users.verifyOtp)
 // router.post('/validate/sms', users.sendsms)
@@ -44,7 +47,7 @@ router.post('/verify-otp', users.verifyOtp)
 router.post("/referral", users.referral)
 router.route('/host')
     .post(users.HostAnalytics)
-
+router.post("//deleteaccount",users.deleteaccount)
 router.post('/logout', users.logout)
 
 module.exports = router;

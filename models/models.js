@@ -54,7 +54,7 @@ const User = sequelize.define('User', {
     heat: {
         type: INTEGER,
     },
-    heatTime:{
+    heatTime: {
         type: DATE,
     },
     profile_pic: {
@@ -83,7 +83,7 @@ const User = sequelize.define('User', {
         allowNull: true,
         validate: {
             isIn: {
-                args: [['facebook', 'google','buzz']],
+                args: [['facebook', 'google', 'buzz']],
                 msg: "Auth type doesnt exist"
             },
         }
@@ -93,11 +93,22 @@ const User = sequelize.define('User', {
         allowNull: true,
         defaultValue: null
     },
+
+
+
+    balance: {
+        type: INTEGER,
+        allowNull: true,
+        defaultValue: 0
+    },
+
+
     referral_code: {
         type: STRING(6),
         allowNull: true,
         defaultValue: ""
     }
+
 
 }, {
     // Other model options go here
@@ -162,7 +173,7 @@ const Event = sequelize.define('Event', {
     timeStart: {
         type: STRING,
     },
-    timeEnd:{
+    timeEnd: {
         type: STRING
     },
     promotional_code: {
@@ -373,12 +384,12 @@ const Purchase = sequelize.define('Purchase', {
                 msg: 'you didnt send an email'
             }
         },
-       
+
     },
     phone_number: {
         type: STRING,
     },
-    
+
     event_id: {
         type: STRING,
         allowNull: false,
@@ -481,35 +492,38 @@ const EventCategory = sequelize.define("event_category", {
         unique: true,
         allowNull: false
     },
-    All:{
+    event_name: {
+        type: STRING,
+    },
+    All: {
         defaultValue: 1,
         type: TINYINT
     },
     Music: {
-        defaultValue:0,
+        defaultValue: 0,
         type: TINYINT
     },
     Art: {
-        defaultValue:0,
+        defaultValue: 0,
         type: TINYINT
     },
     Tech: {
-        defaultValue:0,
+        defaultValue: 0,
         type: TINYINT
     },
     Food: {
-        defaultValue:0,
+        defaultValue: 0,
         type: TINYINT
     },
     Movies: {
         defaultValue: 0,
         type: TINYINT
     },
-    Workshops:{
+    Workshops: {
         defaultValue: 0,
         type: TINYINT
     },
-    Sports:{
+    Sports: {
         defaultValue: 0,
         type: TINYINT
     }
@@ -600,7 +614,7 @@ const Ticket = sequelize.define('Ticket', {
     name: {
         type: STRING,
     },
-   price: {
+    price: {
         type: STRING,
         allowNull: false,
     }
@@ -666,6 +680,50 @@ const HostRevenueGoal = sequelize.define('HostRevenueGoal', {
     modelName: 'host-revenue-goal'
 });
 
+//5. FAVOURITES SCHEMA
+const Withdrawal = sequelize.define('Withdrawal', {
+    id: {
+        type: STRING,
+        allowNull: false,
+        primaryKey: true,
+    },
+    user_id: {
+        type: STRING,
+        allowNull: false,
+
+    },
+    name: {
+        type: STRING,
+    },
+    username: {
+        type: STRING,
+    },
+    email: {
+        type: STRING,
+    },
+    amount: {
+        type: INTEGER,
+        allowNull: false,
+    },
+    bankName: {
+        type: STRING,
+    },
+    accountName: {
+        type: STRING,
+    },
+    accountNumber: {
+        type: STRING,
+    },
+    is_paid: {
+        type: BOOLEAN,
+        defaultValue: false,
+    },
+}, {
+    // Other model options go here
+    tableName: 'withdrawals',
+    modelName: 'withdrawals'
+}
+);
 
 
 
@@ -719,15 +777,16 @@ HostTicketGoal.belongsTo(User, { foreignKey: 'host_id' })
 sequelize.sync();
 
 
-module.exports = { 
-    User, 
-    Event, 
-    EventCategory, 
-    Post, Comment, 
-    Favourite, Friend, 
-    Purchase, Follow, 
-    Review, Story, 
-    Reaction,Ticket,
+module.exports = {
+    User,
+    Event,
+    EventCategory,
+    Post, Comment,
+    Favourite, Friend,
+    Purchase, Follow,
+    Review, Story,
+    Reaction, Ticket,
     HostRevenueGoal,
-    HostTicketGoal
+    HostTicketGoal,
+    Withdrawal
 };

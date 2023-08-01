@@ -107,6 +107,11 @@ const User = sequelize.define('User', {
         type: STRING(6),
         allowNull: true,
         defaultValue: ""
+    },
+
+    reported: {
+        type: INTEGER,
+        defaultValue: 0
     }
 
 

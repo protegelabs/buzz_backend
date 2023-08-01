@@ -47,7 +47,9 @@ router.post('/verify-otp', users.verifyOtp)
 router.post("/referral", users.referral)
 router.route('/host')
     .post(users.HostAnalytics)
-router.post("//deleteaccount",users.deleteaccount)
+router.post("/deleteaccount",users.deleteaccount)
+router.route("/host/report")
+.post(users.reportHost)
 router.post('/logout', users.logout)
 
 module.exports = router;

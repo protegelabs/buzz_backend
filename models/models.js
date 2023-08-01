@@ -735,11 +735,15 @@ const Blocked = sequelize.define('Blocked', {
         allowNull: false,
         primaryKey: true,
     },
-    user_id: {
+    blocked_user: {
         type: STRING,
         allowNull: false,
 
     },
+    user:{
+        type:STRING,
+        allowNull: false,
+    }
    
 }, {
     // Other model options go here

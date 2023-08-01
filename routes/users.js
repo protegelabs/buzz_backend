@@ -49,9 +49,12 @@ router.route('/host')
     .post(users.HostAnalytics)
 router.post("/deleteaccount", users.deleteaccount)
 router.route("/host/report")
-    .get(users.getBlocked)
     .post(users.reportHost)
     .put(users.unblock)
+
+router.route("/get-blocked-status")
+    .post(users.getBlocked)
+
 router.post('/logout', users.logout)
 
 module.exports = router;

@@ -200,11 +200,16 @@ exports.unblock= async(req,res)=>{
 }
 
 exports.getBlocked= async(req,res)=>{
-     const{ userid}= req.body
+     const{ user_id, blocked_user }= req.body
      try{
             //code here
-            const user = await Blocked.findAll({where:{user:userid}})
-          return  res.status(200).json(user)
+            const user = await Blocked.findOne({ where: {
+                user: user_id,
+                blocked_user: blocked_user
+            }})
+
+        if (user) return res.status(200).json(true)
+        return res.status(200).json(false)
      }catch(err){
          res.status(400).json({message:err.message})
      }

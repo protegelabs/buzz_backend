@@ -215,6 +215,23 @@ exports.getBlocked= async(req,res)=>{
      }
 }
 
+exports.blockUser = async (req, res) => {
+    const{ user_id, blocked_user } = req.body;
+    const id = uniqid()
+
+    try {
+        const user = await Blocked.create({ 
+            id,
+            user: user_id,
+            blocked_user: blocked_user
+        })
+       return res.status(200).json(user)
+    }catch(err){
+        res.status(400).json({message:err.message})
+    }
+}
+
+
 module.exports.editProfile = async (req, res) => {
     //const { name, username, email, type, phone, bio, heat, profile_url, is_active, dob, gender, location } = req.body
     const requestBody = req.body;

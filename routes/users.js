@@ -55,6 +55,9 @@ router.route("/host/report")
 router.route("/get-blocked-status")
     .post(users.getBlocked)
 
+router.route("/block")
+    .post(users.blockUser)
+
 router.post('/logout', users.logout)
 
 module.exports = router;

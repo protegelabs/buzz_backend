@@ -180,9 +180,31 @@ exports.reportHost= async(req,res)=>{
      const{ userid,blockedid }= req.body
      try{
          const user = await User.increment('reported',{by:1,where:{id:blockedid}})
-         const block = await Blocked.create({id:uniqid(),user:id,blocked_user:blockedid})
+         const block = await Blocked.create({id:uniqid(),user:userid,blocked_user:blockedid})
          await Promise.all([user,block])
         return res.send("done")
+     }catch(err){
+         res.status(400).json({message:err.message})
+     }
+}
+
+exports.unblock= async(req,res)=>{
+     const{ userid,blockedid}= req.body
+     try{
+         //code here
+         const user = await Blocked.destroy({where:{user:userid,blocked_user:blockedid}})
+       return  res.send("done")
+     }catch(err){
+         res.status(400).json({message:err.message})
+     }
+}
+
+exports.getBlocked= async(req,res)=>{
+     const{ userid}= req.body
+     try{
+            //code here
+            const user = await Blocked.findAll({where:{user:userid}})
+          return  res.status(200).json(user)
      }catch(err){
          res.status(400).json({message:err.message})
      }

@@ -103,15 +103,18 @@ module.exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
+        console.time('bad await')
         //find user in the database
         const user = await User.findOne({
             where: { email: email.toLowerCase() },
         })
-
+        console.timeEnd('bad await');
         const newUser = user.dataValues
         if (newUser) {
             //check for username in database and ensure password matches, then grant access
+            console.time('ba await')
             const check = await bcrypt.compare(password, newUser.password);
+            console.timeEnd('ba await');
           
             if (check === true) {
                 return res.status(200).send({user_id:newUser.id,user:newUser})
@@ -121,7 +124,7 @@ module.exports.login = async (req, res) => {
         } else {
             return res.status(400).json('email or password is incorrect')
         }
-
+       
 
     } catch (error) {
         return res.status(400).json({ message: error.message })
@@ -164,6 +167,16 @@ module.exports.withdraw = async (req, res) => {
         console.log(error)
         return res.status(400).json({ message: error.message })
     }
+}
+
+exports.reportHost= async(req,res)=>{
+     const{ id }= req.body
+     try{
+         const user = await User.increment('reported',{by:1,where:{id}})
+        return res.send("done")
+     }catch(err){
+         res.status(400).json({message:err.message})
+     }
 }
 
 module.exports.editProfile = async (req, res) => {

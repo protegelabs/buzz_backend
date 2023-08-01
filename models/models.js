@@ -729,6 +729,25 @@ const Withdrawal = sequelize.define('Withdrawal', {
     modelName: 'withdrawals'
 }
 );
+const Blocked = sequelize.define('Blocked', {
+    id: {
+        type: STRING,
+        allowNull: false,
+        primaryKey: true,
+    },
+    user_id: {
+        type: STRING,
+        allowNull: false,
+
+    },
+   
+}, {
+    // Other model options go here
+    tableName: 'blocked',
+    modelName: 'blocked'
+}
+);
+
 
 
 
@@ -793,5 +812,6 @@ module.exports = {
     Reaction, Ticket,
     HostRevenueGoal,
     HostTicketGoal,
-    Withdrawal
+    Withdrawal,
+    Blocked
 };

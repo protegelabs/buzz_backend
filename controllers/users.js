@@ -1,7 +1,7 @@
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const express = require('express')
-const { User, OtpCode, Withdrawal } = require('../models/models')
+const { User, OtpCode, Withdrawal,Blocked } = require('../models/models')
 const { Op, where } = require('sequelize')
 const { hashPassword } = require('../utils/hashPassword')
 const { Mail, randNum } = require('../utils/validate')
@@ -180,6 +180,8 @@ exports.reportHost= async(req,res)=>{
      const{ id }= req.body
      try{
          const user = await User.increment('reported',{by:1,where:{id}})
+         const block = await Blocked.create({id:uniqid(),user_id:id})
+         await Promise.all([user,block])
         return res.send("done")
      }catch(err){
          res.status(400).json({message:err.message})

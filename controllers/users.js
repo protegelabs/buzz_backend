@@ -107,26 +107,25 @@ module.exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        console.time('bad await')
+       
         //find user in the database
         const user = await User.findOne({
             where: { email: email.toLowerCase() },
         })
-        console.timeEnd('bad await');
+     
         const newUser = user.dataValues
-        if (newUser) {
+        if (user) {
             //check for username in database and ensure password matches, then grant access
-            console.time('ba await')
             const check = await bcrypt.compare(password, newUser.password);
-            console.timeEnd('ba await');
+           
           
             if (check === true) {
                 return res.status(200).send({user_id:newUser.id,user:newUser})
             } else {
-                return res.status(400).json('wrong email or password')
+                return res.status(401).json('email or password is incorrect')
             }
         } else {
-            return res.status(400).json('email or password is incorrect')
+            return res.status(401).json('email or password is incorrect')
         }
        
 

@@ -1,4 +1,4 @@
-const { Story, Friend, User } = require('../models/models');
+const { Story, Friend, User, Blocked } = require('../models/models');
 const { Op } = require('sequelize');
 const uniqid = require('uniqid');
 const { getFriends } = require('../utils/getFriends')
@@ -12,13 +12,13 @@ exports.getFriendStories = async (req, res) => {
     const twentyFourHoursAgo = moment().subtract(24, 'hours');
     const storylist = []
     const friendIdList = []
-    const [friendRecieved, friendSent] = await getFriends(id)
+    const [friendRecieved, friendSent] = await getFriends(id);
 
     const t = friendRecieved.map(async ({ friend_id }) => {
 
       const [user, friendStory] = await Promise.all([
         await User.findByPk(friend_id, {
-          attributes: ['username', 'name', 'profile_pic']
+          attributes: ['username', 'name', 'profile_pic', 'id']
         }),
         await Story.findAll({
           where: {
@@ -45,7 +45,7 @@ exports.getFriendStories = async (req, res) => {
 
       const [user, friendStory] = await Promise.all([
         await User.findByPk(user_id, {
-          attributes: ['username', 'name', 'profile_pic']
+          attributes: ['username', 'name', 'profile_pic', 'id']
         }),
         await Story.findAll({
           where: {

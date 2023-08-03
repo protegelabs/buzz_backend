@@ -189,10 +189,14 @@ exports.reportHost= async(req,res)=>{
 }
 
 exports.unblock= async(req,res)=>{
-     const{ userid,blockedid}= req.body
+    const{ userid, blockedid} = req.body
      try{
          //code here
-         const user = await Blocked.destroy({where:{user:userid,blocked_user:blockedid}})
+         console.log("wokrd")
+         const user = await Blocked.destroy({
+            where:{ user:userid,
+                blocked_user:blockedid
+            }})
        return  res.send("done")
      }catch(err){
          res.status(400).json({message:err.message})

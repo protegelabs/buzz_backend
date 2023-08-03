@@ -3,6 +3,7 @@ const { Favourite, Event, EventCategory } = require('../models/models');
 
 exports.createFav = async (req, res) => {
     const { event_id } = req.body
+    
     const user_id = req.body.user_id || req.session.user.id
     const id = uniqid()
 

@@ -36,7 +36,7 @@ module.exports.getEvent = async (req, res) => {
 
         const [host, attendance_count, category] = await Promise.all([
             await User.findByPk(event.host_id, {
-                attributes: ['name', 'id', 'profile_pic']
+                attributes: ['name', 'id', 'profile_pic', 'bio']
             }),
             await Purchase.count({ where: { event_id: event.id } }),
             await EventCategory.findAll({ where: { event_id: event.id } })

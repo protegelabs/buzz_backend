@@ -1,13 +1,26 @@
-const { Friend, Event, EventCategory, Purchase, Follow } = require('../models/models')
+const { Friend, Event, EventCategory, Purchase, Follow, Blocked } = require('../models/models')
 const { Op } = require('sequelize')
 
 exports.getFriends = async (id) => {
     try {
+        const blockedFriends = await Blocked.findAll({
+            where: {
+              user: id
+            }
+        })
+      
+        const blockedFriendsList = blockedFriends.map(({ blocked_user }) => (blocked_user))
+      
         const friendRecieved = await Friend.findAll({
             where: {
                 [Op.and]: [
                     { user_id: id },
-                    { status: 'accepted' }
+                    { status: 'accepted' },
+                    {
+                        friend_id: {
+                            [Op.notIn]: blockedFriendsList,
+                        }
+                    }
                 ]
             },
             attributes: ['friend_id']
@@ -16,7 +29,13 @@ exports.getFriends = async (id) => {
             where: {
                 [Op.and]: [
                     { friend_id: id },
-                    { status: 'accepted' }
+                    { status: 'accepted' },
+                    {
+                        user_id: {
+                            [Op.notIn]: blockedFriendsList,
+                        }
+                    }
+
                 ]
             },
             attributes: ['user_id']

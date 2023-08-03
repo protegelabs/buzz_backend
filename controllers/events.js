@@ -11,10 +11,11 @@ const { makePayment } = require("./purchases")
 
 
 module.exports.getAllEvents = async (req, res) => {
-    const user_id = req.body.id
+    const user_id = req.body.user_id
     const events = await Event.findAll();
-    const filteredEvents = await filterOutBlockedUsers(user_id,events)
-    return res.send(filteredEvents)
+    // console.log('events is', events)
+    const filteredEvents = await filterOutBlockedUsers(user_id, events)
+    return res.send({ filteredEvents, events })
 }
 
 module.exports.getHostEvents = async (req, res) => {
@@ -176,7 +177,7 @@ exports.closestEvent = async (req, res) => {
                 order: sequelize.col('distance'),
                 limit: 5
             });
-            const filteredEvents = await filterOutBlockedUsers(user_id,nearest)
+        const filteredEvents = await filterOutBlockedUsers(user_id, nearest)
         return res.status(200).json(filteredEvents)
 
     } catch (err) {
@@ -276,11 +277,11 @@ exports.TrendingEvents = async (req, res) => {
                 event_category: eventCategories,
             };
         });
-       const [trendingEventsByPurchases,eventsWithCategories] = await Promise.all([trendingEventsByPurchases1,eventsWithCategories1].map(async(events)=>{
-                return await filterOutBlockedUsers(user_id,events)
-       }))
+        const [trendingEventsByPurchases, eventsWithCategories] = await Promise.all([trendingEventsByPurchases1, eventsWithCategories1].map(async (events) => {
+            return await filterOutBlockedUsers(user_id, events)
+        }))
 
-        
+
 
         res.json({
             trendingEventsByPurchases,
@@ -310,7 +311,7 @@ const returnDifferentCategories = (tags) => {
 
 }
 exports.filterEvents = async (req, res) => {
-    const { user_id,tags, location, price_range } = req.body
+    const { user_id, tags, location, price_range } = req.body
     try {
         const Events = await Event.findAll({
             where: {
@@ -341,7 +342,7 @@ exports.filterEvents = async (req, res) => {
                 event_category: eventCategories,
             };
         });
-        const eventsWithCategories = await filterOutBlockedUsers(user_id,eventsWithCategories1)
+        const eventsWithCategories = await filterOutBlockedUsers(user_id, eventsWithCategories1)
         return res.send(eventsWithCategories)
     } catch (err) {
         res.status(400).json({ message: err.message })
@@ -350,7 +351,7 @@ exports.filterEvents = async (req, res) => {
 
 exports.SearchByTags = async (req, res) => {
     try {
-        const { user_id,categories } = req.body;
+        const { user_id, categories } = req.body;
 
         // Convert the categories parameter to an array if it's a string
         let categoryList = Array.isArray(categories) ? categories : [categories];
@@ -384,7 +385,7 @@ exports.SearchByTags = async (req, res) => {
 
 
 
-        const filteredEvents = await filterOutBlockedUsers(user_id,eventsWithCategories)
+        const filteredEvents = await filterOutBlockedUsers(user_id, eventsWithCategories)
         return res.send(filteredEvents)
 
         // Find events with matching event categories
@@ -485,9 +486,9 @@ module.exports.getFeaturedEvents = async (req, res) => {
             },
             limit: additionalLength
         })
-        const [featuredEvents,additionalEvents] = await Promise.all([featuredEvents1,additionalEvents1].map(async(events)=>{
-            return await filterOutBlockedUsers(user_id,events)
-   }))
+        const [featuredEvents, additionalEvents] = await Promise.all([featuredEvents1, additionalEvents1].map(async (events) => {
+            return await filterOutBlockedUsers(user_id, events)
+        }))
         return res.send([...featuredEvents, ...additionalEvents])
 
     } catch (e) {

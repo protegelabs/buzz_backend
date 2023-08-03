@@ -1,5 +1,6 @@
 const uniqid = require('uniqid');
-const { Favourite, Event, EventCategory } = require('../models/models');
+const { Favourite, Event, EventCategory, Blocked } = require('../models/models');
+const { filterOutBlockedUsers } = require('../utils/blocked')
 
 exports.createFav = async (req, res) => {
     const { event_id } = req.body
@@ -9,8 +10,8 @@ exports.createFav = async (req, res) => {
     const existingFavourite = await Favourite.findOne({
         where: { event_id, user_id }
     })
-    if(existingFavourite) return res.json({ error: "Already exists in Favourites" })
-    
+    if (existingFavourite) return res.json({ error: "Already exists in Favourites" })
+
     try {
         const fav = await Favourite.create({ id, event_id, user_id })
         return res.status(200).json({ fav })
@@ -24,14 +25,14 @@ exports.getFavourites = async (req, res) => {
     let categoryList = ["Music", "Tech", "Food", "Movies", "Workshops", "Art", "All", "Sports"]
 
     try {
-        const favourites = await Favourite.findAll({ 
+        const favourites = await Favourite.findAll({
             where: { user_id },
-            attributes: ['event_id'] 
+            attributes: ['event_id']
         });
         const events = await Promise.all(favourites.map(async ({ event_id }) => {
             const event = await Event.findByPk(event_id, {
                 attributes: {
-                    exclude: ["host_id", 'longitude', 'latitude', 'sold', 'price', 'description' ]
+                    exclude: ['longitude', 'latitude', 'sold', 'price', 'description']
                 }
             });
 
@@ -56,7 +57,7 @@ exports.getFavourites = async (req, res) => {
         const eventsWithCategories = events.map((event) => {
             const eventCategories = categoryList.filter((category) =>
 
-            
+
                 event?.dataValues?.event_category?.dataValues[category] === 1
             );
 
@@ -64,7 +65,8 @@ exports.getFavourites = async (req, res) => {
                 ...event,
             };
         });
-        return res.status(200).json({ fav: eventsWithCategories })
+        const filteredFavs = await filterOutBlockedUsers(user_id, eventsWithCategories)
+        return res.status(200).json({ fav: filteredFavs })
     } catch (err) {
         res.status(400).json({ message: err.message })
     }

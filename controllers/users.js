@@ -1,7 +1,7 @@
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const express = require('express')
-const { User, OtpCode, Withdrawal,Blocked } = require('../models/models')
+const { User, Withdrawal,Blocked } = require('../models/models')
 const { Op, where } = require('sequelize')
 const { hashPassword } = require('../utils/hashPassword')
 const { Mail, randNum } = require('../utils/validate')

@@ -141,3 +141,13 @@ exports.getPendingRequest = async (req, res) => {
         return res.status(400).json({ message: err.message })
     }
 }
+
+exports.removeFriend= async(req,res)=>{
+     const{user_id,friend_id }= req.body
+     try{
+         await Friend.destroy({where:{user_id,friend_id}})
+         res.send('done')
+     }catch(err){
+         res.status(400).json({message:err.message})
+     }
+}

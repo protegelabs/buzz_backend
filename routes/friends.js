@@ -14,8 +14,9 @@ router.route('/friends')
     .put(changeFriendStatus)
 router.route('/friends/invite')
     .post(findFriends)
-    .put(removeFriend)
-
+   
+router.route('friends/delete')
+.delete(removeFriend)
 
 
 module.exports = router;

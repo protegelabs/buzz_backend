@@ -145,7 +145,11 @@ exports.getPendingRequest = async (req, res) => {
 exports.removeFriend= async(req,res)=>{
      const{user_id,friend_id }= req.body
      try{
-         await Friend.destroy({where:{user_id,friend_id}})
+         await Friend.destroy({where:{
+            [Op.or]: [
+                { user_id,friend_id },
+                { friend_id:user_id,user_id:friend_id }
+            ]}})
          res.send('done')
      }catch(err){
          res.status(400).json({message:err.message})

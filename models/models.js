@@ -740,11 +740,11 @@ const Blocked = sequelize.define('Blocked', {
         allowNull: false,
 
     },
-    user:{
-        type:STRING,
+    user: {
+        type: STRING,
         allowNull: false,
     }
-   
+
 }, {
     // Other model options go here
     tableName: 'blocked',

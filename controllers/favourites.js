@@ -1,6 +1,6 @@
 const uniqid = require('uniqid');
 const { Favourite, Event, EventCategory, Blocked } = require('../models/models');
-const { filterOutBlockedUsers } = require('../utils/blocked')
+const { filterOutBlockedHosts } = require('../utils/blocked')
 
 exports.createFav = async (req, res) => {
     const { event_id } = req.body
@@ -65,7 +65,7 @@ exports.getFavourites = async (req, res) => {
                 ...event,
             };
         });
-        const filteredFavs = await filterOutBlockedUsers(user_id, eventsWithCategories)
+        const filteredFavs = await filterOutBlockedHosts(user_id, eventsWithCategories)
         return res.status(200).json({ fav: filteredFavs })
     } catch (err) {
         res.status(400).json({ message: err.message })

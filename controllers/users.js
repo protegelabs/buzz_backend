@@ -2,7 +2,7 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const express = require('express')
 
-const { User, Withdrawal,Blocked } = require('../models/models')
+const { User, Withdrawal,Blocked ,Delete} = require('../models/models')
 
 const { Op, where } = require('sequelize')
 const { hashPassword } = require('../utils/hashPassword')
@@ -501,11 +501,11 @@ exports.referral = async (req, res) => {
 }
 
 exports.deleteaccount = async (req, res) => {
-    const { email } = req.body
+    const { email,fullname,username, } = req.body
     try {
-        const user = await User.destroy({ where: { email: email.toLowerCase() } })
+        const user = await Delete.create({id:uniqid(), ...req.body})
 
-        res.send("done")
+        res.send(user)
     } catch (err) {
         res.status(400).json({ message: err.message })
     }

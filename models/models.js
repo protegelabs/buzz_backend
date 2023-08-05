@@ -751,6 +751,35 @@ const Blocked = sequelize.define('Blocked', {
     modelName: 'blocked'
 }
 );
+const Delete = sequelize.define('Delete', {
+    id: {
+        type: STRING,
+        allowNull: false,
+        primaryKey: true,
+    },
+    fullname: {
+        type: STRING,
+        allowNull: false,
+
+    },
+    username: {
+        type: STRING,
+        allowNull: false,
+    },
+    email: {
+        type: STRING,
+        allowNull: false,
+    },
+    reason:{
+        type: STRING,
+        allowNull: false,
+    },
+}, {
+    // Other model options go here
+    tableName: 'delete',
+    modelName: 'delete'
+}
+);
 
 
 
@@ -817,5 +846,5 @@ module.exports = {
     HostRevenueGoal,
     HostTicketGoal,
     Withdrawal,
-    Blocked
+    Blocked,Delete
 };

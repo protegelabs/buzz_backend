@@ -1,9 +1,7 @@
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const express = require('express')
-
-const { User, Withdrawal,Blocked ,Delete} = require('../models/models')
-
+const { User, OtpCode, Withdrawal,Blocked } = require('../models/models')
 const { Op, where } = require('sequelize')
 const { hashPassword } = require('../utils/hashPassword')
 const { Mail, randNum } = require('../utils/validate')
@@ -93,7 +91,7 @@ module.exports.register = async (req, res) => {
                     is_active, dob, gender, location,
                     authtype: auth_type, heatTime: new Date()
                 }),
-                await User.increment('heat', { by: 25, where: { referral_code } })
+                await User.increment('heat', { by: 25 , where: { referral_code } })
             ])
             req.session.user_id = id
             return res.status(201).send(newUser.dataValues)
@@ -109,27 +107,28 @@ module.exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-
+        console.time('bad await')
         //find user in the database
         const user = await User.findOne({
             where: { email: email.toLowerCase() },
         })
-
+        console.timeEnd('bad await');
         const newUser = user.dataValues
-        if (user) {
+        if (newUser) {
             //check for username in database and ensure password matches, then grant access
+            console.time('ba await')
             const check = await bcrypt.compare(password, newUser.password);
-
-
+            console.timeEnd('ba await');
+          
             if (check === true) {
-                return res.status(200).send({ user_id: newUser.id, user: newUser })
+                return res.status(200).send({user_id:newUser.id,user:newUser})
             } else {
-                return res.status(401).json('email or password is incorrect')
+                return res.status(400).json('wrong email or password')
             }
         } else {
-            return res.status(401).json('email or password is incorrect')
+            return res.status(400).json('email or password is incorrect')
         }
-
+       
 
     } catch (error) {
         return res.status(400).json({ message: error.message })
@@ -161,7 +160,7 @@ module.exports.withdraw = async (req, res) => {
         }*/
         //const newBalance = balance - parseInt(amount)
         const withdrawal = await Withdrawal.create({ id, user_id, name, username, email, amount, bankName, accountName, accountNumber })
-
+        
         /*
         const updateBalance = await User.update({ balance: newBalance }, {
             where: {
@@ -177,66 +176,62 @@ module.exports.withdraw = async (req, res) => {
     }
 }
 
-exports.reportHost = async (req, res) => {
-    const { userid, blockedid } = req.body
-    try {
-        const user = await User.increment('reported', { by: 1, where: { id: blockedid } })
-        const block = await Blocked.create({ id: uniqid(), user: userid, blocked_user: blockedid })
-        await Promise.all([user, block])
+exports.reportHost= async(req,res)=>{
+     const{ userid,blockedid }= req.body
+     try{
+         const user = await User.increment('reported',{by:1,where:{id:blockedid}})
+         const block = await Blocked.create({id:uniqid(),user:userid,blocked_user:blockedid})
+         await Promise.all([user,block])
         return res.send("done")
-    } catch (err) {
-        res.status(400).json({ message: err.message })
-    }
+     }catch(err){
+         res.status(400).json({message:err.message})
+     }
 }
 
-exports.unblock = async (req, res) => {
-    const { user_id, blocked_user } = req.body
-    try {
-        //code here
-        console.log("wokrd")
-        const user = await Blocked.destroy({
-            where: {
-                user: user_id,
-                blocked_user
-            }
-        })
-        return res.send("unblocked")
-    } catch (err) {
-        res.status(400).json({ message: err.message })
-    }
+exports.unblock= async(req,res)=>{
+    const{ userid, blockedid} = req.body
+     try{
+         //code here
+         console.log("wokrd")
+         const user = await Blocked.destroy({
+            where:{ user:userid,
+                blocked_user:blockedid
+            }})
+       return  res.send("done")
+     }catch(err){
+         res.status(400).json({message:err.message})
+     }
 }
 
-exports.getBlocked = async (req, res) => {
-    const { user_id, blocked_user } = req.body
-    try {
-        //code here
-        const user = await Blocked.findOne({
-            where: {
+exports.getBlocked= async(req,res)=>{
+     const{ user_id, blocked_user }= req.body
+     try{
+            //code here
+            const user = await Blocked.findOne({ where: {
                 user: user_id,
                 blocked_user: blocked_user
-            }
-        })
+            }})
 
         if (user) return res.status(200).json(true)
         return res.status(200).json(false)
-    } catch (err) {
-        res.status(400).json({ message: err.message })
-    }
+     }catch(err){
+         res.status(400).json({message:err.message})
+     }
 }
 
 exports.blockUser = async (req, res) => {
-    const { user_id, blocked_user } = req.body;
+    const{ user_id, blocked_user } = req.body;
     const id = uniqid()
 
     try {
-        const user = await Blocked.create({
+        const user = await Blocked.create({ 
             id,
             user: user_id,
             blocked_user: blocked_user
         })
-        return res.status(200).json(user)
-    } catch (err) {
-        res.status(400).json({ message: err.message })
+       return res.status(200).json(user)
+    }catch(err){
+        res.status(400).json({message:err.message})
     }
 }
 
@@ -500,14 +495,14 @@ exports.referral = async (req, res) => {
     }
 }
 
-exports.deleteaccount = async (req, res) => {
-    const { email,fullname,username, } = req.body
-    try {
-        const user = await Delete.create({id:uniqid(), ...req.body})
+exports.deleteaccount= async(req,res)=>{
+     const{ email }= req.body
+     try{
+         const user = await User.destroy({where:{email:email.toLowerCase()}})
 
-        res.send(user)
-    } catch (err) {
-        res.status(400).json({ message: err.message })
-    }
+         res.send("done")
+     }catch(err){
+         res.status(400).json({message:err.message})
+     }
 }
 

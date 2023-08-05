@@ -58,9 +58,6 @@ router.route("/get-blocked-status")
 router.route("/block")
     .post(users.blockUser)
 
-router.route("/unblock")
-    .post(users.unblock)
-
 router.post('/logout', users.logout)
 
 module.exports = router;

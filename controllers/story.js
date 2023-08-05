@@ -3,6 +3,7 @@ const { Op } = require('sequelize');
 const uniqid = require('uniqid');
 const { getFriends } = require('../utils/getFriends')
 const moment = require('moment');
+const { filterBlockedUsers } = require('../utils/blocked')
 
 
 
@@ -32,7 +33,6 @@ exports.getFriendStories = async (req, res) => {
 
       if (friendStory.length > 0) {
         storylist.push({ user, friendStory })
-        //  console.log(friendStory)
         return friendStory
       } else {
         return null
@@ -59,7 +59,6 @@ exports.getFriendStories = async (req, res) => {
 
       if (friendStory.length > 0) {
         storylist.push({ user, friendStory })
-        //  console.log(friendStory)
         return friendStory
       } else {
         return null
@@ -72,6 +71,7 @@ exports.getFriendStories = async (req, res) => {
     res.status(400).json({ message: err.message })
   }
 }
+
 exports.uploadstories = async (req, res) => {
   try {
     const id = uniqid()
@@ -84,6 +84,7 @@ exports.uploadstories = async (req, res) => {
     res.status(400).json({ message: err.message })
   }
 }
+
 exports.deleteStory = async (req, res) => {
   const { id, user_id } = req.body
 
@@ -102,6 +103,7 @@ exports.deleteStory = async (req, res) => {
     res.status(400).json({ message: err.message })
   }
 }
+
 exports.getUserStories = async (req, res) => {
   const { user_id } = req.body;
   try {

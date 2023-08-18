@@ -1,5 +1,5 @@
 const session = require('express-session');
-const { Event, Review, User, Purchase, EventCategory, Ticket, Blocked } = require('../models/models')
+const { Event, Review, User, Purchase, EventCategory, Ticket, Blocked, EventPic } = require('../models/models')
 const { Op, where } = require('sequelize')
 const uniqid = require('uniqid')
 const { filterOutBlockedHosts } = require('../utils/blocked')
@@ -38,15 +38,25 @@ module.exports.getEvent = async (req, res) => {
             await Review.findAll({ where: { event_id: id } })
         ])
 
-        const [host, attendance_count, category] = await Promise.all([
+        const [host, attendance_count, category, ticket_types, images] = await Promise.all([
             await User.findByPk(event.host_id, {
                 attributes: ['name', 'id', 'profile_pic', 'bio']
             }),
             await Purchase.count({ where: { event_id: event.id } }),
-            await EventCategory.findAll({ where: { event_id: event.id } })
+            await EventCategory.findAll({ where: { event_id: event.id } }),
+            await Ticket.findAll({ 
+                where: { event_id: event.id },
+                attributes: ['name', 'price']
+            }),
+            await EventPic.findAll({ 
+                where: { event_id: event.id },
+                attributes:  ['pic1', 'pic2', 'pic3', 'pic4']
+            })
         ])
+
+        const gallery = [images.pic1, images.pic2, images.pic3, images.pic4]
         // return res.send(event)
-        return res.send({ event, reviews, host, attendance_count, category })
+        return res.send({ event, reviews, host, attendance_count, category, ticket_types, gallery })
     } catch (error) {
         return res.send('sorry an error occured')
     }
@@ -61,10 +71,13 @@ module.exports.createEvent = async (req, res) => {
         tickets, timeStart,
         timeEnd, categories,
         description,
-        promotional_code
+        promotional_code, category,
+        gallery
     } = req.body
     const host_id = req.session.user_id || req.body.host_id
     const event_id = uniqid();
+
+
     try {
         const newEvent = await Event.create({
             id: event_id, name,
@@ -73,19 +86,28 @@ module.exports.createEvent = async (req, res) => {
             date, host_id,
             discount, is_active,
             event_pic, timeStart,
-            timeEnd, description, promotional_code
-        })
-        const newcat = categories.map((category) => {
-            return { [category]: 1 }
+            timeEnd, description, promotional_code,
+            tickets,
+            category
         })
 
-        const eventCategory = await EventCategory.create({
-            id: uniqid(),
-            event_id, name,
-            ...Object.assign({}, ...newcat)
-        });
+        if (gallery.length > 0) {
+            const gallery_id = uniqid();
 
-        await Promise.all(tickets.map(async (item) => {
+            await EventPic.create({
+                id: gallery_id,
+                event_id: event_id,
+                pic1: gallery[0],
+                pic2: gallery[1],
+                pic3: gallery[2],
+                pic4: gallery[3],
+            })
+
+        }
+
+
+        await Promise.all(
+            tickets.map(async (item) => {
             return await Ticket.create({
                 id: uniqid(),
                 event_id,
@@ -116,20 +138,17 @@ module.exports.editEvent = async (req, res) => {
 
 
 exports.searchEvent = async (req, res) => {
-    const { event_name, ...rest } = req.body;
+    const { event_name } = req.body;
     try {
-        const event = await Event.findAll({
+        const events = await Event.findAll({
             where: {
                 name: {
                     [Op.like]: `%${event_name}%`
                 },
-                ...rest
             }
         })
-            .then((data) => {
-                return res.json({ events: data })
-            })
-
+            
+        return res.json({ events })
     } catch (err) {
         return res.status(400).json({ message: err.message })
 
@@ -138,7 +157,7 @@ exports.searchEvent = async (req, res) => {
 
 exports.closestEvent = async (req, res) => {
     const parsedurl = Url.parse(req.url, true)
-    const { user_id, longitude, latitude, range } = parsedurl.query
+    const { user_id, longitude, latitude, range } = parsedurl.query;
 
     try {
         const constant = 6371
@@ -327,9 +346,13 @@ exports.filterEvents = async (req, res) => {
                             [Op.like]: `%${location}%`
                         }
                     },
+                    {
+                        category: {
+                            [Op.in]: tags
+                        }
+                    }
                 ]
             },
-            include: returnDifferentCategories(tags)
         })
 
         const eventsWithCategories1 = Events.map((event) => {
@@ -351,41 +374,24 @@ exports.filterEvents = async (req, res) => {
 
 exports.SearchByTags = async (req, res) => {
     try {
-        const { user_id, categories } = req.body;
+        const { user_id, categories, event_name } = req.body;
 
         // Convert the categories parameter to an array if it's a string
         let categoryList = Array.isArray(categories) ? categories : [categories];
 
         const events = await Event.findAll({
-            include: [
-                {
-                    model: EventCategory,
-                    where: {
-                        [Op.or]: categoryList.reduce((acc, category) => {
-                            acc[category] = 1;
-                            return acc;
-                        }, {}),
-                    },
-                    attributes: [...categoryList],
+            where: {
+                name: {
+                    [Op.like]: `%${event_name}%`
                 },
-            ],
+                category: {
+                    [Op.in]: categoryList,
+                }
+            }
         });
 
 
-        const eventsWithCategories = events.map((event) => {
-            const eventCategories = categoryList.filter((category) =>
-                event.dataValues.event_category.dataValues[category] === 1
-            );
-
-            return {
-                ...event.toJSON(),
-                event_category: eventCategories,
-            };
-        });
-
-
-
-        const filteredEvents = await filterOutBlockedHosts(user_id, eventsWithCategories)
+        const filteredEvents = await filterOutBlockedHosts(user_id, events)
         return res.send(filteredEvents)
 
         // Find events with matching event categories

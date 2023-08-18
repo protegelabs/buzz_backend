@@ -138,6 +138,10 @@ const Event = sequelize.define('Event', {
         type: INTEGER,
         allowNull: false,
     },
+    category: {
+        type: STRING(20),
+        defaultValue: "",
+    },
     description: {
         type: STRING,
         defaultValue: "",
@@ -781,6 +785,40 @@ const Delete = sequelize.define('Delete', {
 }
 );
 
+const EventPic = sequelize.define('EventPic', {
+    id: {
+        type: STRING,
+        allowNull: false,
+        primaryKey: true,
+    },
+    event_id: {
+        type: STRING,
+        allowNull: false,
+
+    },
+    pic1: {
+        type: STRING,
+        allowNull: false,
+    },
+    pic2: {
+        type: STRING,
+        allowNull: false,
+    },
+    pic3: {
+        type: STRING,
+        allowNull: false,
+    },
+    pic4: {
+        type: STRING,
+        allowNull: false,
+    }
+}, {
+    // Other model options go here
+    tableName: 'event_pic',
+    modelName: 'event_pic'
+});
+
+
 
 
 
@@ -846,5 +884,6 @@ module.exports = {
     HostRevenueGoal,
     HostTicketGoal,
     Withdrawal,
-    Blocked,Delete
+    Blocked,Delete,
+    EventPic
 };

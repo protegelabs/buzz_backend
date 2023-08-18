@@ -69,7 +69,8 @@ module.exports.createEvent = async (req, res) => {
             date, host_id,
             discount, is_active,
             event_pic, timeStart,
-            timeEnd, description, promotional_code
+            timeEnd, description, promotional_code,
+            tickets
         })
         const newcat = categories.map((category) => {
             return { [category]: 1 }
